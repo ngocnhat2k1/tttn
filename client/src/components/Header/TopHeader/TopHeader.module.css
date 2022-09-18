@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.divTopheader{
+    display: flex;
+    background-color: #ebebeb;
+    padding: 0.4% 3.5%;
+}
+
+.divTopheader a{
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+    font-family: "Poppins",sans-serif;
+}
+
+.divLeft p {
+    color: black;
+    font-size: 14px;
+    font-family: "Poppins",sans-serif;
+    margin: 0
+}
+
+.divLeft{
+    margin: auto;
+    float: left;
+    text-align: left;
+    width: 50%;
+}
+
+.divRight{
+    float: left;
+    text-align: right;
+    width: 50%;
+}
+
+.divRight  li{
+    padding: 0.5% 2%;
+    float: right;
+}
+
+.clear{
+    clear: both;
+}
+
+.divRight ul {
+    margin: 0;
+    list-style-type: none;
+}
