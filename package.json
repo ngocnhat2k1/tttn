@@ -15,12 +15,9 @@
     "axios": "^0.27.2",
     "concurrently": "^5.3.0",
     "express": "^4.17.1",
-<<<<<<< HEAD
-    "react": "^17.0.0"
-=======
     "http-proxy-middleware": "^2.0.6",
     "react": "^17.0.0",
-    "react-dom": "^17.0.0"
->>>>>>> 6b7f6bd6a65f1f5bfd4c2805751775a889a63626
+    "react-dom": "^17.0.0",
+    "react-router-dom": "^5.3.3"
   }
 }

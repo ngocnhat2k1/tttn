@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import Header from './components/Header';
 import GlobalStyles from './components/GlobalStyles';
-import { Button } from 'react-bootstrap';
+// import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import NavBar from './components/Header/NavBar/NavBar';
 
 class App extends Component {
   state = {
@@ -19,9 +19,11 @@ class App extends Component {
 
   render() {
     return (
+      
       <GlobalStyles>
         <div className="App">
           <Header />
+          <NavBar/>
         </div>
       </GlobalStyles>
     )
