@@ -1,0 +1,83 @@
+import { useState, useEffect, useRef } from 'react'
+import styles from './OfferCountdown.module.css'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
+function OfferCountdown() {
+
+    const [timeDays, setDays] = useState('00');
+    const [timeHours, setHours] = useState('00');
+    const [timeMinutes, setMinutes] = useState('00');
+    const [timeSeconds, setSeconds] = useState('00');
+
+    let interval = useRef();
+
+    const startCountDown = () => {
+        const countDownDate = new Date('October 1, 2022 00:00:00').getTime();
+
+        interval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor(distance % (1000 * 60) / 1000);
+
+            if (distance < 0) {
+                clearInterval(interval.current);
+            } else {
+                setDays(days);
+                setHours(hours);
+                setMinutes(minutes);
+                setSeconds(seconds);
+            }
+        }, 1000);
+    }
+
+    useEffect(() => {
+        startCountDown();
+        return () => {
+            clearInterval(interval.current);
+        }
+    }, [])
+
+    return (
+        <section id={styles.offerTime}>
+            <Container>
+                <Row className={styles.row}>
+                    <Col className={`${styles.col}`} lg={{ span: 8, offset: 4 }} md={{ span: 7, offset: 4 }} sm={12} xs={12}>
+                        <div className={`${styles.offerTimeFlex}`}>
+                            <div className={styles.countDown}>
+                                <div>
+                                    <ul>
+                                        <li>
+                                            <span>{timeDays}</span> days
+                                        </li>
+                                        <li>
+                                            <span>{timeHours}</span> Hours
+                                        </li>
+                                        <li>
+                                            <span>{timeMinutes}</span> Minutes
+                                        </li>
+                                        <li>
+                                            <span>{timeSeconds}</span> Seconds
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className={styles.offerTimeText}>
+                                <h2>20% OFF FOR ALL T-SHIRT COLLECTION</h2>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro quisquam, odit assumenda sit modi commodi esse necessitatibus temporibus aperiam veritatis eveniet!</p>
+                                <a href="">VIEW MORE</a>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+        </section>
+    )
+}
+
+export default OfferCountdown

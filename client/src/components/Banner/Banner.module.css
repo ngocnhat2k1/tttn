@@ -1,0 +1,55 @@
+#banner {
+    background-image: url(../../images/banner.jpg);
+}
+
+.bannerWrapper{
+    justify-content: space-around;
+}
+
+.bannerText {
+    text-align: left;
+}
+
+.bannerText h1 {
+    font-size: 150px;
+    font-weight: 100;
+    line-height: 150px;
+}
+
+.bannerText h1 span {
+    color: #fff;
+    font-weight: 700;
+}
+
+.bannerText h3 {
+    color: #f3f3f3;
+    font-weight: 500;
+    font-size: 24px;
+    margin-bottom: 50px;
+}
+
+.bannerText a {
+    text-decoration: none;
+    background-color: black;
+    color: white;
+    padding: 16px 35px;
+}
+
+.colImageBanner {
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    position: relative;
+}
+
+
+.divImg {
+    width: 50%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.colImageBanner img {
+    width: 100%;
+    height: 100%;
+}

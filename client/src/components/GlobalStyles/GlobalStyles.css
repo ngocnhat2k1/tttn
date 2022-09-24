@@ -1,3 +1,29 @@
+<<<<<<< HEAD
 .colorOrange {
+=======
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+section {
+    padding-top: 50px;
+}
+
+.pb50{
+    padding-bottom: 50px;
+}
+
+.colorOrange{
+>>>>>>> a41d6b6390eac67893e2819c68883ce441eac375
     color: #f79837 !important;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.clear {
+    clear: both;
 }
