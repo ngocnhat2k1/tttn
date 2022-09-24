@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+footer {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    background-color: #f6f6f6;
+    text-align: left;
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+}
+
+.footerLeft {
+}
+
+.footerLeft p {
+    padding-top: 10px;
+    padding-right: 30px;
+    margin-bottom: 20px;
+}
+
+.divFooterIcon {
+    text-align: left;
+
+}
+
+.divFooterIcon ul {
+    padding: 0;
+    margin: 0;
+}
+
+.divFooterIcon ul li:first-child{
+    margin-left: 0px;
+}
+
+.divFooterIcon ul li {
+    margin-left: 9px;
+    display: inline-flex;
+
+    &:hover {
+        cursor: pointer;
+        color: #f79837
+    }
+}
+
+.footerRow{
+    padding: 20px 0px 10px 10px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.footerRow h3 {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.footerRow ul {
+    margin: 0;
+    padding: 10px 0px 0px 0px;
+}
+
+.footerRow ul li:first-child {
+    padding-top: 0px;
+}
+
+.footerRow ul li {
+    padding-top: 11px;
+}
+
+footer p {
+    color: #777c87;
+}
+
+.inputForm {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.divForm {
+    padding-top: 15px;
+}
+
+.btnSendMail {
+    margin-top: 20px;
+    background-color: black;
+    color: white;
+    padding: 13px 37px;
+    font-size: 14px;
+}

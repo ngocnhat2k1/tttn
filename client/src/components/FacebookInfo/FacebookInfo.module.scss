@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+.textCenter {
+    padding-bottom: 10px;
+}
+
+.textCenter h2 {
+    font-size: 33px;
+    font-weight: 600;
+}
+
+.textCenter p {
+    color: #777c87;
+    font-size: 16px;
+}
+
+.parent {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    margin: 0 auto;
+    display: flex;
+}
+
+.parent a {
+    position: relative;
+}
+
+.children {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: auto 20px;
+    border-radius: 50%;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    &:hover {
+        .iconFacebook {
+            cursor: pointer;
+            opacity: 0.8;
+            transition: 0.25s linear;
+            transform: translate(-50%, -50%) scale(0.7, 0.7);
+        }
+
+        &::before {
+            background-color: #f3f0ea;
+            opacity: 0.5;
+            transition: all 0.25s linear;
+        }
+    }
+}
+
+.children a img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.iconFacebook {
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    font-size: 70px;
+    color: #262626;
+    // line-height: 1;
+    transition: 0.25s linear;
+    border-radius: 8px;
+}
+
+.icon {}
