@@ -12,7 +12,7 @@ function OfferCountdown() {
     const [timeSeconds, setSeconds] = useState('00');
 
     let interval = useRef();
-
+    
     const startCountDown = () => {
         const countDownDate = new Date('October 1, 2022 00:00:00').getTime();
 

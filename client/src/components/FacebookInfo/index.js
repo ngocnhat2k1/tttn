@@ -30,7 +30,7 @@ function FacebookInfo() {
                                     </a>
                                 </div>
                                 <div className={styles.children}>
-                                    <a href="">
+                                    <a href="https://www.facebook.com/lequocbao241/" target="_blank">
                                         <img src={BaoAvatar} alt="Avatar Lê Bảo" />
                                         <div className={styles.iconFacebook}>
                                         <FaFacebookF className={styles.icon} />
@@ -38,7 +38,7 @@ function FacebookInfo() {
                                     </a>
                                 </div>
                                 <div className={styles.children}>
-                                    <a href="">
+                                    <a href="https://www.facebook.com/ngocnhat2k1" target="_blank">
                                         <img src={NhatAvatar} alt="Avatar Ngọc Nhật" />
                                         <div className={styles.iconFacebook}>
                                         <FaFacebookF className={styles.icon} />

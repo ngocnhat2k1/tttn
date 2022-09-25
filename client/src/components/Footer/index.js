@@ -4,8 +4,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Logo from '../../images/Logo.png'
+import { useState } from 'react';
 
 function Footer() {
+    const [mail, setMail] = useState('');
+
     return (
         <footer>
             <Container>
@@ -13,7 +16,7 @@ function Footer() {
                     <Col lg={4} md={12} sm={12} xs={12}>
                         <div className={styles.footerLeft}>
                             <a href="">
-                                <img src={Logo} alt="logo" width={200}/>
+                                <img src={Logo} alt="logo" width={200} />
                             </a>
                             <p><strong>Huong Duong Shop</strong>  is an multi-vendor B2C fast e-commerce company. The company mainly focuses on men,women and children wear, but it also offers other apparel, clothes, accessories, shoes, bags and other fashion items.</p>
                             <div className={styles.divFooterIcon}>
@@ -66,12 +69,19 @@ function Footer() {
                         </div>
                     </Col>
                     <Col lg={3} md={12} sm={12} xs={12}>
-                    <div className={styles.footerRow}>
+                        <div className={styles.footerRow}>
                             <h3>NEWSLETTER</h3>
                             <div className={styles.divForm}>
                                 <form>
                                     <div>
-                                        <input className={styles.inputForm} type='email' placeholder='Your mail' name='EMAIL'/>
+                                        <input
+                                            className={styles.inputForm}
+                                            type='email'
+                                            placeholder='Your mail'
+                                            name='EMAIL'
+                                            value={mail}
+                                            onChange={e => setMail(e.target.value)}
+                                        />
                                     </div>
                                     <div>
                                         <button className={styles.btnSendMail} type='submit' name='subscribe'>SEND MAIL</button>

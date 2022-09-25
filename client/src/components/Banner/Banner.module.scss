@@ -33,6 +33,12 @@
     background-color: black;
     color: white;
     padding: 16px 35px;
+
+    &:hover {
+        color: black;
+        background-color: white;
+        border: 1px solid black;
+    }
 }
 
 .colImageBanner {

@@ -1,4 +1,4 @@
-import styles from './Banner.module.css'
+import styles from './Banner.module.scss'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
