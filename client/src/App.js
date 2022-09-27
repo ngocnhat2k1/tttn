@@ -6,17 +6,15 @@ import {
 } from "react-router-dom";
 import GlobalStyles from "./components/GlobalStyles";
 import Home from "./pages/Home";
-import Header from "./components/Header";
-import NavBar from "./components/Header/NavBar/NavBar";
 class App extends Component {
   render() {
     return (
 
       <GlobalStyles>
-        <div className="App">
+        {/* <div className="App">
           <Header />
           <NavBar />
-        </div>
+        </div> */}
 
         <BrowserRouter>
           <Routes>

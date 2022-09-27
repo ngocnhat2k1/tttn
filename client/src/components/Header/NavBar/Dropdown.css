@@ -1,10 +1,10 @@
 .services-submenu {
     position: absolute;
     top: 100%;
-    right: -40%;
+    right: 0;
     list-style: none;
     text-align: start;
-    box-shadow: 0px 0px 10px 1px #e3e3e3;
+    /* box-shadow: 0px 0px 10px 1px #e3e3e3; */
     padding: 10px 15px;
 }
 
