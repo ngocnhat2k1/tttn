@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import LogoSrc from '../../../Images/Logo.png'
+import LogoSrc from '../../../images/Logo.png'
 import { HomeDropDown, NavBarItems, FeatureDropDown, ShopDropDown, BlogDropDown, PagesDropDown } from './NavBarItems.js'
 import "./NavBar.css";
 import { Link, BrowserRouter as Router } from 'react-router-dom';
@@ -18,7 +18,7 @@ function NavBar() {
     < nav className='NavBar' >
       <div className={` container`}>
         < img src={LogoSrc} alt="" className="Logo" />
-        <Router>
+        {/* <Router> */}
           <ul className='nav-item-ul  '>
             {NavBarItems.map((item) => {
               if (item.title === "Home") {
@@ -105,7 +105,7 @@ function NavBar() {
                       }
             })}
           </ul>
-        </Router>
+        {/* </Router> */}
 
         <ul className="ActionNavBar">
           <li> <a href="."><FaHeart fontSize={21} /></a></li>

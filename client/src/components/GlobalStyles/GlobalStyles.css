@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-.colorOrange {
-=======
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 section {
@@ -12,7 +9,6 @@ section {
 }
 
 .colorOrange{
->>>>>>> a41d6b6390eac67893e2819c68883ce441eac375
     color: #f79837 !important;
 }
 
