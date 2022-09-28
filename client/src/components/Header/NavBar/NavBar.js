@@ -3,6 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa"
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+
 import LogoSrc from '../../../images/Logo.png'
 import { HomeDropDown, NavBarItems, FeatureDropDown, ShopDropDown, BlogDropDown, PagesDropDown } from './NavBarItems.js'
 import "./NavBar.css";
@@ -131,6 +132,7 @@ function NavBar() {
                   <FaTimes />
                 </button>
               </ul>
+
 
             </div>
 

@@ -9,13 +9,7 @@ import Home from "./pages/Home";
 class App extends Component {
   render() {
     return (
-
       <GlobalStyles>
-        {/* <div className="App">
-          <Header />
-          <NavBar />
-        </div> */}
-
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />}>
