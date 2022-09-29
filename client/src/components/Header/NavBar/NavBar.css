@@ -4,7 +4,7 @@
 
     background-color: #fef5ef;
     display: flex;
-
+    padding: 10px 0;
 }
 
 
@@ -44,17 +44,19 @@
 
 .ActionNavBar {
     display: flex;
-    text-align: center;
-    justify-content: space-between;
+    /* text-align: center;
+    justify-content: space-between; */
     align-items: center;
-    width: 13%;
+    width: 20%;
     margin-bottom: 0;
 }
 
 .ActionNavBar li {
+    display: flex;
     list-style-type: none;
     padding: 10%;
-
+    text-align: center;
+    justify-content: space-between
 }
 
 .ActionNavBar li a {
@@ -139,7 +141,18 @@
     font-size: 18px;
 }
 
-@media only screen and (max-width:1024px) {
+
+
+@media only screen and (max-width:768px) {
+    .header-logo {
+        width: 18%;
+    }
+
+    .ActionNavBar {
+        position: absolute;
+        right: 10%;
+    }
+
     .nav-btn {
         visibility: visible;
         opacity: 1;
@@ -150,16 +163,17 @@
         position: fixed;
         top: 0;
         left: 0;
-        height: 100%;
+        height: 30%;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.5rem;
+        gap: 0.5rem;
         transition: 1s;
         background-color: #24262B;
-        transform: translateY(-100vh);
+        transform: translatex(100%);
+        z-index: 1000;
     }
 
     .responsive_nav {
@@ -168,11 +182,19 @@
 
     .nav-close-btn {
         position: absolute;
-        top: 2rem;
-        right: 2rem;
+        top: 1rem;
+        right: 1rem;
     }
 
-    .nav-item-ul a {
+    .nav-item-ul {
         font-size: 1.5rem;
     }
+}
+
+@media only screen and (max-width:394px) {
+    .ActionNavBar {
+        right: 20%;
+    }
+
+
 }
