@@ -3,6 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa"
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+
 import LogoSrc from '../../../images/Logo.png'
 import { HomeDropDown, NavBarItems, FeatureDropDown, ShopDropDown, BlogDropDown, PagesDropDown } from './NavBarItems.js'
 import "./NavBar.css";
@@ -41,6 +42,7 @@ function NavBar() {
             <ul className='nav-item-ul'
               ref={navRef}
             >
+<<<<<<< HEAD
               {NavBarItems.map((item) => {
                 if (item.title === "Home") {
                   return (
@@ -122,6 +124,100 @@ function NavBar() {
                 <FaTimes />
               </button>
             </ul>
+=======
+              <ul className='nav-item-ul  '>
+                {NavBarItems.map((item) => {
+                  if (item.title === "Home") {
+                    return (
+                      <li
+                        key={item.id}
+                        className={item.cName}
+                        onMouseEnter={() =>
+                          setHomeDropdown(true)
+                        }
+                        onMouseLeave={() => setHomeDropdown(false)}
+                      >
+                        <Link to={item.path}
+
+                        >{item.title}</Link>
+                        <DropDown
+                          className={`${HomeDropdown ? 'active' : 'dropdown'}`}
+                          nameDropDown={HomeDropDown} />
+                      </li>
+                    );
+                  }
+                  else
+                    if (item.title === "Shop") {
+                      return (
+                        <li
+                          key={item.id}
+                          className={item.cName}
+                          onMouseEnter={() => setShopDropdown(true)}
+                          onMouseLeave={() => setShopDropdown(false)}
+                        >
+                          <Link to={item.path}>{item.title}</Link>
+                          <DropDown className={`${ShopDropdown ? 'active' : 'dropdown'}`}
+                            nameDropDown={ShopDropDown} />
+                        </li>
+                      );
+                    }
+                    else
+                      if (item.title === "Feature") {
+                        return (
+                          <li
+                            key={item.id}
+                            className={item.cName}
+                            onMouseEnter={() => setFeatureDropdown(true)}
+                            onMouseLeave={() => setFeatureDropdown(false)}
+                          >
+                            <Link to={item.path}>{item.title}</Link>
+                            <DropDown className={`${FeatureDropdown ? 'active' : 'dropdown'}`}
+                              nameDropDown={FeatureDropDown} />
+                          </li>
+                        )
+                      }
+                      else
+                        if (item.title === "Blog") {
+                          return (
+                            <li
+                              key={item.id}
+                              className={item.cName}
+                              onMouseEnter={() => setBlogDropdown(true)}
+                              onMouseLeave={() => setBlogDropdown(false)}
+                            >
+                              <Link to={item.path}>{item.title}</Link>
+                              <DropDown className={`${BlogDropdown ? 'active' : 'dropdown'}`}
+                                nameDropDown={BlogDropDown} />
+                            </li>
+                          )
+                        }
+                        else
+                          if (item.title === "Pages") {
+                            return (
+                              <li
+                                key={item.id}
+                                className={item.cName}
+                                onMouseEnter={() => setPagesDropdown(true)}
+                                onMouseLeave={() => setPagesDropdown(false)}
+                              >
+                                <Link to={item.path}>{item.title}</Link>
+                                <DropDown className={`${PageDropdown ? 'active' : 'dropdown'}`}
+                                  nameDropDown={PagesDropDown} />
+                              </li>
+                            )
+                          }
+                })}
+                <button
+                  className='nav-btn nav-close-btn'
+                  onClick={ShowNavBar}
+                >
+                  <FaTimes />
+                </button>
+              </ul>
+
+
+            </div>
+>>>>>>> 9789b2b63b8a280321420d4269cc6938701ec3ed
 
             <ul className="ActionNavBar">
               <li> <a href="."><FaHeart fontSize={21} /></a></li>
