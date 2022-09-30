@@ -1,5 +1,4 @@
-cài đặt những thứ cần thiết để có thể chạy được dự án
-ở thư mục gốc:
+cài đặt những thứ cần thiết để có thể chạy được dự án:
 
 - chạy: **npm i** để khởi tạo thư mục node_modules ở sever
 - chạy: **cd client** để chuyển đường dẫn sang thư mục client
