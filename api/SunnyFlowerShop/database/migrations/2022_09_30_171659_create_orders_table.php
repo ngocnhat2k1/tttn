@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer("total_price")->unsigned();
             $table->unsignedTinyInteger("status")->comment("OrderStatusEnum");
             $table->boolean("paid_type")->comment("0 for Cash Settlemen; 1 for Online Cash");
+            $table->boolean("deleted_at")->nullable()->comment("Anything beside NULL value will be detemined as canceled order");
             $table->timestamps();
         });
     }

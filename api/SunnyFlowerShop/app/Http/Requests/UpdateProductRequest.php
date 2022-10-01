@@ -13,7 +13,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,52 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "name" => [
+                "required",
+                "string",
+                "min:2",
+                "max:100",
+            ],
+            "description" => [
+                "required",
+                "string",
+                "min:10",
+            ],
+            "price" => [
+                "required",
+                "integer",
+            ],
+            "percentSale" => [
+                "required",
+                "integer",
+                "min:1",
+                "max:100",
+            ],
+            "noteable" => [
+                "required",
+                "string"
+            ],
+            "quantity" => [
+                "required",
+                "integer"
+            ],
+            "status" => [
+                "required",
+                "boolean",
+            ],
+            "categoryId" => [
+                "required",
+                "integer",
+            ],
         ];
     }
+
+    // protected function prepareForValidation()
+    // {
+    //     $this->merge([
+    //         'category_id' => $this->categoryId,
+    //         'percent_sale' => $this->percentSale,
+    //         'deleted_at' => $this->deletedAt,
+    //     ]);
+    // }
 }
