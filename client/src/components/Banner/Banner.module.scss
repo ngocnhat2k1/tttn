@@ -10,13 +10,14 @@
     text-align: left;
 }
 
-.bannerText h1 {
+.bannerText h1{
     font-size: 150px;
-    font-weight: 100;
     line-height: 150px;
+    font-weight: 100;
 }
 
 .bannerText h1 span {
+    display: block;
     color: #fff;
     font-weight: 700;
 }
@@ -33,6 +34,12 @@
     background-color: black;
     color: white;
     padding: 16px 35px;
+
+    &:hover {
+        color: black;
+        background-color: white;
+        border: 1px solid black;
+    }
 }
 
 .colImageBanner {

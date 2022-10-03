@@ -9,6 +9,8 @@ import ProductIntroduction from '../components/ProductIntroduction';
 import OfferCountdown from '../components/OfferCountdown'
 import Banner from '../components/Banner'
 import HotProduct from '../components/HotProduct';
+import TrendingIntroduction from '../components/TrendingIntroduction';
+
 class Home extends Component {
 
 
@@ -21,6 +23,7 @@ class Home extends Component {
           <ProductIntroduction />
           <HotProduct />
           <OfferCountdown />
+          <TrendingIntroduction />
           <FacebookInfo />
           <Footer />
         </div>

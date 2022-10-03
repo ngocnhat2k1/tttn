@@ -1,0 +1,43 @@
+.contactForm {
+    text-align: left;
+}
+
+.contactForm h3{
+    padding-bottom: 30px;
+    font-size: 24px;
+    margin-bottom: 0;
+}
+
+.formGroup {
+    margin-bottom: 30px;
+}
+
+.submitButtonContact{
+    text-align: left;
+}
+
+.submitButtonContact button{
+    background-color: #000;
+    color: #fff;
+    padding: 16px 35px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-block;
+    border-radius: 0;
+    border: none;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #262626;
+    }
+}
+
+.checkInput {
+    text-align: left;
+    margin-bottom: 0px;
+    margin-top: 5px;
+    font-size: 15px;
+    color: red;
+}
