@@ -6,6 +6,7 @@ import BaloTibi from '../../images/balo_tibi.png'
 import BaloBeTrai from '../../images/balo_betrai.png'
 import BaloNam from '../../images/balo_nam.png'
 import BaloLaptop from '../../images/balo_laptop.png'
+import BaloTibiCenter from '../../images/balo_tibi_mau_center.png'
 
 function ProductIntroduction() {
     return (
@@ -34,9 +35,9 @@ function ProductIntroduction() {
                     </Col>
                     <Col lg={4} md={6} className={styles.col}>
                         <div className={styles.imageProductCenter}>
-                            <img src={BaloNam} alt="Balo TiBi Mẫu 1" />
+                            <img src={BaloTibiCenter} alt="Balo TiBi Xanh Mẫu" />
                             <div className={styles.textProductCenter}>
-                                <h4 className={`${styles.h4Orange} ${styles.pd5} ${styles.fontSize40}`}>40%  OFFER</h4>
+                                <h4 className={`${styles.h4Orange} ${styles.pd5} ${styles.fontSize36}`}>40%  OFFER</h4>
                                 <h2 className={`${styles.h4Black} ${styles.pd5}`}>NO SELECTED</h2>
                                 <h4 className={`${styles.h4Black} ${styles.pd20}`}>MODELS</h4>
                                 <a href="" className={styles.btnShopNow}>SHOP NOW</a>

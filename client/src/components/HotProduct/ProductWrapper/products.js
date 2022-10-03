@@ -1,0 +1,68 @@
+import BaloTibi from '../../../images/balo_tibi_3.png';
+
+export const products = [
+    {
+        id: 1,
+        name: "Balo Tibi 1",
+        image: BaloTibi,
+        cost: "100000",
+        productUnit: "Trending",
+        discount: "",
+    },
+    {
+        id: 2,
+        name: "Balo Tibi 2",
+        image: BaloTibi,
+        cost: "200000",
+        productUnit: "Trending",
+        discount: "",
+    },
+    {
+        id: 3,
+        name: "Balo Tibi 3",
+        image: BaloTibi,
+        cost: "300000",
+        productUnit: "New Arrival",
+        discount: "",
+    },
+    {
+        id: 4,
+        name: "Balo Tibi 4",
+        image: BaloTibi,
+        cost: "400000",
+        productUnit: "On Sell",
+        discount: 45,
+    },
+    {
+        id: 5,
+        name: "Balo Tibi 5",
+        image: BaloTibi,
+        cost: "100000",
+        productUnit: "Trending",
+        discount: "",
+    },
+    {
+        id: 6,
+        name: "Balo Tibi 6",
+        image: BaloTibi,
+        cost: "200000",
+        productUnit: "Best Seller",
+        discount: "",
+    },
+    {
+        id: 7,
+        name: "Balo Tibi 7",
+        image: BaloTibi,
+        cost: "300000",
+        productUnit: "New Arrival",
+        discount: "",
+    },
+    {
+        id: 8,
+        name: "Balo Tibi 8",
+        image: BaloTibi,
+        cost: "400000",
+        productUnit: "On Sell",
+        discount: 50,
+    },
+]

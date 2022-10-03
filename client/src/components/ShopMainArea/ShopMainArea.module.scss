@@ -1,0 +1,125 @@
+#shopMainArea {
+    padding: 100px 50px;
+}
+
+.shopSidebarWrapper {
+    padding-top: 30px;
+    text-align: left;
+}
+
+.shopSearch {
+    position: relative;
+}
+
+.shopSearch form input{
+    padding: 10px 46px 10px 17px;
+    border-radius: 0;
+}
+
+.shopSearch form button{
+    background: none;
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    border: none;
+    font-size: 20px;
+}
+
+.shopSidebarBoxed {
+    padding-top: 30px;
+}
+
+.shopSidebarBoxed h4{
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 18px;
+    border-bottom: 1px solid #e2e2e2;
+    padding-bottom: 10px;
+}
+
+.boxed {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.boxed input{
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+.boxed:hover input~.checkmark, .boxed input:checked~.checkmark {
+    background-color: #f79837;
+}
+
+.boxed input:checked~.checkmark:after {
+    display: block;
+}
+
+.boxed .checkmark:after {
+    top: 6px;
+    left: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.priceFilter {
+    margin-top: 30px;
+}
+
+#formControlRange {
+    display: block;
+    width: 100%;
+}
+
+.price {
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.price span{
+    font-size: 15px;
+    font-weight: 500;
+    color: #544842;
+    text-transform: capitalize;
+    margin-right: 5px;
+}
+
+.clearButton button{
+    margin-top: 20px;
+    background-color: #000;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-block;
+    border-radius: 0;
+    border: none;
+}

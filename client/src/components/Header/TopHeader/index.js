@@ -1,8 +1,9 @@
 import styles from './TopHeader.module.scss'
-import { FaUser, FaSyncAlt, FaLock } from "react-icons/fa"
+import { FaUser, FaLock } from "react-icons/fa"
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { Link } from 'react-router-dom';
 
 function TopHeader() {
     return (
@@ -18,13 +19,10 @@ function TopHeader() {
                         <div className={styles.divRight}>
                             <ul>
                                 <li className={styles.liRight}>
-                                    <a href=""><FaSyncAlt fontSize={12} /> Compare</a>
+                                    <Link to="/login"><FaUser fontSize={12} /> Login</Link>
                                 </li>
                                 <li className={styles.liRight}>
-                                    <a href=""><FaUser fontSize={12} /> Login</a>
-                                </li>
-                                <li className={styles.liRight}>
-                                    <a href=""><FaLock fontSize={12} /> Register</a>
+                                    <Link to="/register"><FaLock fontSize={12} /> Register</Link>
                                 </li>
                                 <div className={styles.clear}></div>
                             </ul>
