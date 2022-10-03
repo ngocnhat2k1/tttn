@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../App.css';
-import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GlobalStyles from '../components/GlobalStyles';
@@ -11,24 +10,17 @@ import OfferCountdown from '../components/OfferCountdown'
 import Banner from '../components/Banner'
 import HotProduct from '../components/HotProduct';
 class Home extends Component {
-  state = {
-    message: ''
-  };
 
-  componentDidMount() {
-    axios.get('/api/test')
-      .then(result => this.setState({ message: result.data.message }))
-  };
 
   render() {
     return (
       <GlobalStyles>
-        <div className="App" style={{padding: 0}}>
+        <div className="App" style={{ padding: 0 }}>
           <Header />
           <Banner />
-          <ProductIntroduction/>
+          <ProductIntroduction />
           <HotProduct />
-          <OfferCountdown/>
+          <OfferCountdown />
           <FacebookInfo />
           <Footer />
         </div>

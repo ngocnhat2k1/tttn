@@ -1,11 +1,21 @@
-import logo from './logo.svg';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import GlobalStyles from "./components/GlobalStyles";
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      hello
-    </div>
+    <GlobalStyles>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />}>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </GlobalStyles>
   );
 }
 
