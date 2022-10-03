@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            // Will add unique to name column later
+            $table->string("name")->index();
             $table->unsignedTinyInteger("percent");
             $table->dateTime("expired_date");
             $table->timestamps();

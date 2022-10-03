@@ -13,7 +13,7 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,31 @@ class StoreCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "first_name" => [
+                "required",
+                "string",
+                "min:2",
+                "max:50",
+            ],
+            "last_name" => [
+                "required",
+                "string",
+                "min:2",
+                "max:50",
+            ],
+            "email" => [
+                "required",
+                "email",
+            ],
+            "password" => [
+                "required",
+                "min:6",
+                "max:24",
+            ],
+            "phone_number" => [
+                "required",
+                "string",
+            ],
         ];
     }
 }

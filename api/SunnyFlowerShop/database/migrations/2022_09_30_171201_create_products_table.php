@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->string("name")->index();
             $table->longText("description");
             $table->integer("price")->comment("VND format")->unsigned();
             $table->unsignedTinyInteger("percent_sale")->comment("Max is 100; Default is 1");
