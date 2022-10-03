@@ -29,7 +29,7 @@ class ProductController extends Controller
         if (empty($data)) {
             return response()->json([
                 "success" => false,
-                "message" => "Product list is empty"
+                "errors" => "Product list is empty"
             ]);
         }
 
@@ -65,7 +65,7 @@ class ProductController extends Controller
         if ($check_existed !== 0) {
             return response()->json([
                 'success' => false,
-                'message'=> "Product is already existed"
+                'errors'=> "Product is already existed"
             ]);
         }
 
@@ -77,7 +77,7 @@ class ProductController extends Controller
         if (empty($data->id)) {
             return response()->json([
                 "success" => false,
-                "message" => "An unexpected error has occurred"
+                "errors" => "An unexpected error has occurred"
             ]);
         }
 
@@ -86,7 +86,7 @@ class ProductController extends Controller
         if(empty($category)) {
             return response()->json([
                 "success" => false,
-                "message" => "An unexpected error has occurred - Category doesn't exist"
+                "errors" => "An unexpected error has occurred - Category doesn't exist"
             ]);
         }
         
@@ -115,7 +115,7 @@ class ProductController extends Controller
         if (empty($data)) {
             return response()->json([
                 "success" => false,
-                "message" => "Product doesn't not exist"
+                "errors" => "Product doesn't not exist"
             ]);
         }
 
@@ -141,7 +141,7 @@ class ProductController extends Controller
         if (empty($product)) {
             return response()->json([
                 'success' => false,
-                'message' => "Can't update product with invalid id"
+                'errors' => "Can't update product with invalid id"
             ]);
         }
 
@@ -154,7 +154,7 @@ class ProductController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "message" => "An unexpected error has occurred"
+                "errors" => "An unexpected error has occurred"
             ]);
         }
 
@@ -186,7 +186,7 @@ class ProductController extends Controller
         if (empty($data)) {
             return response()->json([
                 'success' => false,
-                'message' => "Product can not be deleted"
+                'errors' => "Product can not be deleted"
             ]);
         }
 
@@ -195,14 +195,17 @@ class ProductController extends Controller
         $result = $data->save();
 
         if (!$result) {
-            
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
         }
 
         return response()->json(
             [
                 'success' => true,
                 // "data" => $data
-                'message' => "Sucessfully hide this product"
+                'errors' => "Sucessfully hide this product"
             ]
         );
     }
