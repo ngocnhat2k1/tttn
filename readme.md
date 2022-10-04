@@ -16,6 +16,6 @@ Cài đặt những thứ cần thiết để có thể chạy được dự án
       - chạy: **composer install** để cài đặt các phần còn thiếu của framework <br>
       - tạo: file **.env** bằng cách copy file **.env.example** và sửa tên lại <br>
       - chạy: **php artisan key:generate** để tạo APP_KEY trong file **.env** <br>
-      - thay đổi tên database thành "SunnyFlowerShop" <br>
+      - thay đổi tên database thành **SunnyFlowerShop** <br>
       - chạy: **php artisan mirgate** hoặc **php artisan mirgate --seed** để tạo dữ liệu seed kèm theo database <br>
       - nếu trong quá trình chạy migrate gặp vấn đề mà muốn refresh lại thì chỉ cần thêm **:refresh** hoặc **:fresh** ở phía sau **....migrate...** là được. <br>
