@@ -11,7 +11,7 @@ Cài đặt những thứ cần thiết để có thể chạy được dự án
       - chạy: **npm start** để chạy webside <br>
 
 Đối với Laravel thì cần thực hiện những việc sau trước khi chạy dự án: <br>
-** Đây là phiên bản Laravel 9 **</b> <br>
+<b>** Đây là phiên bản Laravel 9 **</b> <br>
       - chạy: **cd api\SunnyFlowerShop** để chuyển hướng sang thư mục api <br>
       - chạy: **composer install** để cài đặt các phần còn thiếu của framework <br>
       - tạo: file **.env** bằng cách copy file **.env.example** và sửa tên lại <br>
