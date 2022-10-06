@@ -5,6 +5,7 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Shop from "./pages/Shop";
+import Customer from "./pages/Customer";
 
 class App extends Component {
   render() {
@@ -18,6 +19,8 @@ class App extends Component {
           <Route path="/login" element={<Login />}>
           </Route>
           <Route path="/register" element={<Register />}>
+          </Route>
+          <Route path="/my-account/*" element={<Customer />}>
           </Route>
           <Route path="/contact" element={<Contact />}>
           </Route>
