@@ -1,4 +1,5 @@
-<h1>Cài đặt những thứ cần thiết để có thể chạy được dự án:</h1> <br>
+<h1>FRONT-END</h1><br>
+<h3>Cài đặt những thứ cần thiết để có thể chạy được dự án:</h3> <br>
 * Cài đặt NodeJS về máy ở địa chỉ https://nodejs.org/en/ <br>
 * Mở dự án, bật terminal và chạy các lệnh sau: <br>
     ** Chạy dự án ở client: <br>
@@ -10,9 +11,9 @@
       - Chạy: <b>npm i</b> để khởi tạo thư mục node_modules ở vendor <br>
       - Chạy: <b>npm start</b> để chạy webside <br>
 
-Đối với Laravel thì cần thực hiện những việc sau trước khi chạy dự án: <br>
-<b>** Đây là phiên bản Laravel 9 **</b> <br>
-<h1>CHÚ Ý: Nếu đã cài đặt composer cho PHP 8.1.10 thì bỏ qua 2 bước đầu tiên</h1><br>
+<h1>Đối với Laravel thì cần thực hiện những việc sau trước khi chạy dự án:</h1> <br>
+<h3>** Đây là phiên bản Laravel 9 **</h3> <br>
+<h4>CHÚ Ý: Nếu đã cài đặt composer cho PHP 8.1.10 thì bỏ qua 2 bước đầu tiên</h4><br>
       - Tải PHP 8.1.10 phiên bản non threaded và composer <br>
       - Cài đặt composer và chọn PHP phiên bản vừa tải về và tiến hành cài đặt <br>
       - Mở <b>cmd</b> hoặc <b>git bash</b> tại thư mục đó và chạy: <b>cd api\SunnyFlowerShop</b> để chuyển hướng sang thư mục api <br>
