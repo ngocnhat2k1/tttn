@@ -1,4 +1,4 @@
-Cài đặt những thứ cần thiết để có thể chạy được dự án: <br>
+<h1>Cài đặt những thứ cần thiết để có thể chạy được dự án:</h1> <br>
 * Cài đặt NodeJS về máy ở địa chỉ https://nodejs.org/en/ <br>
 * Mở dự án, bật terminal và chạy các lệnh sau: <br>
     ** Chạy dự án ở client: <br>
