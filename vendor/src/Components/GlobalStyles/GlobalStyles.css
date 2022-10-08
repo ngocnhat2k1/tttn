@@ -8,12 +8,12 @@ section {
     padding-bottom: 50px;
 }
 
-.colorOrange{
+.colorOrange {
     color: #f79837 !important;
 }
 
 body {
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif !important;
 }
 
 ul {
