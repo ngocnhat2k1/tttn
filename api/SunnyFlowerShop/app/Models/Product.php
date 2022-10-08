@@ -15,22 +15,21 @@ class Product extends Model
         'price',
         'percent_sale',
         'img',
-        'noteable',
         "quantity",
         "status",
         'deleted_at',
     ];
 
     public function categories() {
-        return $this->belongsToMany(Category::class, "category_product", "category_id", "product_id");
+        return $this->belongsToMany(Category::class, "category_product", "product_id", "category_id");
     }
 
     public function orders() {
-        return $this->belongsToMany(Order::class);
+        return $this->belongsToMany(Order::class, "order_product", "order_id", "product_id")->withPivot("quantity", "price", "percent_sale");
     }
 
     public function customer_product_feedback() {
-        return $this->belongsToMany(Customer::class, "customer_product_feedback", "customer_id", "product_id")->withPivot("quality", "comment");
+        return $this->belongsToMany(Customer::class, "customer_product_feedback", "customer_id", "product_id")->withPivot("id", "quality", "comment");
     }
 
     public function customer_product_favorite() {

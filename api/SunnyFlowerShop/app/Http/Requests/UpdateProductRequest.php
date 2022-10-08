@@ -45,10 +45,6 @@ class UpdateProductRequest extends FormRequest
                 "min:1",
                 "max:100",
             ],
-            "noteable" => [
-                "required",
-                "string"
-            ],
             "quantity" => [
                 "required",
                 "integer"
@@ -64,12 +60,12 @@ class UpdateProductRequest extends FormRequest
         ];
     }
 
-    // protected function prepareForValidation()
-    // {
-    //     $this->merge([
-    //         'category_id' => $this->categoryId,
-    //         'percent_sale' => $this->percentSale,
-    //         'deleted_at' => $this->deletedAt,
-    //     ]);
-    // }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'category_id' => $this->categoryId,
+            'percent_sale' => $this->percentSale,
+            'deleted_at' => $this->deletedAt,
+        ]);
+    }
 }
