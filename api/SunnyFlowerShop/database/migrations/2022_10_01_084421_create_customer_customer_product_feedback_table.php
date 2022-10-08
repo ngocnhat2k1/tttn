@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer("customer_id");
             $table->integer("product_id");
-            $table->integer("quality");
+            $table->integer("quality")->comment("QualityStatusEnum");
             $table->longText("comment")->nullable();
             // $table->timestamps();
         });

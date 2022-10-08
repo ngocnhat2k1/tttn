@@ -46,10 +46,6 @@ class StoreProductRequest extends FormRequest
                 "min:1",
                 "max:100",
             ],
-            "noteable" => [
-                "required",
-                "string"
-            ],
             "quantity" => [
                 "required",
                 "integer"

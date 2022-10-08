@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Resources\V1\CustomerDetailResource;
+use App\Http\Resources\V1\CustomerRegisterResource;
 use App\Models\Admin;
 use App\Models\AdminAuth;
 use App\Models\Customer;
@@ -25,11 +27,11 @@ class UserAuthController extends Controller
     public function register(Request $request)
     {
         $data = Validator::make($request->all(), [
-            "first_name" => "required|string|min:2|max:50",
-            "last_name" => "required|string|min:2|max:50",
+            "firstName" => "required|string|min:2|max:50",
+            "lastName" => "required|string|min:2|max:50",
             "email" => "required|email",
             "password" => "required|min:6|max:24",
-            "phone_number" => "required|string"
+            "phoneNumber" => "required|string"
         ]);
 
         if ($data->fails()) {
@@ -51,21 +53,21 @@ class UserAuthController extends Controller
 
         if ($data->passes()) {
             $customer = CustomerAuth::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
+                'first_name' => $request->firstName,
+                'last_name' => $request->lastName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                "phone_number" => $request->phone_number
+                "phone_number" => $request->phoneNumber
             ]);
 
             // token abilities will be detemined later
-            $token = $customer->createToken("customer" . $customer->id, ["none"])->plainTextToken;
+            $token = $customer->createToken("customer-$customer->id", ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
 
             return response()->json([
                 "success" => true,
                 "token" => $token,
-                "token_type" => "Bearer",
-                "user" => $customer
+                "tokenType" => "Bearer",
+                "user" => new CustomerRegisterResource($customer)
             ]);
         }
     }
@@ -81,16 +83,16 @@ class UserAuthController extends Controller
 
         $customer = CustomerAuth::where('email', "=", $request->email)->firstOrFail();
 
-        $token = $customer->createToken("customer" . $customer->id, ["none"])->plainTextToken;
+        $token = $customer->createToken("Customer - " . $customer->id, ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
 
         $customer->token = $token;
         $customer->save();
 
         return response()->json([
             "success" => true,
-            "user" => $customer,
-            "token_type" => "Bearer",
-            "token" => $token
+            "tokenType" => "Bearer",
+            "token" => $token,
+            "data" => new CustomerDetailResource($customer)
         ]);
     }
 
@@ -113,6 +115,6 @@ class UserAuthController extends Controller
 
     public function profile(Request $request)
     {
-        return $request->user();
+        return new CustomerDetailResource($request->user());
     }
 }
