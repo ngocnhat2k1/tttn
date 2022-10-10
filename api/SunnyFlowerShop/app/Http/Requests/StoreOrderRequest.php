@@ -26,15 +26,11 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            "customer_id" => [
-                "required",
-                "integer",
-            ],
-            "voucher_id" => [
+            "voucherId" => [
                 "required",
                 "integer"
             ],
-            "date_order" => [
+            "dateOrder" => [
                 "required",
                 "date_format:Y-m-d H:i:s",
             ],
@@ -42,24 +38,20 @@ class StoreOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            "name_receiver" => [
+            "nameReceiver" => [
                 "required",
                 "string",
             ],
-            "phone_receiver" => [
+            "phoneReceiver" => [
                 "required",
                 "string",
-            ],
-            "total_price" => [
-                "required",
-                "integer",
             ],
             "status" => [
                 "required",
                 "integer",
                 Rule::in(OrderStatusEnum::asArray()),
             ],
-            "paid_type" => [
+            "paidType" => [
                 "required",
                 "boolean",
             ],
@@ -69,9 +61,12 @@ class StoreOrderRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'category_id' => $this->categoryId,
-            'percent_sale' => $this->percentSale,
-            'deleted_at' => $this->deletedAt,
+            'voucher_id' => $this->voucherId,
+            'date_order' => $this->dateOrder,
+            'name_receiver' => $this->nameReceiver,
+            'phone_receiver' => $this->phoneReceiver,
+            'paid_type' => $this->paidType,
+            // "product" => $data,
         ]);
     }
 }
