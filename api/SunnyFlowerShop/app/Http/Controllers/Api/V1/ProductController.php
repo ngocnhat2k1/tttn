@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkInsertProductRequest;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
 use App\Http\Resources\V1\ProductListResource;
@@ -120,6 +121,54 @@ class ProductController extends Controller
             'success' => true,
             "data" => $data,
             "category" => $category
+        ]);
+    }
+
+    public function bulkStore(BulkInsertProductRequest $request)
+    {
+        // Main Data use for blueprint
+        $bulk = collect($request->all())->map(function ($arr, $key) {
+            return Arr::except($arr, ["category_id", "categoryId", "percentSale", "deletedAt"]);
+        });
+
+        // Data use for searching in category table to insert to intermediate (category_product) table - $data is an array
+        $data = $request->toArray();
+
+        // Data use for insert into product table - $product is an array
+        $products = $bulk->toArray();
+
+        // Count variable to check how many product successfully added to database
+        $count = 0;
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            // Check if data is already in database
+            $check = Product::where("name", "=", ($products[$i]['name']))->first();
+
+            if ($check) continue;
+
+            // Find Category ID in category table using $data variable
+            $category = Category::find($data[$i]['category_id']);
+
+            // Insert value into product table with $products at $i index
+            $result = Product::create($products[$i]);
+
+            if (!$result) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Something went wrong"
+                ]);
+            }
+
+            $product = Product::find($result->id);
+
+            $product->categories()->attach($category);
+
+            $count++;
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Added " . $count . " products to database successfully"
         ]);
     }
 
@@ -250,7 +299,8 @@ class ProductController extends Controller
         );
     }
 
-    public function destroyCategory(Category $category, Product $product) {
+    public function destroyCategory(Category $category, Product $product)
+    {
         // $category is category_id
         // $product is product_id
 
@@ -263,7 +313,7 @@ class ProductController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category has already been removed from product"
+                "errors" => "Invalid Category ID"
             ]);
         }
 

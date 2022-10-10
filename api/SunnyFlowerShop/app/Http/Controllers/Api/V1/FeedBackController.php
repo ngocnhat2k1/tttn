@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Customer;
-use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFeedBackRequest;
 use App\Http\Requests\UpdateFeedBackRequest;
@@ -12,8 +11,9 @@ use App\Http\Resources\V1\FeedBackDetailResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller
+class FeedBackController extends Controller
 {
+    // **** Feedback **** \\
     public function viewFeedBack(Request $productId)
     {
         $customer = Customer::find($productId->user()->id);
@@ -26,6 +26,7 @@ class CustomerController extends Controller
 
     public function feedbackDetail(Request $request)
     {
+        // $request->id is Feedback ID in customer_product_feedback table
         $customer = Customer::find($request->user()->id);
 
         $data = $customer->customer_product_feedback()->wherePivot("customer_product_feedback.id", "=", "$request->id")->first();
@@ -41,17 +42,6 @@ class CustomerController extends Controller
             "success" => true,
             "data" => new FeedBackDetailResource($data)
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCustomerRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function storeFavorite(StoreCustomerRequest $request)
-    {
-        //
     }
 
     public function storeFeedBack(StoreFeedBackRequest $request)
@@ -97,7 +87,7 @@ class CustomerController extends Controller
         if (!$result) {
             return response()->json([
                 "success" => false,
-                "errors" => "Either data not change or product id/ order_product id is invalid"
+                "errors" => "Either data not change or Product ID/ order_product ID is invalid"
             ]);
         }
 
@@ -120,18 +110,13 @@ class CustomerController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Feedback of Product ID " . $productId->id . " has already been removed"
+                "errors" => "Product ID is invalid"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Deleted feedback of Product ID " . $productId->id . " successfully"
+            "message" => "Deleted feedback of Product ID = " . $productId->id . " successfully"
         ]);
-    }
-
-    public function storeAddress()
-    {
-        //
     }
 }

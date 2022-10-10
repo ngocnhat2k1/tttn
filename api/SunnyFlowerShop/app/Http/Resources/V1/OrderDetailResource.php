@@ -17,7 +17,7 @@ class OrderDetailResource extends JsonResource
         return [
             "id" => $this->id,
             "customerId" => $this->customer_id,
-            "voucherId" => $this->vouchers_id,
+            "voucherId" => $this->voucher_id,
             "nameVoucher" => $this->name,
             "percentSale" => $this->percent,
             "expiredDate" => $this->expired_date,
