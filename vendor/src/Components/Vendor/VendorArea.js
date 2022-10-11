@@ -8,7 +8,7 @@ import Col from 'react-bootstrap/Col';
 import TabList from './TabList';
 import DashBoard from './Dashboard.js'
 import Product from './Product/Product'
-import Oder from './Oder/Oder'
+import Order from './Order/Order'
 import Profile from './Profile/Profile'
 import AddProduct from './AddProduct/AddProduct'
 import Setting from './Setting/Setting'
@@ -25,7 +25,7 @@ const VendorArea = () => {
                     <Routes>
                         <Route path='*' element={<DashBoard />} />
                         <Route path='/all-product' element={<Product />} />
-                        <Route path='/all-order' element={<Oder />} />
+                        <Route path='/all-order' element={<Order />} />
                         <Route path='/vendor-profile' element={<Profile />} />
                         <Route path='/add-products' element={<AddProduct />} />
                         <Route path='/vendor-setting' element={<Setting />} />
