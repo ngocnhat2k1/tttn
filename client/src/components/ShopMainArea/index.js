@@ -7,6 +7,7 @@ import { useEffect, useState, createContext } from 'react'
 import { products } from '../HotProduct/ProductWrapper/products';
 import { formatter } from '../../utils/utils'
 import PaginatedItems from './PaginatedItems';
+import axios from '../../service/axiosClient';
 
 export const ListProductContext = createContext();
 
@@ -17,6 +18,24 @@ function ShopMainArea() {
     const [price, setPrice] = useState(100000);
     const [gender, setGender] = useState('ALL');
     const [listProduct, setListProduct] = useState(products);
+    //Test API
+    // const [listAPI, setListAPI] = useState([]);
+
+    // useEffect(() => {
+    //     const apiListProduct = async () => {
+    //         const data = await axios.get(`http://localhost:8000/api/v1/products`);
+    //         return data;
+    //     };
+    //     apiListProduct()
+    //         .then((response) => {
+    //             setListAPI(response.data);
+    //         })
+    //         .catch(function (error) {
+    //             console.log(error);
+    //         });
+    // }, []);
+
+    // console.log(listAPI)
 
     const handlePriceFilter = (e) => {
         setPrice(e.target.value);

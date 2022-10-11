@@ -3,7 +3,7 @@ import '../App.css';
 // import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import GlobalStyles from '../components/GlobalStyles';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FacebookInfo from '../components/FacebookInfo';
 import CommonBanner from '../components/CommonBanner';
@@ -21,15 +21,13 @@ class Shop extends Component {
 
     render() {
         return (
-            <GlobalStyles>
-                <div className="App" style={{ padding: 0 }}>
-                    <Header />
-                    <CommonBanner namePage="Shop"/>
-                    <ShopMainArea />
-                    <FacebookInfo />
-                    <Footer />
-                </div>
-            </GlobalStyles>
+            <div className="App" style={{ padding: 0 }}>
+                <Header />
+                <CommonBanner namePage="Shop" />
+                <ShopMainArea />
+                <FacebookInfo />
+                <Footer />
+            </div>
         )
     };
 };
