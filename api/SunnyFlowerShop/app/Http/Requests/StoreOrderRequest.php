@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\OrderStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreOrderRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,47 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "voucherId" => [
+                "required",
+                "integer"
+            ],
+            "dateOrder" => [
+                "required",
+                "date_format:Y-m-d H:i:s",
+            ],
+            "address" => [
+                "required",
+                "string",
+            ],
+            "nameReceiver" => [
+                "required",
+                "string",
+            ],
+            "phoneReceiver" => [
+                "required",
+                "string",
+            ],
+            "status" => [
+                "required",
+                "integer",
+                Rule::in(OrderStatusEnum::asArray()),
+            ],
+            "paidType" => [
+                "required",
+                "boolean",
+            ],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'voucher_id' => $this->voucherId,
+            'date_order' => $this->dateOrder,
+            'name_receiver' => $this->nameReceiver,
+            'phone_receiver' => $this->phoneReceiver,
+            'paid_type' => $this->paidType,
+            // "product" => $data,
+        ]);
     }
 }

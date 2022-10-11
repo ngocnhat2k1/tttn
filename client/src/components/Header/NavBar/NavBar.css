@@ -38,7 +38,6 @@
 }
 
 .MenuNavBar li a {
-    text-decoration: none;
     color: #000;
 }
 
@@ -86,7 +85,6 @@
 
 
 .nav-item a {
-    text-decoration: none;
     color: #000;
     font-size: 14px;
     margin-right: 2rem;

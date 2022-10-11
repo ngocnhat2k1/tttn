@@ -10,22 +10,22 @@ class Customer extends Model
     use HasFactory;
 
     public function addresses() {
-        return $this->belongsToMany(Address::class, "address_customer", "address_id", "customer_id");
+        return $this->belongsToMany(Address::class, "address_customer", "customer_id", "address_id")->withPivot("id");
     }
 
     public function orders() {
         return $this->hasMany(Order::class);
     }
-
+    
     public function customer_product_feedback() {
-        return $this->belongsToMany(Product::class, "customer_product_feedback", "product_id", "customer_id")->withPivot("quality", "comment");
+        return $this->belongsToMany(Product::class, "customer_product_feedback", "customer_id", "product_id")->withPivot("id","quality", "comment");
     }
 
     public function customer_product_favorite() {
-        return $this->belongsToMany(Product::class, "customer_product_favorite", "product_id", "customer_id");
+        return $this->belongsToMany(Product::class, "customer_product_favorite", "customer_id", "product_id");
     }
 
     public function customer_product_cart() {
-        return $this->belongsToMany(Product::class, "customer_product_cart", "product_id", "customer_id")->withPivot("quantity");
+        return $this->belongsToMany(Product::class, "customer_product_cart", "customer_id", "product_id")->withPivot("quantity");
     }
 }

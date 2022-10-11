@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import GlobalStyles from '../components/GlobalStyles';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FacebookInfo from '../components/FacebookInfo';
 import ProductIntroduction from '../components/ProductIntroduction';
@@ -12,11 +12,8 @@ import HotProduct from '../components/HotProduct';
 import TrendingIntroduction from '../components/TrendingIntroduction';
 
 class Home extends Component {
-
-
   render() {
     return (
-      <GlobalStyles>
         <div className="App" style={{ padding: 0 }}>
           <Header />
           <Banner />
@@ -27,7 +24,6 @@ class Home extends Component {
           <FacebookInfo />
           <Footer />
         </div>
-      </GlobalStyles>
     )
   };
 };

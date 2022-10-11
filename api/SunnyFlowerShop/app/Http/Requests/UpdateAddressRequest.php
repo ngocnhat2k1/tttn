@@ -13,7 +13,7 @@ class UpdateAddressRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,43 @@ class UpdateAddressRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "nameReceiver" => [
+                "required",
+                "string",
+                "min:2",
+                "max:100",
+            ],
+            "phoneReceiver" => [
+                "required",
+                "string",
+                "min:8",
+            ],
+            "streetName" => [
+                "required",
+                "string",
+                "min:10",
+            ],
+            "district" => [
+                "required",
+                "string",
+            ],
+            "ward" => [
+                "required",
+                "string",
+            ],
+            "city" => [
+                "required",
+                "string",
+            ],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'name_receiver' => $this->nameReceiver,
+            'phone_receiver' => $this->phoneReceiver,
+            'street_name' => $this->streetName,
+        ]);
     }
 }

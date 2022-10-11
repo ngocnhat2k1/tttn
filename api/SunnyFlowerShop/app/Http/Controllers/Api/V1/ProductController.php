@@ -6,8 +6,11 @@ use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\CustomerCategoryCollection;
-use App\Http\Resources\V1\CustomerCategoryResource;
+use App\Http\Requests\BulkInsertProductRequest;
+use App\Http\Resources\V1\ProductDetailResource;
+use App\Http\Resources\V1\ProductListCollection;
+use App\Http\Resources\V1\ProductListResource;
+use App\Http\Resources\V1\ProductReviewResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -22,19 +25,37 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        // $data = Product::with("categories")->paginate();
         $data = Product::with("categories")->get();
+        $count = $data->count();
 
         // dd($data);
 
-        if (empty($data)) {
+        if (empty($count)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Product list is empty"
             ]);
         }
 
+        // Will change later, this is just temporary
         if (!empty($request->get("q"))) {
-            $data = Product::where("name", "like", "%" . $request->get("q") . "%")->get();
+            $check = (int)$request->get("q");
+            $column = "";
+            $operator = "";
+            $value = "";
+
+            if ($check == 0) {
+                $column = "name";
+                $operator = "like";
+                $value = "%" . $request->get("q") . "%";
+            } else {
+                $column = "id";
+                $operator = "=";
+                $value = $request->get("q");
+            }
+
+            $search = Product::where("$column", "$operator", "$value")->get();
         }
 
         $count = DB::table("products")->count();
@@ -42,8 +63,10 @@ class ProductController extends Controller
         return response()->json([
             "success" => true,
             "total" => $count,
-            "data" => new CustomerCategoryCollection($data)
+            "data" => new ProductListCollection($data)
         ]);
+
+        // return new ProductListCollection($data->appends($request->query()));
     }
 
     /**
@@ -65,11 +88,20 @@ class ProductController extends Controller
         if ($check_existed !== 0) {
             return response()->json([
                 'success' => false,
-                'errors'=> "Product is already existed"
+                'errors' => "Product is already existed"
             ]);
         }
 
         $filtered = $request->except(['category_id', "categoryId", 'deletedAt', "percentSale"]);
+
+        $category = Category::find($request->category_id);
+
+        if (empty($category)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred - Category doesn't exist"
+            ]);
+        }
 
         $data = Product::create($filtered);
 
@@ -81,15 +113,6 @@ class ProductController extends Controller
             ]);
         }
 
-        $category = Category::find($request->category_id);
-
-        if(empty($category)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "An unexpected error has occurred - Category doesn't exist"
-            ]);
-        }
-        
         // checking $category variable is empty or not
 
         $data->categories()->attach($category);
@@ -98,6 +121,54 @@ class ProductController extends Controller
             'success' => true,
             "data" => $data,
             "category" => $category
+        ]);
+    }
+
+    public function bulkStore(BulkInsertProductRequest $request)
+    {
+        // Main Data use for blueprint
+        $bulk = collect($request->all())->map(function ($arr, $key) {
+            return Arr::except($arr, ["category_id", "categoryId", "percentSale", "deletedAt"]);
+        });
+
+        // Data use for searching in category table to insert to intermediate (category_product) table - $data is an array
+        $data = $request->toArray();
+
+        // Data use for insert into product table - $product is an array
+        $products = $bulk->toArray();
+
+        // Count variable to check how many product successfully added to database
+        $count = 0;
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            // Check if data is already in database
+            $check = Product::where("name", "=", ($products[$i]['name']))->first();
+
+            if ($check) continue;
+
+            // Find Category ID in category table using $data variable
+            $category = Category::find($data[$i]['category_id']);
+
+            // Insert value into product table with $products at $i index
+            $result = Product::create($products[$i]);
+
+            if (!$result) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Something went wrong"
+                ]);
+            }
+
+            $product = Product::find($result->id);
+
+            $product->categories()->attach($category);
+
+            $count++;
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Added " . $count . " products to database successfully"
         ]);
     }
 
@@ -121,7 +192,7 @@ class ProductController extends Controller
 
         return response()->json([
             "success" => true,
-            "data" => new CustomerCategoryResource($data)
+            "data" => new ProductDetailResource($data)
         ]);
     }
 
@@ -132,6 +203,26 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
+
+    public function checkOldCategory($product, $request)
+    {
+        // Retrieve old value in category_product table
+        $category_array = [];
+        $index = 0;
+
+        foreach ($product->categories as $category) {
+            $category_array[$index]['category_id'] = $category->pivot->category_id;
+            $index++;
+        }
+
+        foreach ($category_array as $item) {
+            if ($item["category_id"] === $request->category_id) {
+                return True;
+            }
+        }
+        return False;
+    }
+
     public function update(UpdateProductRequest $request, $productId)
     {
         $data = $request->except(['category_id', "categoryId", 'deletedAt', "percentSale"]);
@@ -145,11 +236,16 @@ class ProductController extends Controller
             ]);
         }
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $product->{$key} = $value;
         }
 
         $result = $product->save();
+
+        if (!$this->checkOldCategory($product, $request)) {
+            $category = Category::find($request->category_id);
+            $product->categories()->attach($category);
+        }
 
         if (!$result) {
             return response()->json([
@@ -160,16 +256,9 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            "data" => $product
+            "message" => "Updated product successfully"
         ]);
     }
-
-    // public function softDeleted(UpdateProductRequest $request, $productId)
-    // {
-    //     $product = Product::find($productId);
-
-    //     dd($product);
-    // }
 
     /**
      * Remove the specified resource from storage.
@@ -208,5 +297,29 @@ class ProductController extends Controller
                 'errors' => "Sucessfully hide this product"
             ]
         );
+    }
+
+    public function destroyCategory(Category $category, Product $product)
+    {
+        // $category is category_id
+        // $product is product_id
+
+        $product = Product::find($product->id);
+
+        $category = Category::find($category->id);
+
+        $result = $product->categories()->detach($category);
+
+        if (empty($result)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Invalid Category ID"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Category has successfully been removed from product"
+        ]);
     }
 }
