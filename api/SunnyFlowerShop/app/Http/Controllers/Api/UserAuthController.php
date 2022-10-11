@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
 use App\Http\Resources\V1\CustomerRegisterResource;
 use App\Models\Admin;
