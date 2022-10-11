@@ -53,7 +53,7 @@ const Dashboard = () => {
                                                 </td>
                                                 <td>{Order.Details}</td>
                                                 <td>
-                                                    <span className=''>{Order.Status}</span>
+                                                    <span className={Order.Status}>{Order.Status}</span>
                                                 </td>
                                             </tr>
                                         )

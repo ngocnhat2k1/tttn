@@ -27,7 +27,7 @@ export const Orders = [
     {
         OrderId: '#78153',
         Details: 'Belted Trench Coat',
-        Status: 'Shipped'
+        Status: 'Canceled'
     },
     {
         OrderId: '#78153',

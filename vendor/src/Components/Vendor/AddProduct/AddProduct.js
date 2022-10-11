@@ -1,8 +1,14 @@
 import React from 'react'
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row'
 
 const AddProduct = () => {
     return (
-        <div>AddProduct</div>
+        <Col sm={12} md={12} lg={9}>
+            <div>
+                Product cc
+            </div>
+        </Col>
     )
 }
 

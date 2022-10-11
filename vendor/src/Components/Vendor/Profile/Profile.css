@@ -1,0 +1,40 @@
+.profils_details_vendor {
+    display: flex;
+}
+
+.profils_details_vendor .profile_left {
+    width: 150px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.vendors_profiles ul li h4 {
+    font-size: 16px;
+    color: #787878;
+    font-weight: 400;
+}
+
+.profils_details_vendor h4 {
+    border-bottom: none;
+}
+
+.profile_right h4 {
+    font-weight: 600 !important;
+}
+
+
+.bg-black, .bg-black:hover {
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(0, 0, 0);
+    border-image: initial;
+}
+
+.btn-sm {
+    padding: 10px 16px;
+    padding-top: 10px;
+    padding-right: 16px;
+    padding-bottom: 10px;
+    padding-left: 16px;
+}

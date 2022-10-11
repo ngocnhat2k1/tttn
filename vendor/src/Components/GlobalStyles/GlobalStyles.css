@@ -8,6 +8,10 @@ section {
     padding-bottom: 50px;
 }
 
+.container, .container-lg, .container-md, .container-sm, .container-xl {
+    max-width: 1440px !important;
+}
+
 .colorOrange {
     color: #f79837 !important;
 }
