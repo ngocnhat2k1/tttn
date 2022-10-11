@@ -97,10 +97,19 @@ class UserAuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Will remove later
-        $customer = CustomerAuth::where('email', "=", $request->user()->email)->firstOrFail();
+        // **** Will change later **** \\
+        $customer = CustomerAuth::where('token', "=", $request->user()->token)->first();
+        
+        // Check ID Customer
+        if (empty($customer)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer ID is invalide"
+            ]);
+        }
+
         $customer->token = null;
-        $customer->save;
+        $customer->save();
 
         Auth::guard("customer")->logout();
 
