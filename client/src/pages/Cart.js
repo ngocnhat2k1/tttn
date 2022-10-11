@@ -6,28 +6,28 @@ import Footer from '../components/Footer';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CommonBanner from '../components/CommonBanner';
-import RegisterArea from '../components/RegisterArea';
+import EmptyCart from '../components/EmptyCart';
 
-class Register extends Component {
-  // state = {
-  //   message: ''
-  // };
+class Cart extends Component {
+//   state = {
+//     message: ''
+//   };
 
-  // componentDidMount() {
-  //   axios.get('/api/test')
-  //     .then(result => this.setState({ message: result.data.message }))
-  // };
+//   componentDidMount() {
+//     axios.get('/api/test')
+//       .then(result => this.setState({ message: result.data.message }))
+//   };
 
   render() {
     return (
         <div className="App" style={{padding: 0}}>
           <Header />
-          <CommonBanner namePage="Register"/>
-          <RegisterArea />
+          <CommonBanner namePage="Cart"/>
+          <EmptyCart />
           <Footer />
         </div>
     )
   };
 };
 
-export default Register;
+export default Cart;

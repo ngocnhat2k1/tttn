@@ -4,8 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import axios from '../../service/axiosClient';
 
 function LoginArea() {
+    const [cookies, setCookie, removeCookie] = useCookies([]);
 
     const {
         register,
@@ -13,8 +16,28 @@ function LoginArea() {
         formState: { errors },
     } = useForm();
 
+
     const onSubmit = (data) => {
         console.log({ data })
+        setCookie('token', 'hello', { path: '/' });
+        console.log(cookies);
+        // axios
+        //     .post('http://localhost:8080/tttn_be/public/api/user/login', { data })
+        //     .then(function (response) {
+        //         console.log(response.data.result);
+        //         if (response.data.result) {
+        //             const accessToken = response.data.access_token;
+
+        //             setCookie('token', 'hello', { path: '/' });
+
+        //             setAuth({ data.account, data.password, roles, accessToken });
+        //         } else {
+        //             alert(response.data.message);
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //     });
     };
 
     return (
@@ -26,16 +49,16 @@ function LoginArea() {
                             <h3>Login</h3>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="account-input">Username or email
+                                    <label htmlFor="account">Username or email
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
                                         placeholder="Username or Email"
-                                        {...register("account-input", { required: true, minLength: 3})}
+                                        {...register("account", { required: true, minLength: 3 })}
                                     />
-                                    {errors["account-input"] && (
+                                    {errors["account"] && (
                                         <p className="checkInput">Invalid Username or Email!</p>
                                     )}
                                 </div>
@@ -47,7 +70,7 @@ function LoginArea() {
                                         className="FormInput"
                                         type="password"
                                         placeholder="Password"
-                                        {...register("password", { required: true, min:3 })}
+                                        {...register("password", { required: true, min: 3 })}
                                     />
                                     {errors["password"] && (
                                         <p className="checkInput">Password must be at 3 char long</p>
@@ -55,12 +78,6 @@ function LoginArea() {
                                 </div>
                                 <div className={styles.loginSubmit}>
                                     <button type="submit">LOGIN</button>
-                                </div>
-                                <div className={styles.rememberArea}>
-                                    <div className="form-check">
-                                        <input type="checkbox" className="form-check-input" id="rememberinput"/>
-                                        <label className="form-check-label" htmlFor="rememberinput">Remember me</label>
-                                    </div>
                                 </div>
                                 <Link to="/register" className={styles.createAccount}>Create Your Account?</Link>
                             </form>

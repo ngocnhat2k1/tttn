@@ -45,13 +45,37 @@ ul {
     letter-spacing: 2px;
     display: inline-block;
     border-radius: 0;
+    text-decoration: none;
 }
 
 .bg-black, .bg-black:hover {
     border: 1px solid #000;
 }
 
+.bg-black:hover {
+    color: #000;
+    background-color: #fff !important;
+}
+
 .bg-black, .bg-whites:hover {
     color: #fff;
     background-color: #000;
+}
+
+.btn-black-overlay {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+.btn-black-overlay:hover {
+    background-color: #262626 !important;
+    color: #fff !important;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.btn_md {
+    padding: 16px 35px !important;
 }
