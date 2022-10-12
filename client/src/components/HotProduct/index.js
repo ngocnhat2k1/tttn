@@ -9,7 +9,7 @@ function HotProduct() {
     const [unit, setUnit] = useState('New Arrival');
 
     return (
-        <section className="pb50">
+        <section className="pb100">
             <Container>
                 <Row>
                     <Col lg={12}>

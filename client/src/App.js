@@ -8,12 +8,10 @@ import Shop from "./pages/Shop";
 import Customer from "./pages/Customer";
 import Cart from "./pages/Cart";
 import GlobalStyles from "./components/GlobalStyles";
-import { CookiesProvider } from 'react-cookie';
 
 class App extends Component {
   render() {
     return (
-      <CookiesProvider>
         <GlobalStyles>
           <BrowserRouter>
             <Routes>
@@ -34,7 +32,6 @@ class App extends Component {
             </Routes>
           </BrowserRouter>
         </GlobalStyles>
-      </CookiesProvider>
     )
   };
 };
