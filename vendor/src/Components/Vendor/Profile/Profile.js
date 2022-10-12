@@ -1,10 +1,8 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
 import './Profile.css'
-import { FakeProfile } from '../FakeData/FakeProfile';
 
 const Profile = () => {
     return (
