@@ -4,11 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 import axios from '../../service/axiosClient';
+import Cookies from 'js-cookie';
 
 function LoginArea() {
-    const [cookies, setCookie, removeCookie] = useCookies([]);
+
 
     const {
         register,
@@ -18,21 +18,17 @@ function LoginArea() {
 
 
     const onSubmit = (data) => {
-        console.log({ data })
-        setCookie('token', 'hello', { path: '/' });
-        console.log(cookies);
+        Cookies.set('token', 'bao', { path: '/' });
+        window.location.href = 'http://localhost:3000/my-account';
         // axios
         //     .post('http://localhost:8080/tttn_be/public/api/user/login', { data })
         //     .then(function (response) {
         //         console.log(response.data.result);
         //         if (response.data.result) {
         //             const accessToken = response.data.access_token;
-
-        //             setCookie('token', 'hello', { path: '/' });
-
-        //             setAuth({ data.account, data.password, roles, accessToken });
+        //             setCookie('token', accessToken, { path: '/' });    
         //         } else {
-        //             alert(response.data.message);
+        //             alert('Sai tài khoản hoặc mật khẩu!');
         //         }
         //     })
         //     .catch(function (error) {
