@@ -1,14 +1,33 @@
-import React from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
 import './Product.css'
+import ReactPaginate from 'react-paginate'
 import { FakeProducts } from '../FakeData/FakeProduct';
+import styles from './PaginatedItems.module.scss'
+import ListProducts from './ListProduct/ListProduct';
 
 
 const Product = () => {
+    const [listProducts, setistProducts] = useState(FakeProducts);
+    const [currentProduct, setcurrentProduct] = useState([])
+
+    const itemsPerPage = 8;
+
+    const [pageCount, setPageCount] = useState(0);
+    const [itemOffset, setItemOffset] = useState(0);
+    useEffect(() => {
+        const endOffset = itemOffset + itemsPerPage;
+        setcurrentProduct(listProducts.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(listProducts.length / itemsPerPage));
+    }, [itemOffset, itemsPerPage, listProducts]);
+
+    const handlePageClick = (event) => {
+        const newOffset = event.selected * itemsPerPage % listProducts.length;
+        setItemOffset(newOffset);
+    };
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -38,27 +57,32 @@ const Product = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {FakeProducts.map((FakeProduct) => {
-                                                return (
-                                                    <tr>
-                                                        <td><a><img width="70px" src={FakeProduct.Image} alt="img" /></a></td>
-                                                        <td><a href="/product-details-one/1">{FakeProduct.ProductName}</a></td>
-                                                        <td>{FakeProduct.Category}</td>
-                                                        <td>${FakeProduct.Price}</td>
-                                                        <td>{FakeProduct.Stock}</td>
-                                                        <td>{FakeProduct.Sales}</td>
-                                                        <td><a href="/vendor/add-products">
-                                                            <FaEdit></FaEdit>
-                                                        </a>
-                                                            <button type="">
-                                                                <FaTrash></FaTrash>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })}
+                                            <ListProducts currentProduct={currentProduct} />
+
                                         </tbody>
                                     </table>
+                                    < Col lg={12}>
+                                        <ReactPaginate
+                                            nextLabel="»"
+                                            onPageChange={handlePageClick}
+                                            pageRangeDisplayed={3}
+                                            marginPagesDisplayed={2}
+                                            pageCount={pageCount}
+                                            previousLabel="«"
+                                            pageClassName={styles.pageItem}
+                                            pageLinkClassName={styles.pageLink}
+                                            previousClassName={styles.pageItem}
+                                            previousLinkClassName={styles.pageLink}
+                                            nextClassName={styles.pageItem}
+                                            nextLinkClassName={styles.pageLink}
+                                            breakLabel="..."
+                                            breakClassName={styles.pageItem}
+                                            breakLinkClassName={styles.pageLink}
+                                            containerClassName={styles.pagination}
+                                            activeClassName={styles.active}
+                                            renderOnZeroPageCount={null}
+                                        />
+                                    </Col>
                                 </div>
                             </div>
                         </Col>

@@ -27,3 +27,17 @@ ul {
 .clear {
     clear: both;
 }
+
+input[type=date], input[type=email], input[type=number], input[type=password], input[type=text], select {
+    min-height: 45px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+input[type=date]:focus, input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=text]:focus, select:focus, textarea:focus {
+    background-color: #fff;
+    outline: none;
+    box-sizing: none;
+    border: 1px solid #f79837 !important;
+    box-shadow: none;
+}

@@ -1,0 +1,92 @@
+.image-input label svg {
+    font-size: 125%;
+    margin-right: 0.3rem;
+}
+
+.image-input label {
+    display: block;
+    color: #fff;
+    background: #000;
+    padding: 0.3rem 0.6rem;
+    font-size: 17px;
+    cursor: pointer;
+    width: 26%;
+    margin: 21px auto 33px;
+}
+
+.image-input input {
+    display: none;
+}
+
+.image-input img {
+    max-width: 200px;
+    max-height: 200px;
+    border: 2px solid #ffc107;
+    margin: 0 auto;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.image-input {
+    text-align: center;
+}
+
+.add_product_form .fotm-group select {
+    display: block;
+    width: 100%;
+}
+
+.add_product_form .fotm-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.bg-black {
+    border: 1px solid #000;
+    color: #fff;
+    background-color: #fff;
+}
+
+.bg-black:hover {
+    border: 1px solid #000;
+    color: #000;
+    background-color: #fff !important;
+}
+
+.add_prod_button {
+    position: absolute;
+    right: 0;
+    top: 18px;
+}
+
+.btn_sm {
+    padding: 10px 16px;
+}
+
+.theme-btn-one {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-block;
+    border-radius: 0;
+    text-decoration: none;
+}
+
+.add_product_form {
+    box-shadow: 0 2px 8px 4px rgb(0 0 0 / 6%);
+    background: #fff;
+    padding: 30px 25px;
+}
+
+.btn_right_table {
+    text-align: right;
+    margin-top: 30px;
+}
