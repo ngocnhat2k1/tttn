@@ -6,9 +6,10 @@ import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 import axios from '../../service/axiosClient';
 import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
 
 function LoginArea() {
-
+    const [list, setList] = useState([]);
 
     const {
         register,
@@ -16,24 +17,22 @@ function LoginArea() {
         formState: { errors },
     } = useForm();
 
-
     const onSubmit = (data) => {
-        Cookies.set('token', 'bao', { path: '/' });
-        window.location.href = 'http://localhost:3000/my-account';
-        // axios
-        //     .post('http://localhost:8080/tttn_be/public/api/user/login', { data })
-        //     .then(function (response) {
-        //         console.log(response.data.result);
-        //         if (response.data.result) {
-        //             const accessToken = response.data.access_token;
-        //             setCookie('token', accessToken, { path: '/' });    
-        //         } else {
-        //             alert('Sai tài khoản hoặc mật khẩu!');
-        //         }
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
+        axios
+            .post('http://localhost:8000/api/login', data )
+            .then(function (response) {
+                console.log("1", response.data.success)
+                if (response.data.success) {
+                    const token = response.data.token;
+                    Cookies.set('token', token, { path: '/' });
+                    window.location.href = 'http://localhost:3000/my-account';
+                } else {
+                    alert('Sai tài khoản hoặc mật khẩu!');
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     };
 
     return (
@@ -45,16 +44,16 @@ function LoginArea() {
                             <h3>Login</h3>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="account">Username or email
+                                    <label htmlFor="email">Username or email
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
                                         placeholder="Username or Email"
-                                        {...register("account", { required: true, minLength: 3 })}
+                                        {...register("email", { required: true, minLength: 3 })}
                                     />
-                                    {errors["account"] && (
+                                    {errors["email"] && (
                                         <p className="checkInput">Invalid Username or Email!</p>
                                     )}
                                 </div>

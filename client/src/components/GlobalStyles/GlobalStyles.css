@@ -94,3 +94,11 @@ a {
 .btn_md {
     padding: 16px 35px !important;
 }
+
+table {
+    width: 100%;
+}
+
+.justifyContentCenter {
+    justify-content: center!important;
+}

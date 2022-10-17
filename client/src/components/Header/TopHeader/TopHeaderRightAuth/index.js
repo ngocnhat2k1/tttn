@@ -3,33 +3,36 @@ import styles from '../TopHeader.module.scss'
 import { Link } from 'react-router-dom';
 import BaoAvatar from '../../../../images/Bao_avatar.jpg';
 import Cookies from 'js-cookie';
+import axios from '../../../../service/axiosClient';
 
-function TopHeaderRightAuth() {
+function TopHeaderRightAuth(user) {
+
+    console.log("user: ", user);
 
     const handleLogout = () => {
-        Cookies.remove('token', { path: '/'});
-        window.location.href = 'http://localhost:3000/login';
-        // axios
-        //     .post(
-        //         'http://localhost:8080/tttn_be/public/api/user/logout',
-        //         {},
-        //         {
-        //             headers: {
-        //                 Authorization: `Bearer ${cookies.get('token')}`,
-        //             },
-        //         },
-        //     )
-        //     .then(function (response) {
-        //         if (response.data.result) {
-        //             removeCookie('token');
-        //             window.location.href = 'http://localhost:3000/login';
-        //         } else {
-        //             console.log(response);
-        //         }
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
+        // Cookies.remove('token', { path: '/'});
+        // window.location.href = 'http://localhost:3000/login';
+        axios
+            .post(
+                'http://localhost:8000/api/logout',
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('token')}`,
+                    },
+                },
+            )
+            .then(function (response) {
+                if (response.success) {
+                    Cookies.remove('token', { path: '/'});
+                    window.location.href = 'http://localhost:3000/login';
+                } else {
+                    console.log(response);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     return (
@@ -39,7 +42,7 @@ function TopHeaderRightAuth() {
                     <Link to="/order-tracking"><FaTruck fontSize={18} /> Track your Order</Link>
                 </li>
                 <li className={styles.account}>
-                    <img src={BaoAvatar} alt="avatar" />Lê Quốc Bảo
+                    <img src={user.user.avatar} alt="avatar" />{user.user.firstName} {user.user.lastName}
                     <FaAngleDown fontSize={12} />
                     <ul className={styles.dropDown}>
                         <li>

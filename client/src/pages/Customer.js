@@ -9,9 +9,9 @@ import MyAccountArea from '../components/MyAccountArea';
 
 class Customer extends Component {
   render() {
-    if(Cookies.get('token') === undefined) {
-      window.location.href = 'http://localhost:3000/login';
-    };
+    // if(Cookies.get('token') === undefined) {
+    //   window.location.href = 'http://localhost:3000/login';
+    // };
 
     return (
         <div className="App" style={{ padding: 0 }}>
