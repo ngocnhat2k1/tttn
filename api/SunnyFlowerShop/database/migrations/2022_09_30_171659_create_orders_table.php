@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string("address");
             $table->string("name_receiver");
             $table->string("phone_receiver");
-            $table->integer("total_price")->unsigned();
+            $table->unsignedBigInteger("total_price")->unsigned();
             $table->unsignedTinyInteger("status")->comment("OrderStatusEnum");
             $table->boolean("paid_type")->comment("0 for Cash Settlemen; 1 for Online Cash");
             $table->boolean("deleted_by")->nullable()->comment("This one has 3 status: 1 for deleted by admin: 0 for customer and NULL for not delete");

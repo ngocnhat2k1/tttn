@@ -21,9 +21,7 @@ return new class extends Migration
             $table->string("password");
             $table->string("avatar")->nullable();
             $table->string("phone_number");
-
-            // Temporary
-            $table->string("token")->nullable();
+            $table->boolean("disabled")->nullable()->comment("Default value is NULL, 0 for disable");
             // $table->rememberToken();
             $table->timestamps();
         });

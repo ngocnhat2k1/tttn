@@ -53,9 +53,11 @@ class UpdateProductRequest extends FormRequest
                 "required",
                 "boolean",
             ],
-            "categoryId" => [
-                "required",
-                "integer",
+            "category" => [
+                "*.id" => [
+                    "required",
+                    "integer",
+                ]
             ],
         ];
     }
@@ -63,7 +65,7 @@ class UpdateProductRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'category_id' => $this->categoryId,
+            // 'category_id' => $this->categoryId,
             'percent_sale' => $this->percentSale,
             'deleted_at' => $this->deletedAt,
         ]);

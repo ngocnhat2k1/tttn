@@ -77,31 +77,17 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        // $data = collect($request->all())->map(function ($arr, $key) {
-        //     return Arr::except($arr, ["categoryId", "percentSale", "deletedAt"]);
-        // });
-
-        $check_existed = Product::where("name", "=", $request->name)->get()->count();
+        $check_existed = Product::where("name", "=", $request->name)->exists();
 
         // Check if the existence of name product in database
-        // 0 for none; anything beside 0 is already existed
-        if ($check_existed !== 0) {
+        if ($check_existed) {
             return response()->json([
                 'success' => false,
                 'errors' => "Product is already existed"
             ]);
         }
 
-        $filtered = $request->except(['category_id', "categoryId", 'deletedAt', "percentSale"]);
-
-        $category = Category::find($request->category_id);
-
-        if (empty($category)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "An unexpected error has occurred - Category doesn't exist"
-            ]);
-        }
+        $filtered = $request->except(['deletedAt', "percentSale"]);
 
         $data = Product::create($filtered);
 
@@ -113,14 +99,23 @@ class ProductController extends Controller
             ]);
         }
 
-        // checking $category variable is empty or not
+        // Add each categories to pivot table "category_product"
+        for ($i = 0; $i < sizeof($filtered['category']); $i++) {
+            $category_id = $filtered['category'][$i]['id'];
 
-        $data->categories()->attach($category);
+            $category = Category::find($category_id);
+
+            // Checking category id - If it doesn't exist just skip
+            if (empty($category)) {
+                continue;
+            }
+
+            $data->categories()->attach($category_id);
+        }
 
         return response()->json([
             'success' => true,
-            "data" => $data,
-            "category" => $category
+            "message" => "Successfully created product"
         ]);
     }
 
@@ -128,7 +123,7 @@ class ProductController extends Controller
     {
         // Main Data use for blueprint
         $bulk = collect($request->all())->map(function ($arr, $key) {
-            return Arr::except($arr, ["category_id", "categoryId", "percentSale", "deletedAt"]);
+            return Arr::except($arr, ["category", "percentSale", "deletedAt"]);
         });
 
         // Data use for searching in category table to insert to intermediate (category_product) table - $data is an array
@@ -144,10 +139,8 @@ class ProductController extends Controller
             // Check if data is already in database
             $check = Product::where("name", "=", ($products[$i]['name']))->first();
 
+            // If product has already existed ==> skip
             if ($check) continue;
-
-            // Find Category ID in category table using $data variable
-            $category = Category::find($data[$i]['category_id']);
 
             // Insert value into product table with $products at $i index
             $result = Product::create($products[$i]);
@@ -159,9 +152,15 @@ class ProductController extends Controller
                 ]);
             }
 
-            $product = Product::find($result->id);
+            // Insert each category id to pivot table "category_product"
+            for ($j = 0; $j < sizeof($data[$i]['category']); $j++) {
+                // Find Category ID in category table using $data variable
+                $category_id = $data[$i]['category'][$j]["id"];
+                $category = Category::find($category_id);
+                $product = Product::find($result->id);
 
-            $product->categories()->attach($category);
+                $product->categories()->attach($category);
+            }
 
             $count++;
         }
@@ -204,31 +203,12 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function checkOldCategory($product, $request)
-    {
-        // Retrieve old value in category_product table
-        $category_array = [];
-        $index = 0;
-
-        foreach ($product->categories as $category) {
-            $category_array[$index]['category_id'] = $category->pivot->category_id;
-            $index++;
-        }
-
-        foreach ($category_array as $item) {
-            if ($item["category_id"] === $request->category_id) {
-                return True;
-            }
-        }
-        return False;
-    }
-
     public function update(UpdateProductRequest $request, $productId)
     {
-        $data = $request->except(['category_id', "categoryId", 'deletedAt', "percentSale"]);
+        $data = $request->except(['category', 'deletedAt', "percentSale"]);
 
+        // Checking Product ID
         $product = Product::find($productId);
-
         if (empty($product)) {
             return response()->json([
                 'success' => false,
@@ -236,22 +216,30 @@ class ProductController extends Controller
             ]);
         }
 
+        // Save all value was changed
         foreach ($data as $key => $value) {
             $product->{$key} = $value;
         }
 
         $result = $product->save();
 
-        if (!$this->checkOldCategory($product, $request)) {
-            $category = Category::find($request->category_id);
-            $product->categories()->attach($category);
-        }
-
+        // If result is false, that means save process has occurred some issues
         if (!$result) {
             return response()->json([
                 'success' => false,
                 "errors" => "An unexpected error has occurred"
             ]);
+        }
+
+        // Remove all existed categories from product to readd everything back
+        $product->categories()->detach();
+
+        // Checking all categories that product has to decide to attach new categories or skip
+        for ($i = 0; $i < sizeof($request['category']); $i++) {
+            $category_id = $request['category'][$i]['id'];
+
+            $category = Category::find($category_id);
+            $product->categories()->attach($category);
         }
 
         return response()->json([
@@ -268,7 +256,7 @@ class ProductController extends Controller
      */
 
     // This is SOFT DELETE not permanent delete
-    public function destroy($productId)
+    public function destroy(Request $request, $productId)
     {
         $data = Product::find($productId);
 
@@ -279,24 +267,64 @@ class ProductController extends Controller
             ]);
         }
 
-        $data->{"deleted_at"} = 1;
+        // Check state variable to switch between 2 mode: (Soft) Delete and Reverse Delete
+        // If value is 1, it will be (Soft) Delete
+        if ((int)$request->state === 1) {
 
-        $result = $data->save();
+            // Check if product Has already been deleted?
+            if ($data->deleted_at !== null) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Product with ID = " . $productId ." has already been (Soft) deleted"
+                ]);
+            }
 
-        if (!$result) {
-            return response()->json([
-                "success" => false,
-                "errors" => "An unexpected error has occurred"
-            ]);
+            $data->{"deleted_at"} = 1;
+
+            $result = $data->save();
+
+            if (!$result) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "An unexpected error has occurred"
+                ]);
+            }
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'errors' => "Sucessfully hide this product with ID = " . $productId
+                ]
+            );
+
+        // If value is not 1, it will be Reverse Delete
+        } else {
+            // Check if product Has already been reversed delete?
+            if ($data->deleted_at === null) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Product with ID = " . $productId . " has already been (Soft) deleted"
+                ]);
+            }
+
+            $data->{"deleted_at"} = null;
+
+            $result = $data->save();
+
+            if (!$result) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "An unexpected error has occurred"
+                ]);
+            }
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'errors' => "Sucessfully reverse deleted_at value for product with ID = " . $productId
+                ]
+            );
         }
-
-        return response()->json(
-            [
-                'success' => true,
-                // "data" => $data
-                'errors' => "Sucessfully hide this product"
-            ]
-        );
     }
 
     public function destroyCategory(Category $category, Product $product)

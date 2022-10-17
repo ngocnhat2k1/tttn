@@ -15,11 +15,11 @@ class FavoriteController extends Controller
     {
         $customer = Customer::find($request->user()->id);
 
-        $data = DB::table("customer_product_favorite")
+        $check = DB::table("customer_product_favorite")
             ->where("customer_id", "=", $customer->id)
-            ->first();
-
-        if (empty($data)) {
+            ->get()->count();
+            
+        if ($check === 0) {
             return response()->json([
                 "success" => false,
                 "message" => "This user hasn't added any product to favorite yet"
@@ -39,12 +39,12 @@ class FavoriteController extends Controller
 
         $product = Product::find($request->id);
 
-        $data = DB::table("customer_product_favorite")
+        $check = DB::table("customer_product_favorite")
             ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $product->id)
-            ->first();
+            ->exists();
 
-        if (empty($data)) {
+        if (empty($check)) {
             $customer->customer_product_favorite()->attach($product);
 
             return response()->json([
@@ -66,12 +66,12 @@ class FavoriteController extends Controller
 
         $product = Product::find($request->id);
 
-        $data = DB::table("customer_product_favorite")
+        $check = DB::table("customer_product_favorite")
             ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $product->id)
-            ->first();
+            ->exists();
 
-        if (empty($data)) {
+        if (empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Can't remove an unexisted product from favorite"

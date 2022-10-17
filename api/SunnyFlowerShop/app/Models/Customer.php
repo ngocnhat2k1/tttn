@@ -9,8 +9,20 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "first_name",
+        "last_name",
+        "email",
+        "password",
+        "phone_number"
+    ];
+
     public function addresses() {
-        return $this->belongsToMany(Address::class, "address_customer", "customer_id", "address_id")->withPivot("id");
+        return $this->belongsToMany(Address::class);
+    }
+
+    public function tokens() {
+        return $this->hasMany(Token::class);
     }
 
     public function orders() {

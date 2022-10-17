@@ -29,9 +29,10 @@ class FeedBackController extends Controller
         // $request->id is Feedback ID in customer_product_feedback table
         $customer = Customer::find($request->user()->id);
 
-        $data = $customer->customer_product_feedback()->wherePivot("customer_product_feedback.id", "=", "$request->id")->first();
+        $query = $customer->customer_product_feedback()
+            ->wherePivot("customer_product_feedback.id", "=", "$request->id");
 
-        if (!$data) {
+        if (!$query->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong"
@@ -40,7 +41,7 @@ class FeedBackController extends Controller
 
         return response()->json([
             "success" => true,
-            "data" => new FeedBackDetailResource($data)
+            "data" => new FeedBackDetailResource($query->first())
         ]);
     }
 

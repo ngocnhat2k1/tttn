@@ -27,8 +27,8 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             "voucherId" => [
-                "required",
-                "integer"
+                "integer",
+                "nullable"
             ],
             "dateOrder" => [
                 "required",
@@ -60,8 +60,12 @@ class StoreOrderRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        if ($this->voucherId) {
+            $this->merge([
+                'voucher_id' => $this->voucherId,
+            ]);
+        }
         $this->merge([
-            'voucher_id' => $this->voucherId,
             'date_order' => $this->dateOrder,
             'name_receiver' => $this->nameReceiver,
             'phone_receiver' => $this->phoneReceiver,

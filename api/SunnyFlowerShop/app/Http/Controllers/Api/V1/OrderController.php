@@ -26,14 +26,6 @@ class OrderController extends Controller
     {
         $check = Customer::find($request->user()->id);
 
-        // Will fix this later when i figure out the other way
-        if ($check->token == null) {
-            return response()->json([
-                "success" => false,
-                "errors" => "You have no permission here"
-            ]);
-        }
-
         $data = Order::where("customer_id", "=", $request->user()->id)->get();
         $count = $data->count();
 
@@ -72,7 +64,7 @@ class OrderController extends Controller
 
         $data = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)->get();
-            
+
         if ($data->count() === 0) {
             return response()->json([
                 "success" => false,
@@ -85,7 +77,8 @@ class OrderController extends Controller
 
         for ($i = 0; $i < sizeof($data); $i++) {
             $value = DB::table("products")
-                ->where("id", "=", $data[$i]->product_id)->first();
+                ->where("id", "=", $data[$i]->product_id)
+                ->first();
 
             $arr[$i]['product_id'] = $value->id;
             $arr[$i]['quantity'] = $data[$i]->quantity;
@@ -95,13 +88,20 @@ class OrderController extends Controller
             $total_price = $total_price + (($value->price - $sale_price) * $data[$i]->quantity);
         }
 
-        $voucher_sale = DB::table("vouchers")
-            ->where("id", "=", $request->voucher_id)
-            ->first();
+        // Check if existence of voucherId
+        if ($request->voucher_id === null) {
+            $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+            $filtered["customer_id"] = $request->user()->id;
+            $filtered["total_price"] = $total_price;
+        } else {
+            $voucher_sale = DB::table("vouchers")
+                ->where("id", "=", $request->voucher_id)
+                ->first();
 
-        $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
-        $filtered["customer_id"] = $request->user()->id;
-        $filtered["total_price"] = $total_price - (($total_price * $voucher_sale->percent) / 100);
+            $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+            $filtered["customer_id"] = $request->user()->id;
+            $filtered["total_price"] = $total_price - (($total_price * $voucher_sale->percent) / 100);
+        }
 
         $check = Order::create($filtered);
 
@@ -128,7 +128,7 @@ class OrderController extends Controller
         // Detach data from intermediate table (customer_product_cart)
         $detach = $customer->customer_product_cart()->detach();
 
-        if(empty($detach)) {
+        if (empty($detach)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong"
@@ -153,37 +153,25 @@ class OrderController extends Controller
     {
         $check = Customer::find($request->user()->id);
 
-        $product_array = [];
-        $index = 0;
-
-        // Will fix this later when i figure out the other way
-        if ($check->{"token"} == null) {
-            return response()->json([
-                "success" => false,
-                "errors" => "You have no permission here"
-            ]);
-        }
-
         // Check Order isExists
-        $data = Order::where("orders.id", "=", $request->id)
+        $query = Order::where("orders.id", "=", $request->id)
             ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent")
             ->where("customer_id", "=", $request->user()->id)
-            ->join("vouchers", "orders.voucher_id", "=", "vouchers.id")
-            ->first();
+            ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 
-        if (empty($data)) {
+        if (!$query->exists() || empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck your Customer ID and Order ID"
             ]);
         }
 
+        $data = $query->first();
+
         // Create product array
         $pivot_table = Order::find($request->id);
 
         $data["products"] = $pivot_table->products;
-
-        // dd($data);
 
         return response()->json([
             "success" => true,
@@ -201,16 +189,17 @@ class OrderController extends Controller
     {
         $customer = Customer::find($request->user()->id);
 
-        $order = Order::where("id", "=", $request->id)
-            ->where("customer_id", "=", $customer->id)
-            ->first();
+        $query = Order::where("id", "=", $request->id)
+            ->where("customer_id", "=", $customer->id);
 
-        if (empty($order)) {
+        if (!$query->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Order ID is invalid"
             ]);
         }
+
+        $order = $query->first();
 
         // This function cancel by customer so value will be 0
         $order->deleted_by = 0;
@@ -227,7 +216,6 @@ class OrderController extends Controller
         return response()->json(
             [
                 'success' => true,
-                // "data" => $data
                 'errors' => "Sucessfully canceled Order ID = " . $request->id
             ]
         );
