@@ -17,7 +17,7 @@
 <b>CHÚ Ý: Nếu đã cài đặt composer cho PHP 8.1.10 thì bỏ qua 2 bước đầu tiên</b><br>
       - Tải PHP 8.1.10 phiên bản non threaded và composer <br>
       - Cài đặt composer và chọn PHP phiên bản vừa tải về và tiến hành cài đặt <br>
-      <b> Khuyến khích nên sử dụng laragon để thuận tiện trong việc cài đặt và sử dụng Laravel </b> <br>
+      <b> (Khuyến khích nên sử dụng laragon để thuận tiện trong việc cài đặt và sử dụng Laravel) </b> <br>
       - Mở <b>cmd</b> hoặc <b>git bash</b> tại thư mục đó và chạy: <b>cd api\SunnyFlowerShop</b> để chuyển hướng sang thư mục api <br>
       - Chạy: <b>composer install</b> để cài đặt các phần còn thiếu của framework <br>
       - Tạo: file <b>.env</b> bằng cách copy file <b>.env.example</b> và sửa tên lại <br>
