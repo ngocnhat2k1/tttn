@@ -6,10 +6,8 @@ import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 import axios from '../../service/axiosClient';
 import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
 
 function LoginArea() {
-    const [list, setList] = useState([]);
 
     const {
         register,
