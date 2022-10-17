@@ -24,13 +24,13 @@ class StoreCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            "first_name" => [
+            "firstName" => [
                 "required",
                 "string",
                 "min:2",
                 "max:50",
             ],
-            "last_name" => [
+            "lastName" => [
                 "required",
                 "string",
                 "min:2",
@@ -42,13 +42,24 @@ class StoreCustomerRequest extends FormRequest
             ],
             "password" => [
                 "required",
+                "string",
                 "min:6",
                 "max:24",
             ],
-            "phone_number" => [
+            "phoneNumber" => [
                 "required",
                 "string",
             ],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            // 'category_id' => $this->categoryId,
+            'first_name' => $this->firstName,
+            'last_name' => $this->lastName,
+            'phone_number' => $this->phoneNumber
+        ]);
     }
 }

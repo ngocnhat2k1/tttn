@@ -3,24 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
 use App\Http\Resources\V1\CustomerRegisterResource;
-use App\Models\Admin;
-use App\Models\AdminAuth;
 use App\Models\Customer;
 use App\Models\CustomerAuth;
-use App\Models\User;
+use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserAuthController extends Controller
 {
     // ******* CUSOMTER ******* \\
     public function __construct()
     {
-        $this->middleware("auth:sanctum", ["except" => ["register", "login"]]);
+        $this->middleware("auth:sanctum", ["except" => ["register", "login", "retrieveToken"]]);
     }
 
     public function register(Request $request)
@@ -42,8 +43,8 @@ class UserAuthController extends Controller
             ]);
         }
 
-        $check = Customer::where("email", '=', $request->email)->get()->count();
-        if ($check != 0) {
+        $check = Customer::where("email", '=', $request->email)->exists();
+        if ($check) {
             return response()->json([
                 "success" => false,
                 "errors" => "Email already exists"
@@ -59,57 +60,89 @@ class UserAuthController extends Controller
                 "phone_number" => $request->phoneNumber
             ]);
 
-            // token abilities will be detemined later
-            $token = $customer->createToken("customer-$customer->id", ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
+            // token abilities will be detemined later - i mean will be consider to be deleted or not
+            // $token = $customer->createToken("customer-$customer->id", ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
 
             return response()->json([
                 "success" => true,
-                "token" => $token,
-                "tokenType" => "Bearer",
-                "user" => new CustomerRegisterResource($customer)
+                // "token" => $token,
+                // "tokenType" => "Bearer",
+                // "user" => new CustomerRegisterResource($customer)
+                "message" => "Successfully created account"
             ]);
         }
     }
 
     public function login(Request $request)
     {
-        if (!Auth::guard("customer")->attempt($request->only("email", "password"))) {
+
+        // if (!Auth::guard("customer")->attempt($request->only("email", "password"))) {
+        if (!Auth::guard("customer")->attempt(['email' => $request->email, 'password' => $request->password])) {
             return response()->json([
                 "success" => false,
                 "errors" => "Invalid credential"
             ]);
         }
 
-        $customer = CustomerAuth::where('email', "=", $request->email)->firstOrFail();
+        // Set to Vietnam timezone
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // Using Auth model to check User to create Token
+        $customer = CustomerAuth::where('email', "=", $request->email)->first();
+
+        // Checking if account is disabled?
+        if ($customer->disabled !== null) {
+
+            // Log out account
+            Auth::guard("customer")->logout();
+
+            return response()->json([
+                "success" => false,
+                "errors" => "This account has already been disabled by admin"
+            ]);
+        }
 
         $token = $customer->createToken("Customer - " . $customer->id, ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
 
-        $customer->token = $token;
-        $customer->save();
+        // Use normal model to check User to store token
+        $customer_token = Customer::where('email', "=", $request->email)->first();
+
+        $token_data = [
+            "customer_id" => $customer_token->id,
+            "token" => $token,
+            "created_at" => date("Y-m-d H:i:s"),
+            "updated_at" => date("Y-m-d H:i:s")
+        ];
+
+        $check = Token::insert($token_data);
+
+        if (empty($check)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Something went wrong"
+            ]);
+        }
 
         return response()->json([
             "success" => true,
             "tokenType" => "Bearer",
             "token" => $token,
-            "data" => new CustomerDetailResource($customer)
+            // "data" => new CustomerDetailResource($customer)
+            "data" => [
+                "customerId" => $customer->id,
+                "firstName" => $customer->first_name,
+                "lastName" => $customer->last_name,
+                "email" => $customer->email,
+                "avatar" => $customer->avatar,
+                "phoneNumber" => $customer->phone_number,
+            ]
         ]);
     }
 
     public function logout(Request $request)
     {
         // **** Will change later **** \\
-        $customer = CustomerAuth::where('token', "=", $request->user()->token)->first();
-        
-        // Check ID Customer
-        if (empty($customer)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer ID is invalide"
-            ]);
-        }
-
-        $customer->token = null;
-        $customer->save();
+        Token::where('token', "=", $request->bearerToken())->delete();
 
         Auth::guard("customer")->logout();
 
@@ -124,5 +157,54 @@ class UserAuthController extends Controller
     public function profile(Request $request)
     {
         return new CustomerDetailResource($request->user());
+    }
+
+    public function update(UpdateCustomerRequest $request)
+    {
+        // Check email belong to customer that being check
+        $customer_email = Customer::where("email", "=", $request->email)
+            ->where("id", "=", $request->user()->id)->exists();
+
+        // If new email doesn't belong to current customer
+        if (!$customer_email) {
+
+            // Check existence of email in database
+            $check = Customer::where("email", "=", $request->email)->exists();
+            if ($check) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Email has already been used"
+                ]);
+            }
+        }
+
+        $filtered = $request->except(["firstName", "lastName", "phoneNumber"]);
+
+        // Checking if user make chane to password
+        if ($request->password !== null) {
+            $filtered['password'] = Hash::make($filtered['password']);
+        }
+
+        $update = Customer::where("id", "=", $request->user()->id)->update($filtered);
+
+        if (empty($update)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Updated Customer information successfully"
+        ]);
+    }
+
+    public function retrieveToken(Request $request)
+    {
+        return response()->json([
+            "token" => $request->bearerToken(),
+            "tokenType" => "Bearer Token"
+        ]);
     }
 }

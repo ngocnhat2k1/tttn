@@ -48,9 +48,11 @@ class BulkInsertProductRequest extends FormRequest
                 "required",
                 "boolean",
             ],
-            "*.categoryId" => [
-                "required",
-                "integer",
+            "*.category" => [
+                "*.id" => [
+                    "required",
+                    "integer",
+                ]
             ],
         ];
     }
@@ -60,7 +62,7 @@ class BulkInsertProductRequest extends FormRequest
         $data = [];
 
         foreach ($this->toArray() as $obj) {
-            $obj['category_id'] = $obj['categoryId'] ?? null;
+            // $obj['category_id'] = $obj['categoryId'] ?? null;
             $obj['percent_sale'] = $obj['percentSale'] ?? null;
             $obj['deleted_at'] = $obj['deletedAt'] ?? null;
 

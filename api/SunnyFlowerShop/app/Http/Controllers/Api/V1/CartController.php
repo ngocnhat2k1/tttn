@@ -17,7 +17,16 @@ class CartController extends Controller
     // REASON FOR CHECKING USER ACTIVITIES TO MAKE A DECISION TO FREE UP SPACE IN DATABASE VIA PIVOT CART TABLE
     public function index(Request $request)
     {
-        $customer = Customer::where("id", "=", $request->user()->id)->first();
+        $check = Customer::where("id", "=", $request->user()->id);
+
+        if ($check->get()->count() === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This user hasn't added any product to cart yet"
+            ]);
+        }
+
+        $customer = $check->first();
 
         $customer['products'] = $customer->customer_product_cart;
 
@@ -41,7 +50,7 @@ class CartController extends Controller
 
         $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
 
-        $check = $data->where("product_id", "=", $product->id)->first();
+        $check = $data->where("product_id", "=", $product->id)->exists();
 
         if (empty($check)) {
             $customer->customer_product_cart()->attach($product, [
@@ -80,17 +89,20 @@ class CartController extends Controller
 
         $product = Product::find($request->id);
 
-        $data = DB::table("customer_product_cart")
+        $query = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
-            ->where("product_id", "=", $product->id)
-            ->first();
+            ->where("product_id", "=", $product->id);
 
-        if (empty($data)) {
+        $check = $query->exists();
+
+        if (empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"
             ]);
         }
+
+        $data = $query->first();
 
         if ($data->quantity === 1) {
             $customer->customer_product_cart()->detach($product);
@@ -117,17 +129,20 @@ class CartController extends Controller
 
         $product = Product::find($request->product_id);
 
-        $data = DB::table("customer_product_cart")
+        $query = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
-            ->where("product_id", "=", $product->id)
-            ->first();
+            ->where("product_id", "=", $product->id);
 
-        if (empty($data)) {
+        $check = $query->exists();
+
+        if (empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"
             ]);
         }
+
+        $data = $query->first();
 
         // If $request->quantity value is negative
         if ($data->quantity <= ($request->quantity * -1)) { // **$request->quantity * -1** use for checking negative number
@@ -163,12 +178,12 @@ class CartController extends Controller
 
         $product = Product::find($request->id);
 
-        $data = DB::table("customer_product_cart")
+        $check = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $request->id)
-            ->first();
+            ->exists();
 
-        if (empty($data)) {
+        if (empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"

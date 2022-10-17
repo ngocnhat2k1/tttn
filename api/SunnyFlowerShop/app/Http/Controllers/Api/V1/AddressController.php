@@ -40,12 +40,13 @@ class AddressController extends Controller
      */
     public function store(StoreAddressRequest $request)
     {
-        $check = Address::where("street_name", $request->streetName)
+        $check = Address::where("name_receiver", "=", $request->nameReceiver)
+            ->where("street_name", $request->streetName)
             ->where("district", $request->district)
             ->where("ward", $request->ward)
-            ->where("city", $request->city)->get()->count();
+            ->where("city", $request->city)->exists();
 
-        if ($check !== 0) {
+        if ($check) {
             return response()->json([
                 "success" => false,
                 "errors" => "Address is already existed"
@@ -90,18 +91,21 @@ class AddressController extends Controller
         $customer = Customer::find($request->user()->id);
 
         // For some reason, i can't use normal Many-to-Many relationship query
-        $data = DB::table("address_customer")
+        $query = DB::table("address_customer")
             ->where("address_id", "=", $request->id)
             ->where("customer_id", "=", $customer->id)
-            ->join("addresses", "address_customer.id", "=", "addresses.id")
-            ->first();
+            ->join("addresses", "address_customer.id", "=", "addresses.id");
 
-        if (empty($data) || empty($customer)) {
+        $check = $query->exists();
+
+        if (empty($check) || empty($customer)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Either customer id or address id doesn't exist"
             ]);
         }
+
+        $data = $query->first();
 
         return response()->json([
             "success" => true,
@@ -121,13 +125,13 @@ class AddressController extends Controller
         $customer = Customer::find($request->user()->id);
 
         // For some reason, i can't use normal Many-to-Many relationship query
-        $data = DB::table("address_customer")
+        $check = DB::table("address_customer")
             ->where("address_id", "=", $request->id)
             ->where("customer_id", "=", $customer->id)
             ->join("addresses", "address_customer.id", "=", "addresses.id")
-            ->first();
+            ->exists();
 
-        if (empty($data) || empty($customer)) {
+        if (empty($check) || empty($customer)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"
@@ -167,12 +171,12 @@ class AddressController extends Controller
     {
         $customer = Customer::find($request->user()->id);
 
-        $data = DB::table("address_customer")
+        $check = DB::table("address_customer")
             ->where("address_id", "=", $request->id)
             ->where("customer_id", "=", $customer->id)
-            ->first();
+            ->exists();
 
-        if (empty($data)) {
+        if (empty($check)) {
             return response()->json([
                 "success" => true,
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"

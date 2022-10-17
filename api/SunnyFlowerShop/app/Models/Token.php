@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Address extends Model
+class Token extends Model
 {
     use HasFactory;
 
+    protected $table = "tokens";
+
     protected $fillable = [
-        "name_receiver",
-        "phone_receiver",
-        "street_name",
-        "district",
-        "ward",
-        "city"
+        "customer_id",
+        "token",
+        "created_at",
+        "updated_at"
     ];
 
     public function customers() {
-        return $this->belongsToMany(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 }

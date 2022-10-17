@@ -3,11 +3,16 @@
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\V1\AddressController;
+use App\Http\Controllers\Api\V1\AddressCustomerController;
 use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\FeedBackController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\FavoriteController;
+use App\Http\Controllers\Api\V1\FavoriteProductCustomerController;
+use App\Http\Controllers\Api\V1\OrderCustomerController;
+use App\Http\Controllers\Api\V1\VoucherCustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,68 +33,159 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Admin
+// ***** Admin ***** \\
 // Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
 Route::post("/admin/login", [AdminAuthController::class, "login"]);
-Route::middleware("auth:sanctum")->group(function() {
+Route::middleware("auth:sanctum")->group(function () {
     Route::get("/admin/profile", [AdminAuthController::class, "profile"]);
     Route::post("/admin/logout", [AdminAuthController::class, "logout"]);
-});
 
-Route::group(['prefix' => "v1", "namespace" => "App\Http\Controllers\Api\V1"], function () {
-    Route::group(['prefix' => "products"], function() {
-        Route::get('/', [ProductController::class, "index"]); // Show all products
-        Route::get('/{id}', [ProductController::class, "show"]); // Show detail of a specific product
-        Route::post('/add', [ProductController::class, "store"]); // Add single product to database
-        Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
-        Route::put('/edit/{id}', [ProductController::class, "update"]); // Update detail of a specific product
-        Route::delete('/destroy/category={category}&product={product}', [ProductController::class, "destroyCategory"]); // Delete a category from product
-        Route::delete('/destroy/{id}', [ProductController::class, "destroy"]); // (Soft) Delete product from database
+    Route::group(['prefix' => "v1", "namespace" => "App\Http\Controllers\Api\V1"], function () {
+
+        // Route for Product
+        Route::group(['prefix' => "products"], function () {
+            Route::get('/', [ProductController::class, "index"]); // Show all products
+            Route::get('/{id}', [ProductController::class, "show"]); // Show detail of a specific product
+            Route::post('/add', [ProductController::class, "store"]); // Add single product to database
+            Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
+            Route::put('/{id}/edit', [ProductController::class, "update"]); // Update detail of a specific product
+            Route::delete('/destroy/category={category}&product={product}', [ProductController::class, "destroyCategory"]); // Delete a category from product
+            Route::delete('/{id}/destroy={state}', [ProductController::class, "destroy"]); // (Soft) Delete product from database
+            /** Need to add fucntion
+             * Adjust products value function for each products
+             * Favourite - Still figure this one out
+             * Query products got the most favorite product out of all products
+             */
+        });
+    
+        // Route for User
+        Route::group(['prefix' => "users"], function () {
+            // User info
+            Route::get("/", [CustomerController::class, "index"]); // Show all user available
+            Route::get("/{customer}", [CustomerController::class, "show"]); // Show detail information from specific customer
+            Route::post("/create", [CustomerController::class, "store"]); // Create account from admin site
+            Route::put("{customer}/update", [CustomerController::class, "update"]); // Update information for specific customer from admin site
+            Route::delete("/{customer}/disable={state}", [CustomerController::class, "disable"]); // Disable customer account
+
+            // Address from User info
+            Route::get("/{customer}/addresses", [AddressCustomerController::class, "index"]);
+            Route::get("/{customer}/address/{address}", [AddressCustomerController::class, "show"]);
+            Route::post("/{customer}/address/create", [AddressCustomerController::class, "store"]);
+            Route::put("/{customer}/address/{address}/update", [AddressCustomerController::class, "update"]);
+            Route::delete("/{customer}/address/{address}/destroy", [AddressCustomerController::class, "destroy"]);
+
+            // Order from User info
+            Route::get("/{customer}/orders", [OrderCustomerController::class, "index"]);
+            Route::get("/{customer}/orders/{order}", [OrderCustomerController::class, "show"]);
+            /* Route::post // Create order from admin site */
+            Route::put("/{customer}/orders/{order}/update", [OrderCustomerController::class, "update"]);
+            Route::put("/{customer}/orders/{order}/update/status", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
+            Route::delete("/{customer}/orders/{order}/destroy={state}", [OrderCustomerController::class, "destroy"]);
+
+            // Voucher from User info
+            Route::get("/{customer}/vouchers", [VoucherCustomerController::class, "index"]);
+            Route::get("/{customer}/voucher/{voucher}", [VoucherCustomerController::class, "show"]);
+            /* Delete voucher from Customer's Order (?) */
+
+            // Favorite from User info
+            Route::get("/{customer}/favorite", [FavoriteProductCustomerController::class, "index"]);
+            Route::delete("/{customer}/favorite/{product}/destroy", [FavoriteProductCustomerController::class, "destroy"]);
+        });
+    
+        /** Address
+         * Overview addresses
+         * Detail address from which customer
+         * Create-Update-Delete Address from admin site
+         */
+    
+        /** Category
+         * Overview category
+         * Detail category and its appearance in which products
+         * Create-Update-(Soft)Delete fucntion for each categories from admin site
+         */
+    
+        /** Voucher
+         * Overview all vouchers has been created so far
+         * Filter for vouhcer_expired_date (Maybe for front-end side)
+         * Detail for its vouhcer and its appearance in which orders
+         * Create-Update-(Soft)Delete function for each vouchers
+         */
+
+        /** Cart
+         * Overview Cart from all customers
+         * Detail cart from a specific customers
+         * Update-Delete Cart (?)
+         */
+    
+        /** Order
+         * Overview all orders order by recently_created
+         * Create-Update-(Soft)Delete function for each orders from admin site
+         * Update state for orders
+         */
+    
+        /** Email
+         * Manage Send Email function
+         * Manage email template
+         * Create forgot password function
+         */
+    
+        /** Query for products appearance in front page
+         * Trending product
+         * New products
+         * Best Seller
+         * Sale products
+         */
     });
 });
 
+
 // ***** CUSTOMER ***** \\
-Route::post("/register", [UserAuthController::class, "register"]);
-Route::post("/login", [UserAuthController::class, "login"]);
-Route::middleware('auth:sanctum')->group(function() {
-    Route::group(['prefix' => "user"], function() {
+Route::get('/products', [ProductController::class, "index"]); // Show all products
+Route::get('/products/{id}', [ProductController::class, "show"]); // Show detail of a specific product
+
+Route::post("/register", [UserAuthController::class, "register"]); // Register
+Route::post("/login", [UserAuthController::class, "login"]); // Login
+Route::get("/retrieveToken", [UserAuthController::class, "retrieveToken"]);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix' => "user"], function () {
         // View profile
         Route::get("/profile", [UserAuthController::class, "profile"]); // May only be use for editing info in user profile page (Only for login user)
+        Route::put("/update", [UserAuthController::class, "update"]); // Update user information
 
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
         Route::get("/cart", [CartController::class, "index"]);
         Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
         Route::post("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
-        Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
-        Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]);
+        Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
+        Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
 
         // Create-Review-Cancel Order function
         Route::get("/order", [OrderController::class, "index"]); // Show all order from current login user
-        Route::get("/order/{id}", [OrderController::class, "show"]); // Show detail of order from current login user
-        Route::post("/order/placeorder", [OrderController::class, "store"]);// Placeorder
-        Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]);// Placeorder
-        // Cancel order
+        Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
+        Route::post("/order/placeorder", [OrderController::class, "store"]); // Placeorder
+        Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
 
         // Check voucher expired date
-        
+
 
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)
-        Route::get("/feedback/{id}", [FeedBackController::class, "feedbackDetail"]); // View detail feedback of a specific product from current login user
+        Route::get("/feedback/{id}", [FeedBackController::class, "feedbackDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
         Route::post("/feedback/create", [FeedBackController::class, "storeFeedBack"]); // Create new feedback for a specific proudct
-        Route::put("/feedback/update/{id}", [FeedBackController::class, "updateFeedBack"]); // Update existed feedback of a specific product
-        Route::delete("/feedback/destroy/{id}", [FeedBackController::class, "destroyFeedBack"]); // Delete existed feedback of a specific product
+        Route::put("/feedback/update/{id}", [FeedBackController::class, "updateFeedBack"]); // {id} is feedback_id; Update existed feedback of a specific product
+        Route::delete("/feedback/destroy/{id}", [FeedBackController::class, "destroyFeedBack"]); // {id} is feedback_id; Delete existed feedback of a specific product
 
         // Create-Review-Update-Delete Address function
         Route::get("/address", [AddressController::class, "index"]);
-        Route::get("/address/{id}", [AddressController::class, "show"]);
+        Route::get("/address/{id}", [AddressController::class, "show"]); // {id} is address_id;
         Route::post("/address/create", [AddressController::class, "store"]);
-        Route::put("/address/update/{id}", [AddressController::class, "update"]);
-        Route::delete("address/destroy/{id}", [AddressController::class, "destroy"]);
+        Route::put("/address/update/{id}", [AddressController::class, "update"]); // {id} is address_id;
+        Route::delete("address/destroy/{id}", [AddressController::class, "destroy"]); // {id} is address_id;
 
         // Create-Review-Delete Products from Favorite
         Route::get("/favorite", [FavoriteController::class, "viewFavorite"]);
-        Route::get("/favorite/{id}", [FavoriteController::class, "storeFavorite"]); // Add product using {id} to favorite. May need to reconsider about GET Method
+        Route::get("/favorite/{id}", [FavoriteController::class, "storeFavorite"]); // Using {id} to add product to favorite. May need to reconsider about GET Method
         Route::delete("/favorite/destroy/{id}", [FavoriteController::class, "destroyFavorite"]);
     });
     Route::post("/logout", [UserAuthController::class, "logout"]);
