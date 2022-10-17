@@ -8,6 +8,7 @@ import Shop from "./pages/Shop";
 import Customer from "./pages/Customer";
 import Cart from "./pages/Cart";
 import GlobalStyles from "./components/GlobalStyles";
+import OrderComplete from "./pages/OrderComplete";
 
 class App extends Component {
   render() {
@@ -28,6 +29,8 @@ class App extends Component {
               <Route path="/contact" element={<Contact />}>
               </Route>
               <Route path="/cart" element={<Cart />}>
+              </Route>
+              <Route path="/order-complete" element={<OrderComplete />}>
               </Route>
             </Routes>
           </BrowserRouter>

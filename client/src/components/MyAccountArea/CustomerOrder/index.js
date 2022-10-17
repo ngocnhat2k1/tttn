@@ -27,7 +27,7 @@ function CustomerOrder() {
                                         <a className={styles.view} href="">View</a>
                                     </td>
                                     <td>
-                                        <button type="button">Hủy đơn</button>
+                                        <button type="button" className={styles.btnDeleteOrder}>Hủy đơn</button>
                                     </td>
                                 </tr>
                             </tbody>

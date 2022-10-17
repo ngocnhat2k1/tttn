@@ -7,6 +7,7 @@ import { FaTachometerAlt, FaCartArrowDown, FaMapMarkerAlt, FaUserAlt } from 'rea
 import CustomerOrder from './CustomerOrder';
 import CustomerDashboard from './CustomerDashboard';
 import CustomerAddress from './CustomerAddress';
+import CustomerAccountDetails from './CustomerAccountDetails';
 import { useState } from 'react';
 
 function MyAccountArea() {
@@ -41,6 +42,7 @@ function MyAccountArea() {
                             <Route path="/" element={<CustomerDashboard />}></Route>
                             <Route path="/customer-order" element={<CustomerOrder />}></Route>
                             <Route path="/customer-address" element={<CustomerAddress />}></Route>
+                            <Route path="/customer-account-details" element={<CustomerAccountDetails />}></Route>
                         </Routes>
                     </Col>
                 </Row>

@@ -7,6 +7,7 @@ import TopHeaderRightAuth from './TopHeaderRightAuth';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import axios from '../../../service/axiosClient'
 
 function TopHeader() {
     const [user, setUser] = useState();
@@ -14,23 +15,21 @@ function TopHeader() {
     console.log(user);
 
     useEffect(() => {
-        
-        if (Cookies.get('token') === 'bao') {
-            setUser('Lê Quốc Bảo');
+        if(Cookies.get('token') !== undefined) {
+        axios
+            .get(`http://localhost:8000/api/user/profile`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                setUser(response.data.data);
+            })
+            .catch(function (error) {
+                // console.log(error);
+            });
         }
-        // axios
-        //     .get(`http://localhost:8080/tttn_be/public/api/user/profile`, {
-        //         headers: {
-        //             Authorization: `Bearer ${Cookies.get('token')}`,
-        //         },
-        //     })
-        //     .then((response) => {
-        //         setProfile(response.data.user);
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
-    }, [user]);
+    }, []);
 
     return (
         <section className={styles.divTopheader}>

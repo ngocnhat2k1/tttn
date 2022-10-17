@@ -1,0 +1,189 @@
+.tableDesc {
+    border: 1px solid #ededed;
+}
+
+.tableResponsive {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tableResponsive table thead {
+    background: #f79837;
+}
+
+.tableDesc table tbody tr td:last-child, .tablePage table thead tr:last-child th {
+    border-right: 0;
+}
+
+.tablePage table tbody tr td, .tablePage table thead tr th {
+    border-right: 1px solid #ededed;
+    padding: 10px;
+    text-align: center;
+}
+
+.tablePage table thead tr th {
+    color: #fff;
+    border-bottom: 3px solid #f79837;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.tableResponsive table tbody tr td {
+    border-right: 1px solid #ededed;
+    font-weight: 500;
+    text-transform: capitalize;
+    text-align: center;
+    min-width: 150px;
+}
+
+.tablePage table tbody tr td.productThumb {
+    max-width: 180px;
+    overflow: hidden;
+}
+
+.tablePage table tbody tr td.productThumb img {
+    width: 92px;
+    height: 92px;
+    object-fit: cover;
+    max-width: 100%;
+    background-color: #ededed;
+}
+
+.tablePage table tbody tr td {
+    font-size: 17px !important;
+    border-bottom: 1px solid #ededed;
+}
+
+.tablePage table tbody tr td.productName {
+    min-width: 200px;
+}
+
+.tablePage table tbody tr td.productPrice {
+    min-width: 120px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.tablePage table tbody tr td.productQuantity {
+    min-width: 80px;
+}
+
+#cartArea .tablePage table tbody tr td.productQuantity input {
+    margin: 0 8px;
+}
+
+.tablePage table tbody tr td.productQuantity input {
+    width: 60px;
+    height: 40px;
+    padding: 0 5px 0 10px;
+    background: none;
+    border: 1px solid #ededed;
+}
+
+.productQuantity input {
+    text-align: center;
+}
+
+.tablePage table tbody tr td.productTotal {
+    min-width: 120px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.tablePage table tbody tr td.productRemove {
+    min-width: 100px;
+    font-size: 20px !important;
+}
+
+.productRemove svg {
+    cursor: pointer;
+    color: red;
+}
+
+.btnClearCart {
+    text-align: right;
+    padding: 12px;
+}
+.coupon {
+    text-align: right;
+    padding-top: 30px;
+}
+
+.coupon input {
+    border: 1px solid #ededed;
+    min-height: 38px;
+    background: none;
+    padding: 10px 20px;
+    margin-right: 20px;
+    font-size: 14px;
+    color: #333;
+    width: 220px;
+    margin-bottom: 0.5rem;
+
+    &::marker {
+        border: 1px solid #f79837;
+    }
+}
+
+.coupon form button {
+    text-align: left;
+}
+
+.cartTotal {
+    border: 1px solid #ededed;
+    margin-top: 60px;
+}
+
+.cartTotal h3 {
+    color: #fff;
+    line-height: 36px;
+    padding: 5px 15px;
+    background: #f79837;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.cartInner {
+    padding: 10px 20px 25px;
+}
+
+.cartInner p {
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.cartSubTotal {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cartSubTotal p {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.cartSubTotal .cartSubTotalDetail {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.cartSubTotal p span {
+    color: #777c87 !important;
+    margin-right: 30px;
+}
+
+.checkoutBtn {
+    text-align: right;
+}
+
+.border {
+    border-top: 1px solid #ededed;
+}
