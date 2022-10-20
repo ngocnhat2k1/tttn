@@ -5,11 +5,10 @@ const ListProducts = ({ currentProduct }) => {
     return (
 
         <>
-            {console.log(currentProduct)}
             {
-                currentProduct.map((Product) => {
+                currentProduct.map((Product, index) => {
                     return (
-                        <tr>
+                        <tr key={index}>
                             <td><a><img width="70px" src={Product.Image} alt="img" /></a></td>
                             <td><a href="/product-details-one/1">{Product.ProductName}</a></td>
                             <td>{Product.Category}</td>
