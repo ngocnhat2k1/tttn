@@ -5,7 +5,7 @@ function Header() {
     return (
         <>
             <TopHeader />
-            <NavBar />
+            {/* <NavBar /> */}
         </>
     )
 }

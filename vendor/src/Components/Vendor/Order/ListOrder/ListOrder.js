@@ -3,9 +3,9 @@ import React from 'react'
 const ListOrder = ({ currentOrder }) => {
     return (
         <>
-            {currentOrder.map((Order) => {
+            {currentOrder.map((Order, index) => {
                 return (
-                    <tr>
+                    <tr key={index}>
                         <td>
                             <a href="/invoice-one" className='text-primary'>{Order.OrderId}</a>
                         </td>

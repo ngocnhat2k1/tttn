@@ -8,6 +8,7 @@ import ReactPaginate from 'react-paginate'
 import { FakeProducts } from '../FakeData/FakeProduct';
 import styles from './PaginatedItems.module.scss'
 import ListProducts from './ListProduct/ListProduct';
+import { Link } from 'react-router-dom';
 
 
 const Product = () => {
@@ -27,6 +28,7 @@ const Product = () => {
     const handlePageClick = (event) => {
         const newOffset = event.selected * itemsPerPage % listProducts.length;
         setItemOffset(newOffset);
+        window.location.pathname(`/${pageCount}`)
     };
     return (
         <Col sm={12} md={12} lg={9}>
@@ -39,9 +41,9 @@ const Product = () => {
                                     <h4>
                                         All Product
                                     </h4>
-                                    <a data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" href="/vendor/add-products">
+                                    <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-products">
                                         Add Product
-                                    </a>
+                                    </Link>
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>

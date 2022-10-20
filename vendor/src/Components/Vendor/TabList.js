@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom"
-import { FaTachometerAlt, FaShoppingCart, FaShoppingBag, FaRegIdBadge, FaUser, FaCog } from "react-icons/fa"
+import { FaTachometerAlt, FaShoppingCart, FaShoppingBag, FaRegIdBadge, FaUser } from "react-icons/fa"
 import "./TabList.css"
 
 
 function TabList() {
-
-    const [isActive, setActive] = useState("dashboard")
+    const duongdan = window.location.pathname
+    const [isActive, setActive] = useState(duongdan)
+    console.log(duongdan)
 
     return (
         <>
@@ -14,41 +15,34 @@ function TabList() {
                 <ul className='nav flex-column dashboard'>
                     <li >
                         <Link
-                            onClick={() => setActive('dashboard')}
-                            className={`${isActive === "dashboard" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/')}
+                            className={`${isActive === "/" ? 'active_tablist' : ' '} `}
                             to="/"> <i> <FaTachometerAlt color='black' /></i> dashboard </Link>
                     </li>
                     <li>
                         <Link
-                            onClick={() => setActive('allproduct')}
-                            className={`${isActive === "allproduct" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/all-product')}
+                            className={`${isActive === "/all-product" ? 'active_tablist' : ' '} `}
                             to="/all-product">  <i> <FaShoppingCart color='black' /></i> product </Link>
                     </li>
                     <li>
                         <Link
-                            onClick={() => setActive('allorder')}
-                            className={`${isActive === "allorder" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/all-order')}
+                            className={`${isActive === "/all-order" ? 'active_tablist' : ' '} `}
                             to="/all-order">  <i> <FaShoppingBag color='black' /></i> order </Link>
                     </li>
                     <li
                     >
                         <Link
-                            onClick={() => setActive('profile')}
-                            className={`${isActive === "profile" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/vendor-profile')}
+                            className={`${isActive === "/vendor-profile" ? 'active_tablist' : ' '} `}
                             to="/vendor-profile">  <i> <FaRegIdBadge color='black' /></i> profile </Link>
                     </li>
                     <li>
                         <Link
-                            onClick={() => setActive('addproduct')}
-                            className={`${isActive === "addproduct" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/add-product')}
+                            className={`${isActive === "/add-product" ? 'active_tablist' : ' '} `}
                             to="/add-products">  <i> <FaUser color='black' /></i> add product </Link>
-                    </li>
-                    <li
-                    >
-                        <Link
-                            onClick={() => setActive('setting')}
-                            className={`${isActive === "setting" ? 'active_tablist' : ' '} `}
-                            to="/vendor-setting">  <i> <FaCog color='black' /></i> setting </Link>
                     </li>
                 </ul>
             </div>
