@@ -43,7 +43,7 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request)
     {
-        $filtered = $request->except(["firstName", "lastName", "phoneNumber"]);
+        $filtered = $request->except(["firstName", "lastName"]);
 
         $filtered['password'] = Hash::make($filtered['password']);
 
@@ -168,7 +168,7 @@ class CustomerController extends Controller
             }
         }
 
-        $filtered = $request->except(["firstName", "lastName", "phoneNumber"]);
+        $filtered = $request->except(["firstName", "lastName"]);
 
         // Checking if user make chane to password
         if ($request->password !== null) {
