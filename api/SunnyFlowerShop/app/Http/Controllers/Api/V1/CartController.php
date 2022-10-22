@@ -15,6 +15,10 @@ class CartController extends Controller
 {
     // NEED TO RECONSIDER ADDING "CREATED_AT" & "UDPATED_ATT" COLUMN TO TABLE
     // REASON FOR CHECKING USER ACTIVITIES TO MAKE A DECISION TO FREE UP SPACE IN DATABASE VIA PIVOT CART TABLE
+    public function all() {
+        
+    }
+
     public function index(Request $request)
     {
         $check = Customer::where("id", "=", $request->user()->id);

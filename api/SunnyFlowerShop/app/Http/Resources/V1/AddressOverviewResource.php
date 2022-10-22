@@ -16,7 +16,7 @@ class AddressOverviewResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "customter_id" => $this->pivot->customer_id,
+            "customterId" => $this->pivot->customer_id,
             "nameReceiver" => $this->name_receiver,
             "phoneReceiver" => $this->phone_receiver,
             "streetName" => $this->street_name,

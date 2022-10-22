@@ -26,10 +26,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         // $data = Product::with("categories")->paginate();
-        $data = Product::with("categories")->get();
-        $count = $data->count();
-
-        // dd($data);
+        $data = Product::with("categories");
+        $count = $data->get()->count();
 
         if (empty($count)) {
             return response()->json([
@@ -60,13 +58,13 @@ class ProductController extends Controller
 
         $count = DB::table("products")->count();
 
-        return response()->json([
-            "success" => true,
-            "total" => $count,
-            "data" => new ProductListCollection($data)
-        ]);
+        // return response()->json([
+        //     "success" => true,
+        //     "total" => $count,
+        //     "data" => new ProductListCollection($data)
+        // ]);
 
-        // return new ProductListCollection($data->appends($request->query()));
+        return new ProductListCollection($data->paginate(9)->appends($request->query()));
     }
 
     /**

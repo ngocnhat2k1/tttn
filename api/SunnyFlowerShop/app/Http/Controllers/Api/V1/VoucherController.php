@@ -6,6 +6,7 @@ use App\Models\Voucher;
 use App\Http\Requests\StoreVoucherRequest;
 use App\Http\Requests\UpdateVoucherRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\VoucherDetailCollection;
 
 class VoucherController extends Controller
 {
@@ -16,7 +17,18 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        //
+        $count = Voucher::query()->get()->count();
+
+        if (empty($count)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Address list is empty"
+            ]);
+        }
+
+        $vouchers = Voucher::paginate(10);
+
+        return new VoucherDetailCollection($vouchers);
     }
 
     /**

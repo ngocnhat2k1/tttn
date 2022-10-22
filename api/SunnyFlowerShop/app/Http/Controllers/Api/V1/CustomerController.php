@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
@@ -19,7 +18,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::paginate();
+        $customers = Customer::paginate(10);
 
         return new CustomerOverviewCollection($customers);
     }
