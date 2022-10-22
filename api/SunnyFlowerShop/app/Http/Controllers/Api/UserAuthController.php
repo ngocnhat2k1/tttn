@@ -29,7 +29,7 @@ class UserAuthController extends Controller
             "lastName" => "required|string|min:2|max:50",
             "email" => "required|email",
             "password" => "required|min:6|max:24",
-            "phoneNumber" => "required|string"
+            "confirmPassword" => "required|string"
         ]);
 
         if ($data->fails()) {
@@ -41,11 +41,20 @@ class UserAuthController extends Controller
             ]);
         }
 
+        // Check existence of email in database
         $check = Customer::where("email", '=', $request->email)->exists();
         if ($check) {
             return response()->json([
                 "success" => false,
                 "errors" => "Email already exists"
+            ]);
+        }
+
+        // Check password and confirm password are the same
+        if ($request->password !== $request->confirmPassword) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Password are changing. Please make sure your information is consistent"
             ]);
         }
 
@@ -55,7 +64,6 @@ class UserAuthController extends Controller
                 'last_name' => $request->lastName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                "phone_number" => $request->phoneNumber
             ]);
 
             // token abilities will be detemined later - i mean will be consider to be deleted or not
@@ -176,7 +184,7 @@ class UserAuthController extends Controller
             }
         }
 
-        $filtered = $request->except(["firstName", "lastName", "phoneNumber"]);
+        $filtered = $request->except(["firstName", "lastName"]);
 
         // Checking if user make chane to password
         if ($request->password !== null) {
@@ -198,6 +206,7 @@ class UserAuthController extends Controller
         ]);
     }
 
+    // Use when user first enter website
     public function retrieveToken(Request $request)
     {
         // Checking token existence
