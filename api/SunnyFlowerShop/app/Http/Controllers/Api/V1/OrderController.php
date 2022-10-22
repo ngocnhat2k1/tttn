@@ -4,15 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Models\Customer;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -22,9 +19,17 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         $check = Customer::find($request->user()->id);
+
+        if (empty($check)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer ID is invalid"
+            ]);
+        }
 
         $data = Order::where("customer_id", "=", $request->user()->id)->get();
         $count = $data->count();
@@ -40,7 +45,6 @@ class OrderController extends Controller
             "success" => true,
             "data" => new OrderListCollection($data)
         ]);
-        // return $data;
     }
 
     /**

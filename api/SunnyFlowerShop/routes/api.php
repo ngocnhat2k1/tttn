@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AddressCustomerController;
 use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\FeedBackController;
 use App\Http\Controllers\Api\V1\OrderController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteProductCustomerController;
 use App\Http\Controllers\Api\V1\OrderCustomerController;
+use App\Http\Controllers\Api\V1\VoucherController;
 use App\Http\Controllers\Api\V1\VoucherCustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +75,12 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post("/{customer}/address/create", [AddressCustomerController::class, "store"]);
             Route::put("/{customer}/address/{address}/update", [AddressCustomerController::class, "update"]);
             Route::delete("/{customer}/address/{address}/destroy", [AddressCustomerController::class, "destroy"]);
+            
+            /** Cart from User info
+             * Add product to cart from specific user (add 1 value of product; Update any value of any product to cart; Reduce 1 value of product)
+             * Remove product from cart from specific user
+             * Empty cart from specific user
+             */
 
             // Order from User info
             Route::get("/{customer}/orders", [OrderCustomerController::class, "index"]);
@@ -91,18 +99,33 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{customer}/favorite", [FavoriteProductCustomerController::class, "index"]);
             Route::delete("/{customer}/favorite/{product}/destroy", [FavoriteProductCustomerController::class, "destroy"]);
         });
+
+        /** Order
+         * Overview all orders order by recently_created
+         * Create-Update-(Soft)Delete function for each orders from admin site
+         * Update state for orders
+         */
+        Route::group(['prefix' => 'orders'], function() {
+            Route::get("/", [OrderCustomerController::class, "all"]);
+        });
     
         /** Address
          * Overview addresses
          * Detail address from which customer
          * Create-Update-Delete Address from admin site
          */
+        Route::group(['prefix' => 'addresses'], function() {
+            Route::get("/", [AddressCustomerController::class, "all"]);
+        });
     
         /** Category
          * Overview category
          * Detail category and its appearance in which products
          * Create-Update-(Soft)Delete fucntion for each categories from admin site
          */
+        Route::group(['prefix' => 'categories'], function() {
+            Route::get("/", [CategoryController::class, "index"]);
+        });
     
         /** Voucher
          * Overview all vouchers has been created so far
@@ -110,18 +133,26 @@ Route::middleware("auth:sanctum")->group(function () {
          * Detail for its vouhcer and its appearance in which orders
          * Create-Update-(Soft)Delete function for each vouchers
          */
+        Route::group(['prefix' => 'vouchers'], function() {
+            Route::get("/", [VoucherController::class, "index"]);
+        });
+
+        /** Feedback
+         * Overview feedback
+         * Create-Update-Delete feedback from admin site (?)
+         */
+        Route::group(['prefix' => 'feedbacks'], function() {
+            Route::get("/", [FeedBackController::class, "all"]);
+        });
 
         /** Cart
          * Overview Cart from all customers
          * Detail cart from a specific customers
          * Update-Delete Cart (?)
          */
-    
-        /** Order
-         * Overview all orders order by recently_created
-         * Create-Update-(Soft)Delete function for each orders from admin site
-         * Update state for orders
-         */
+        Route::group(['prefix' => 'carts'], function() {
+            Route::get("/", [CartController::class, "all"]);
+        });     
     
         /** Email
          * Manage Send Email function
@@ -134,6 +165,7 @@ Route::middleware("auth:sanctum")->group(function () {
          * New products
          * Best Seller
          * Sale products
+         * All of them are top 10
          */
     });
 });

@@ -5,16 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
-use App\Http\Resources\V1\CustomerRegisterResource;
 use App\Models\Customer;
 use App\Models\CustomerAuth;
 use App\Models\Token;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class UserAuthController extends Controller
 {
@@ -202,8 +200,19 @@ class UserAuthController extends Controller
 
     public function retrieveToken(Request $request)
     {
+        // Checking token existence
+        $token = Token::where("token", "=", $request->bearerToken())->first();
+
+        if ($token === null) {
+            return response()->json([
+                "success" => false,
+                "errors" => "No token found"
+            ]);
+        }
+
         return response()->json([
-            "token" => $request->bearerToken(),
+            "success" => true,
+            "token" => $request->bearerToken() ?? null,
             "tokenType" => "Bearer Token"
         ]);
     }
