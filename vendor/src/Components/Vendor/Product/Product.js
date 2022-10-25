@@ -4,6 +4,8 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
 import './Product.css'
+import axios from '../../../service/axiosClient';
+import Cookies from 'js-cookie';
 import ReactPaginate from 'react-paginate'
 import { FakeProducts } from '../FakeData/FakeProduct';
 import styles from './PaginatedItems.module.scss'
@@ -30,6 +32,26 @@ const Product = () => {
         setItemOffset(newOffset);
         window.location.pathname(`/${pageCount}`)
     };
+    useEffect(() => {
+        axios
+            .get(`http://127.0.0.1:8000/api/v1/products`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                if (response.data.success) {
+                    console.log(response.data.data)
+                    setistProducts(response.data.data)
+
+                } else {
+                    alert('cccc');
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, [])
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>

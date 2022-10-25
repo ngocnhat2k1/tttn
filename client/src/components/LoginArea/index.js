@@ -17,7 +17,7 @@ function LoginArea() {
 
     const onSubmit = (data) => {
         axios
-            .post('http://localhost:8000/api/login', data )
+            .post('http://localhost:8000/api/login', data)
             .then(function (response) {
                 console.log("1", response.data.success)
                 if (response.data.success) {

@@ -9,18 +9,11 @@ import Cookies from 'js-cookie';
 
 class Login extends Component {
 
-  // state = {
-  //   message: ''
-  // };
 
-  // componentDidMount() {
-  //   axios.get('/api/test')
-  //     .then(result => this.setState({ message: result.data.message }))
-  // };
 
   render() {
     if (Cookies.get('token') !== undefined) {
-      window.location.href = 'http://localhost:3000/my-account';
+      window.location.href = 'http://localhost:3000';
     };
 
     return (

@@ -7,7 +7,6 @@ import "./TabList.css"
 function TabList() {
     const duongdan = window.location.pathname
     const [isActive, setActive] = useState(duongdan)
-    console.log(duongdan)
 
     return (
         <>

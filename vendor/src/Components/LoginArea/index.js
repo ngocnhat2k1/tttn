@@ -19,11 +19,9 @@ function LoginArea() {
 
 
     const onSubmit = (data) => {
-        console.log(data)
         axios
-            .post('http://localhost:8000/api/login', data)
+            .post('http://localhost:8000/api/admin/login', data)
             .then(function (response) {
-                console.log("1", response.data.success)
                 if (response.data.success) {
                     const token = response.data.token;
                     Cookies.set('token', token, { path: '/' });

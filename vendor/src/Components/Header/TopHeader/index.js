@@ -12,22 +12,20 @@ import axios from '../../../service/axiosClient'
 function TopHeader() {
     const [user, setUser] = useState();
 
-    console.log(user);
-
     useEffect(() => {
-        if(Cookies.get('token') !== undefined) {
-        axios
-            .get(`http://localhost:8000/api/user/profile`, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            })
-            .then((response) => {
-                setUser(response.data.data);
-            })
-            .catch(function (error) {
-                // console.log(error);
-            });
+        if (Cookies.get('token') !== undefined) {
+            axios
+                .get(`http://localhost:8000/api/user/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('token')}`,
+                    },
+                })
+                .then((response) => {
+                    setUser(response.data.data);
+                })
+                .catch(function (error) {
+                    // console.log(error);
+                });
         }
     }, []);
 

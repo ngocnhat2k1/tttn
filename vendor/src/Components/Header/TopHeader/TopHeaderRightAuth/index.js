@@ -5,9 +5,6 @@ import Cookies from 'js-cookie';
 import axios from '../../../../service/axiosClient';
 
 function TopHeaderRightAuth(user) {
-
-    console.log("user: ", user);
-
     const handleLogout = () => {
 
         axios
