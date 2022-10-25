@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("email")->unique()->index();
             $table->string("password");
             $table->string("avatar")->nullable();
-            $table->string("phone_number");
+            // $table->string("phone_number");
             $table->boolean("disabled")->nullable()->comment("Default value is NULL, 0 for disable");
             // $table->rememberToken();
             $table->timestamps();

@@ -14,9 +14,13 @@ use Illuminate\Http\Request;
 class FeedBackController extends Controller
 {
     // **** Feedback **** \\
+    public function all() {
+        // Using Query builder to query all data from pivot table "customer_product_feedback"
+    }
+
     public function viewFeedBack(Request $productId)
     {
-        $customer = Customer::find($productId->user()->id);
+        $customer = Customer::find($productId->user()->id)->first();
 
         return response()->json([
             "success" => true,

@@ -11,10 +11,22 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class OrderCustomerController extends Controller
 {
+    public function all() {
+        $check = Order::get()->count();
+
+        if (empty($check)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Order list is empty"
+            ]);
+        }
+
+        return new OrderListCollection(Order::paginate(10));
+    }
+    
     public function index(Customer $customer)
     {
         $customer_data = Customer::find($customer->id);

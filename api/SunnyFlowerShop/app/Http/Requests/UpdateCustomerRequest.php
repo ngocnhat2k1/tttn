@@ -45,10 +45,10 @@ class UpdateCustomerRequest extends FormRequest
                 "min:6",
                 "max:24",
             ],
-            "phoneNumber" => [
-                "required",
-                "string",
-            ],
+            // "phoneNumber" => [
+            //     "required",
+            //     "string",
+            // ],
         ];
     }
 
@@ -58,7 +58,7 @@ class UpdateCustomerRequest extends FormRequest
             // 'category_id' => $this->categoryId,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
-            'phone_number' => $this->phoneNumber
+            // 'phone_number' => $this->phoneNumber
         ]);
     }
 }

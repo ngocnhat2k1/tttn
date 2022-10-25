@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
+use App\Http\Resources\V1\AddressListCollection;
 use App\Http\Resources\V1\AddressOverviewCollection;
 use App\Http\Resources\V1\AddressOverviewResource;
 use App\Models\Address;
@@ -13,6 +14,21 @@ use Illuminate\Support\Facades\DB;
 
 class AddressCustomerController extends Controller
 {
+    public function all() {
+        $addresses = Address::with("customers");
+
+        $count = $addresses->get()->count();
+
+        if (empty($count)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Address list is empty"
+            ]);
+        }
+
+        return new AddressListCollection($addresses->paginate());
+    }
+
     public function index(Customer $customer)
     {
         $customer_data = Customer::find($customer->id);
