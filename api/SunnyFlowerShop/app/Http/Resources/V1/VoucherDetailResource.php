@@ -18,7 +18,8 @@ class VoucherDetailResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "percent" => $this->percent,
-            "expiredDate" => $this->expired_date
+            "expiredDate" => $this->expired_date,
+            "createdAt" => $this->created_at
         ];
     }
 }

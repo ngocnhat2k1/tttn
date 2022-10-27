@@ -5,17 +5,16 @@ const ListProducts = ({ currentProduct }) => {
     return (
 
         <>
-            {console.log(currentProduct)}
             {
-                currentProduct.map((Product) => {
+                currentProduct.map((Product, index) => {
                     return (
-                        <tr>
-                            <td><a><img width="70px" src={Product.Image} alt="img" /></a></td>
-                            <td><a href="/product-details-one/1">{Product.ProductName}</a></td>
-                            <td>{Product.Category}</td>
-                            <td>${Product.Price}</td>
+                        <tr key={index}>
+                            <td><a><img width="70px" src={Product.img} alt="img" /></a></td>
+                            <td><a href="/product-details-one/1">{Product.name}</a></td>
+                            <td>{Product.categories}</td>
+                            <td>${Product.price}</td>
                             <td>{Product.Stock}</td>
-                            <td>{Product.Sales}</td>
+                            <td>{Product.precentSale}</td>
                             <td><a href="/vendor/add-products">
                                 <FaEdit></FaEdit>
                             </a>

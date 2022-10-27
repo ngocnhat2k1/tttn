@@ -1,19 +1,20 @@
 import React from 'react'
 
 const ListOrder = ({ currentOrder }) => {
+
     return (
         <>
-            {currentOrder.map((Order) => {
+            {currentOrder.map((Order, index) => {
                 return (
-                    <tr>
+                    <tr key={index}>
                         <td>
-                            <a href="/invoice-one" className='text-primary'>{Order.OrderId}</a>
+                            <a href="/invoice-one" className='text-primary'>{Order.id}</a>
                         </td>
-                        <td>{Order.ProductDetails}</td>
+                        <td>{Order.nameReceiver}</td>
                         <td>
-                            <span className={Order.Status}>{Order.Status}</span>
+                            {Order.deletedBy ? <span className='Cancelled'>Cancelled</span> : Order.status === 0 ? <span className='Pending'>Pending</span> : Order.status === 1 ? <span className='Confirmed'>Confirm</span> : <span className='Completed'>Completed</span>}
                         </td>
-                        <td>{Order.Price}</td>
+                        <td>{Order.totalPrice}₫</td>
                     </tr>
                 )
             })

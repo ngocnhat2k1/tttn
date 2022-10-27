@@ -4,10 +4,13 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
 import './Product.css'
+import axios from '../../../service/axiosClient';
+import Cookies from 'js-cookie';
 import ReactPaginate from 'react-paginate'
 import { FakeProducts } from '../FakeData/FakeProduct';
 import styles from './PaginatedItems.module.scss'
 import ListProducts from './ListProduct/ListProduct';
+import { Link } from 'react-router-dom';
 
 
 const Product = () => {
@@ -27,7 +30,28 @@ const Product = () => {
     const handlePageClick = (event) => {
         const newOffset = event.selected * itemsPerPage % listProducts.length;
         setItemOffset(newOffset);
+        window.location.pathname(`/${pageCount}`)
     };
+    useEffect(() => {
+        axios
+            .get(`http://127.0.0.1:8000/api/v1/products`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                if (response.data.success) {
+                    console.log(response.data.data)
+                    setistProducts(response.data.data)
+
+                } else {
+                    alert('cccc');
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, [])
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -39,9 +63,9 @@ const Product = () => {
                                     <h4>
                                         All Product
                                     </h4>
-                                    <a data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" href="/vendor/add-products">
+                                    <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-products">
                                         Add Product
-                                    </a>
+                                    </Link>
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>

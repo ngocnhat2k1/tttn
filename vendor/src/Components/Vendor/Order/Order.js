@@ -5,13 +5,15 @@ import Row from 'react-bootstrap/Row'
 import ReactPaginate from 'react-paginate'
 import '../DashBoard.css'
 import './Order.css'
-import { FakeOrders } from '../FakeData/FakeOrders.js'
+import Cookies from 'js-cookie';
+import axios from '../../../service/axiosClient';
+// import { FakeOrders } from '../FakeData/FakeOrders.js'
 import styles from './PaginatedItems.module.scss'
 import ListOrder from './ListOrder/ListOrder';
 
 
 const Order = () => {
-    const [listOrder, setListOrder] = useState(FakeOrders)
+    const [listOrder, setListOrder] = useState([])
     const [currentOrders, setCurrentItems] = useState([]);
 
     const itemsPerPage = 10;
@@ -22,11 +24,33 @@ const Order = () => {
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(listOrder.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(listOrder.length / itemsPerPage));
+
     }, [itemOffset, itemsPerPage, listOrder]);
     const handlePageClick = (event) => {
         const newOffset = event.selected * itemsPerPage % listOrder.length;
         setItemOffset(newOffset);
     };
+    useEffect(() => {
+        axios
+            .get(`http://127.0.0.1:8000/api/v1/users/2/orders`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                if (response.data.success) {
+                    console.log(response.data.data)
+                    setListOrder(response.data.data)
+
+                } else {
+                    alert('cccc');
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+    }, [])
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>

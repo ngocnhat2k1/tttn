@@ -11,7 +11,7 @@ import Product from './Product/Product'
 import Order from './Order/Order'
 import Profile from './Profile/Profile'
 import AddProduct from './AddProduct/AddProduct'
-import Setting from './Setting/Setting'
+import LoginArea from '../LoginArea';
 
 
 const VendorArea = () => {
@@ -28,8 +28,6 @@ const VendorArea = () => {
                         <Route path='/all-order' element={<Order />} />
                         <Route path='/vendor-profile' element={<Profile />} />
                         <Route path='/add-products' element={<AddProduct />} />
-                        <Route path='/vendor-setting' element={<Setting />} />
-
                     </Routes>
                 </Row>
             </Container>

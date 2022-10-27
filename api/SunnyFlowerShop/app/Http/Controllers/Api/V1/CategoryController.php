@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\CategoryDetailCollection;
 
 class CategoryController extends Controller
 {
@@ -16,7 +17,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::paginate(10);
+
+        return new CategoryDetailCollection($categories);
     }
 
     /**
