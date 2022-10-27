@@ -1,56 +1,25 @@
 import React, { useEffect, useState } from 'react'
+import { Link, useSearchParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
-import ReactPaginate from 'react-paginate'
+// import ReactPaginate from 'react-paginate'
 import '../DashBoard.css'
 import './Order.css'
-import Cookies from 'js-cookie';
-import axios from '../../../service/axiosClient';
-// import { FakeOrders } from '../FakeData/FakeOrders.js'
-import styles from './PaginatedItems.module.scss'
+// import Cookies from 'js-cookie';
+// import axios from '../../../service/axiosClient';
+import usePaginate from "../../Hook/usePaginate";
+// import styles from './PaginatedItems.module.scss'
 import ListOrder from './ListOrder/ListOrder';
 
 
 const Order = () => {
-    const [listOrder, setListOrder] = useState([])
-    const [currentOrders, setCurrentItems] = useState([]);
+    const [searchParams] = useSearchParams();
+    const { data, page, nextPage, prevPage } = usePaginate(
+        "http://127.0.0.1:8000/api/v1/orders",
+        searchParams
+    );
 
-    const itemsPerPage = 10;
-
-    const [pageCount, setPageCount] = useState(0);
-    const [itemOffset, setItemOffset] = useState(0);
-    useEffect(() => {
-        const endOffset = itemOffset + itemsPerPage;
-        setCurrentItems(listOrder.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(listOrder.length / itemsPerPage));
-
-    }, [itemOffset, itemsPerPage, listOrder]);
-    const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % listOrder.length;
-        setItemOffset(newOffset);
-    };
-    useEffect(() => {
-        axios
-            .get(`http://127.0.0.1:8000/api/v1/users/2/orders`, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            })
-            .then((response) => {
-                if (response.data.success) {
-                    console.log(response.data.data)
-                    setListOrder(response.data.data)
-
-                } else {
-                    alert('cccc');
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-
-    }, [])
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -71,11 +40,11 @@ const Order = () => {
                                         </thead>
                                         <tbody>
 
-                                            <ListOrder currentOrder={currentOrders} />
+                                            <ListOrder currentOrder={data} />
 
                                         </tbody>
                                     </table>
-                                    < Col lg={12}>
+                                    {/* < Col lg={12}>
                                         <ReactPaginate
                                             nextLabel="»"
                                             onPageChange={handlePageClick}
@@ -96,7 +65,11 @@ const Order = () => {
                                             activeClassName={styles.active}
                                             renderOnZeroPageCount={null}
                                         />
-                                    </Col>
+                                    </Col> */}
+                                    <div className="pagination">
+                                        <Link to={`?page=${prevPage}`}>Prev page</Link>
+                                        <Link to={`?page=${nextPage}`}>Next page</Link>
+                                    </div>
                                 </div>
                             </div>
                         </Col>
