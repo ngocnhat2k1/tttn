@@ -12,10 +12,7 @@ import axios from '../../../service/axiosClient'
 function TopHeader() {
     const [user, setUser] = useState();
 
-    console.log(user);
-
     useEffect(() => {
-        if(Cookies.get('token') !== undefined) {
         axios
             .get(`http://localhost:8000/api/user/profile`, {
                 headers: {
@@ -24,11 +21,11 @@ function TopHeader() {
             })
             .then((response) => {
                 setUser(response.data.data);
+
             })
             .catch(function (error) {
-                // console.log(error);
+                console.log(error);
             });
-        }
     }, []);
 
     return (

@@ -1,31 +1,34 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 import '../App.css';
-// import axios from 'axios';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import axios from 'axios';
 import CommonBanner from '../components/CommonBanner';
 import RegisterArea from '../components/RegisterArea';
+import Cookies from 'js-cookie'
 
-class Register extends Component {
-  // state = {
-  //   message: ''
-  // };
+function Register() {
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/api/retrieveToken`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      })
+      .then((response) => {
+        if (response.data.success) {
+          window.location.href = 'http://localhost:3000/my-account';
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
 
-  // componentDidMount() {
-  //   axios.get('/api/test')
-  //     .then(result => this.setState({ message: result.data.message }))
-  // };
-
-  render() {
     return (
-        <div className="App" style={{padding: 0}}>
-          <Header />
+        <>
           <CommonBanner namePage="Register"/>
           <RegisterArea />
-          <Footer />
-        </div>
+        </>
     )
-  };
 };
 
 export default Register;

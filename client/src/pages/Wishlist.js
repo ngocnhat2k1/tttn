@@ -3,10 +3,10 @@ import '../App.css';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CommonBanner from '../components/CommonBanner';
-import CartArea from '../components/CartArea';
+import WishlistArea from '../components/WishlistArea';
 import Cookies from 'js-cookie'
 
-function Cart() {
+function Wishlist() {
 
   useEffect(() => {
     axios
@@ -27,10 +27,10 @@ function Cart() {
 
   return (
     <>
-      <CommonBanner namePage="Cart" />
-      <CartArea />
+      <CommonBanner namePage="Wishlist" />
+      <WishlistArea />
     </>
   )
 };
 
-export default Cart;
+export default Wishlist;

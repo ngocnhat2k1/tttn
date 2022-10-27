@@ -1,5 +1,6 @@
 import TopHeader from './TopHeader'
 import NavBar from './NavBar/NavBar'
+import { memo } from 'react'
 
 function Header() {
     return (
@@ -10,4 +11,4 @@ function Header() {
     )
 }
 
-export default Header
+export default memo(Header)

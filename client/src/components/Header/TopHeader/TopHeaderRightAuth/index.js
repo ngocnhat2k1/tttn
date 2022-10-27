@@ -1,21 +1,15 @@
 import { FaTruck, FaAngleDown, FaTachometerAlt, FaCubes, FaSignOutAlt } from 'react-icons/fa'
 import styles from '../TopHeader.module.scss'
 import { Link } from 'react-router-dom';
-import BaoAvatar from '../../../../images/Bao_avatar.jpg';
 import Cookies from 'js-cookie';
 import axios from '../../../../service/axiosClient';
 
 function TopHeaderRightAuth(user) {
 
-    console.log("user: ", user);
-
     const handleLogout = () => {
-        // Cookies.remove('token', { path: '/'});
-        // window.location.href = 'http://localhost:3000/login';
         axios
             .post(
-                'http://localhost:8000/api/logout',
-                {},
+                'http://localhost:8000/api/logout',{},
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('token')}`,
@@ -23,8 +17,8 @@ function TopHeaderRightAuth(user) {
                 },
             )
             .then(function (response) {
-                if (response.success) {
-                    Cookies.remove('token', { path: '/'});
+                if (response.data.success) {
+                    Cookies.remove('token', { path: '/', domain: 'localhost'});
                     window.location.href = 'http://localhost:3000/login';
                 } else {
                     console.log(response);
@@ -52,7 +46,7 @@ function TopHeaderRightAuth(user) {
                             <Link to="/my-account/customer-order"><FaCubes /> My Orders</Link>
                         </li>
                         <li>
-                            <Link to="/login" onClick={handleLogout}><FaSignOutAlt /> Log out</Link>
+                            <button type='button' onClick={handleLogout}><FaSignOutAlt /> Log out</button>
                         </li>
                     </ul>
                 </li>
