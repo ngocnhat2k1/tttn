@@ -132,14 +132,6 @@ table {
     border-bottom: 1px solid #ededed;
 }
 
-.btnDeleteOrder {
-    background-color: red;
-    color: #fff;
-    border: none;
-    border-radius: 5%;
-    padding: 8px 20px;
-}
-
 .view {
     color: #b19361;
     text-decoration: none;
@@ -159,9 +151,19 @@ table {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
-.badgeGreen {
+.badgeCompleted {
     background-color: #28a745;
     color: white;
+}
+
+.badgePending {
+    color: #212529;
+    background-color: #ffc107;
+}
+
+.badgeCanceled {
+    color: #fff;
+    background-color: #dc3545;
 }
 
 .shippingAddress {
@@ -169,6 +171,7 @@ table {
 }
 
 .shippingAddress h5 {
+    font-size: 18px !important;
     padding-bottom: 10px;
     margin-bottom: 0;
 }

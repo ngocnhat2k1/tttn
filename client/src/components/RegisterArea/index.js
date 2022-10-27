@@ -4,9 +4,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useForm, Controller } from "react-hook-form";
 import axios from '../../service/axiosClient';
-import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
-import 'react-phone-number-input/style.css';
-import './PhoneInput.css';
 
 function RegisterArea() {
     const {
@@ -16,13 +13,7 @@ function RegisterArea() {
         control,
     } = useForm();
 
-    const handleValidate = (value) => {
-        const isValid = isValidPhoneNumber(value);
-        return isValid
-    }
-
     const onSubmit = (data) => {
-        console.log(data);
         axios
             .post('http://localhost:8000/api/register', data)
             .then(function (response) {
@@ -55,7 +46,7 @@ function RegisterArea() {
                                         className="FormInput"
                                         type="text"
                                         placeholder="First name"
-                                        {...register("firstName", { required: true, minLength: 3 })}
+                                        {...register("firstName", { required: true, minLength: 2 })}
                                     />
                                     {errors["firstName"] && (
                                         <p className="checkInput">Invalid First Name!</p>
@@ -69,7 +60,7 @@ function RegisterArea() {
                                         className="FormInput"
                                         type="text"
                                         placeholder="Last name"
-                                        {...register("lastName", { required: true, minLength: 3 })}
+                                        {...register("lastName", { required: true, minLength: 2 })}
                                     />
                                     {errors["lastName"] && (
                                         <p className="checkInput">Invalid Last Name!</p>
@@ -83,7 +74,7 @@ function RegisterArea() {
                                         className="FormInput"
                                         type="text"
                                         placeholder="Email"
-                                        {...register("email", { required: true, pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i })}
+                                        {...register("email", { required: true, pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i })}
                                     />
                                     {errors["email"] && (
                                         <p className="checkInput">Invalid Email!</p>
@@ -97,32 +88,24 @@ function RegisterArea() {
                                         className="FormInput"
                                         type="password"
                                         placeholder="Password"
-                                        {...register("password", { required: true, minLength: 3 })}
+                                        {...register("password", { required: true, minLength: 6, maxLength: 24 })}
                                     />
                                     {errors["password"] && (
-                                        <p className="checkInput">Password must be at 3 char long</p>
+                                        <p className="checkInput">Password must be at least 6 characters and max 24 characters long</p>
                                     )}
                                 </div>
                                 <div className={styles.defaultFormBox}>
-                                    <Controller
-                                        name="phoneNumber"
-                                        control={control}
-                                        rules={{
-                                            validate: (value) => handleValidate(value)
-                                        }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <PhoneInput
-                                                value={value}
-                                                onChange={onChange}
-                                                defaultCountry="VN"
-                                                id="phoneNumber"
-                                                placeholder="Phone"
-                                                required
-                                            />
-                                        )}
+                                    <label htmlFor="confirmPassword">Confirm Password
+                                        <span className="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        className="FormInput"
+                                        type="password"
+                                        placeholder="Confirm Password"
+                                        {...register("confirmPassword", { required: true, minLength: 6, maxLength: 24 })}
                                     />
-                                    {errors["phoneNumber"] && (
-                                        <p className="checkInput">Invalid Phone!</p>
+                                    {errors["confirmPassword"] && (
+                                        <p className="checkInput">Those passwords didn't match. Try again.</p>
                                     )}
                                 </div>
                                 <div className={styles.registerSubmit}>

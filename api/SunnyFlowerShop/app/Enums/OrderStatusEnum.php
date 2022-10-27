@@ -13,16 +13,14 @@ use BenSampo\Enum\Enum;
  */
 final class OrderStatusEnum extends Enum
 {
-  private const In_Progress = 0;
-  private const Shipping = 1;
-  private const Received = 2;
+  private const Pending = 0;
+  private const Completed = 1;
 
   public static function getStatusEnum()
   {
     return [
-      "In Progress" => self::In_Progress,
-      "Currently Shipping" => self::Shipping,
-      "Received" => self::Received,
+      "Pending" => self::Pending,
+      "Completed" => self::Completed,
     ];
   }
 

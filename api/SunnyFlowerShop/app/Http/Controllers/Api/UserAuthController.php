@@ -202,8 +202,18 @@ class UserAuthController extends Controller
 
     public function retrieveToken(Request $request)
     {
+        $token = Token::where("token", "=", $request->bearerToken())->first();
+
+        if ($token === null) {
+            return response()->json([
+                "success" => false,
+                "errors" => "No token found"
+            ]);
+        }
+
         return response()->json([
-            "token" => $request->bearerToken(),
+            "success" => true,
+            "token" => $request->bearerToken() ?? null,
             "tokenType" => "Bearer Token"
         ]);
     }

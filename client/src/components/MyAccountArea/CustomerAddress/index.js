@@ -1,26 +1,55 @@
 import styles from '../MyAccountArea.module.scss';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom'
 
 function CustomerAddress() {
+
+    const [listAddress, setListAddress] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get(`http://localhost:8000/api/user/address`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                if (response.data.success) {
+                    setListAddress(response.data.data);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, []);
+
     return (
-                <Row>
-                    <Col lg={6}>
+        <Row>
+            {listAddress.map((address, index) => {
+                return (
+                    <Col lg={6} key={index}>
                         <div className={styles.myaccountContent}>
-                            <h4 className={styles.title}>Shipping Address #1</h4>
+                            <h4 className={styles.title}>Shipping Address {index + 1}</h4>
                             <div className={styles.shippingAddress}>
                                 <h5>
-                                    <strong>Alex Porty</strong>
+                                    <strong>{address.nameReceiver}</strong>
                                 </h5>
                                 <p>
-                                    4964 Dennison Street French Camp, 12345
+                                    {address.streetName}, {address.district}<br />
+                                    {address.ward}, {address.city}
                                 </p>
-                                <p>Mobile: 0969710601</p>
-                                <button type="button" className='theme-btn-one bg-black btn_sm mt-4'>Edit Address</button>
+                                <p>Mobile: {address.phoneReceiver}</p>
+                                <Link to={`/address-edit/id=${address.id}`} className='theme-btn-one bg-black btn_sm mt-4'>Edit Address</Link>
                             </div>
                         </div>
                     </Col>
-                </Row>
+                )
+            })}
+        </Row>
     )
 }
 

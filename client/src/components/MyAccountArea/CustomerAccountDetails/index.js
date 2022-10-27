@@ -1,18 +1,20 @@
 import styles from './CustomerAccountDetails.module.scss'
-import {Link} from 'react-router-dom'
-import BaoAvatar from '../../../images/Bao_avatar.jpg'
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import axios from '../../../service/axiosClient'
 import Cookies from 'js-cookie';
 
-
-
 function CustomerAccountDetails() {
-    
-    const [user, setUser] = useState();
+
+    const [profile, setProfile] = useState({
+        avatar: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: ''
+    });
 
     useEffect(() => {
-        if(Cookies.get('token') !== undefined) {
         axios
             .get(`http://localhost:8000/api/user/profile`, {
                 headers: {
@@ -20,14 +22,13 @@ function CustomerAccountDetails() {
                 },
             })
             .then((response) => {
-                setUser(response.data.data);
+                setProfile(response.data.data);
             })
             .catch(function (error) {
                 console.log(error);
             });
-        }
     }, []);
-    
+
     return (
         <div className={styles.myaccountContent}>
             <div className={`justify-content-between mt-3 d-flex align-items-center`}>
@@ -38,23 +39,23 @@ function CustomerAccountDetails() {
                 <div className={styles.accountDetailsForm}>
                     <form>
                         <div className={styles.imgProfiles}>
-                            <img src={BaoAvatar} alt="img" />
+                            <img src={profile?.avatar} alt="img" />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>First Name</label>
-                            <input type="text" name="first-name" value="Kazi" className='form-control' disabled/>
+                            <input type="text" name="first-name" value={profile?.firstName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Last Name</label>
-                            <input type="text" name="last-name" value="Saiful" className='form-control' disabled/>
+                            <input type="text" name="last-name" value={profile?.lastName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Email</label>
-                            <input type="text" name="email-name" value="test@gmail.com" className='form-control' disabled/>
+                            <input type="text" name="email-name" value={profile?.email} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Phone number</label>
-                            <input type="text" name="phone-name" value="0969710601" className='form-control' disabled/>
+                            <input type="text" name="phone-number" value={profile?.phoneNumber} className='form-control' disabled />
                         </div>
                     </form>
                 </div>
