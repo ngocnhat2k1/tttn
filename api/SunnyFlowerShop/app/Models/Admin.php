@@ -10,4 +10,8 @@ class Admin extends Model
     use HasFactory;
 
     protected $table = "admins";
+
+    public function admin_token() {
+        return $this->hasMany(AdminToken::class);
+    }
 }
