@@ -193,6 +193,13 @@ class CustomerController extends Controller
 
     public function updateValue(Request $request, Customer $customer)
     {
+        if(empty($request->all())) {
+            return response()->json([
+                "success" => true,
+                "message" => "No change was made"
+            ]);
+        }
+
         $data = Validator::make($request->all(), [
             "firstName" => "string|min:2|max:50",
             "lastName" => "string|min:2|max:50",
