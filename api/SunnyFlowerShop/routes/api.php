@@ -66,7 +66,8 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/", [CustomerController::class, "index"]); // Show all user available
             Route::get("/{customer}", [CustomerController::class, "show"]); // Show detail information from specific customer
             Route::post("/create", [CustomerController::class, "store"]); // Create account from admin site
-            Route::put("{customer}/update", [CustomerController::class, "update"]); // Update information for specific customer from admin site
+            // Route::put("{customer}/update", [CustomerController::class, "update"]); // Update information for specific customer from admin site
+            Route::put("{customer}/update", [CustomerController::class, "updateValue"]); // Update information for specific customer from admin site
             Route::delete("/{customer}/disable={state}", [CustomerController::class, "disable"]); // Disable customer account
 
             // Address from User info
