@@ -196,7 +196,7 @@ class CustomerController extends Controller
         if(empty($request->all())) {
             return response()->json([
                 "success" => true,
-                "message" => "No value is requested to change/ No value is changed"
+                "message" => "No change was made"
             ]);
         }
 
