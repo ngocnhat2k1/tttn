@@ -147,7 +147,6 @@ class UserAuthController extends Controller
 
     public function logout(Request $request)
     {
-        // **** Will change later **** \\
         Token::where('token', "=", $request->bearerToken())->delete();
 
         Auth::guard("customer")->logout();

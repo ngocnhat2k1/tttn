@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\AdminAuth;
+use App\Models\AdminToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,6 +26,9 @@ class AdminAuthController extends Controller
             ]);
         }
 
+        // Set to Vietnam timezone
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
         $admin = AdminAuth::where("email", "=", $request->email)->firstOrFail();
 
         if ($admin->level == 0) {
@@ -32,8 +37,24 @@ class AdminAuthController extends Controller
             $token = $admin->createToken("super-admin", ['create', 'update', 'delete'])->plainTextToken;
         }
 
-        $admin->token = $token;
-        $admin->save();
+        // Update token in admin_token table
+        $admin_token = Admin::where('email', "=", $request->email)->first();
+
+        $token_data = [
+            "admin_id" => $admin_token->id,
+            "token" => $token,
+            "created_at" => date("Y-m-d H:i:s"),
+            "updated_at" => date("Y-m-d H:i:s")
+        ];
+
+        $check = AdminToken::insert($token_data);
+
+        if (empty($check)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Something went wrong"
+            ]);
+        }
 
         return response()->json([
             "success" => true,
@@ -44,10 +65,7 @@ class AdminAuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Will remove later
-        // $admin = AdminAuth::where("email", "=", $request->user()->email)->firstOrFail();
-        // $admin->token = null;
-        // $admin->save();
+        AdminToken::where('token', "=", $request->bearerToken())->delete();
 
         Auth::guard("admin")->logout();
 
