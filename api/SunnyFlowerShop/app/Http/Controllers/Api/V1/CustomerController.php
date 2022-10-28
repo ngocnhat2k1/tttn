@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
@@ -45,16 +46,16 @@ class CustomerController extends Controller
     {
         $filtered = $request->except(["firstName", "lastName"]);
 
-        $filtered['password'] = Hash::make($filtered['password']);
-
+        // Check existence of email
         $check_email = Customer::where("email", "=", $filtered['email'])->exists();
-
         if ($check_email) {
             return response()->json([
                 "success" => false,
                 "errors" => "Email has already been used"
             ]);
         }
+
+        $filtered['password'] = Hash::make($filtered['password']);
 
         $result = Customer::create($filtered);
 
@@ -187,6 +188,64 @@ class CustomerController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Updated Customer information successfully"
+        ]);
+    }
+
+    public function updateValue(Request $request, Customer $customer)
+    {
+        $data = Validator::make($request->all(), [
+            "firstName" => "string|min:2|max:50",
+            "lastName" => "string|min:2|max:50",
+            "email" => "email",
+            "password" => "string|min:6|max:24",
+        ]);
+
+        if ($data->fails()) {
+            $errors = $data->errors();
+
+            return response()->json([
+                "success" => false,
+                "errors" => $errors,
+            ]);
+        }
+
+        $customer_data = Customer::where("email", "=", $customer->email)
+            ->where("id", "=", $customer->id);
+
+        // Check existence of email
+        if (!$customer_data->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer doesn't exist"
+            ]);
+        }
+
+        $customer_get = $customer_data->first();
+
+        $customer_get['first_name'] = $request->firstName ?? $customer_get['first_name'];
+        $customer_get['last_name'] = $request->lastName ?? $customer_get['last_name'];
+        $customer_get['email'] = $request->email ?? $customer_get['email'];
+
+        // Create check for password
+        if ($request->password !== null) {
+            $customer_get['password'] = Hash::make($request->password);
+        } else {
+            $customer_get['password'] = $customer_get['password'];
+        }
+
+        $result = $customer_get->save();
+
+        // If result is false, that means save process has occurred some issues
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Updated name customer successfully"
         ]);
     }
 }
