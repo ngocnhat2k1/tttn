@@ -1,57 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { Link, useSearchParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
 import './Product.css'
-import axios from '../../../service/axiosClient';
-import Cookies from 'js-cookie';
-import ReactPaginate from 'react-paginate'
-import { FakeProducts } from '../FakeData/FakeProduct';
+import usePaginate from "../../Hook/usePaginate";
 import styles from './PaginatedItems.module.scss'
 import ListProducts from './ListProduct/ListProduct';
-import { Link } from 'react-router-dom';
+
 
 
 const Product = () => {
-    const [listProducts, setistProducts] = useState(FakeProducts);
-    const [currentProduct, setcurrentProduct] = useState([])
+    const [searchParams] = useSearchParams();
+    const { data, page, nextPage, prevPage, lastPage } = usePaginate(
+        "http://127.0.0.1:8000/api/v1/products",
+        searchParams
+    );
+    console.log(data)
 
-    const itemsPerPage = 8;
-
-    const [pageCount, setPageCount] = useState(0);
-    const [itemOffset, setItemOffset] = useState(0);
-    useEffect(() => {
-        const endOffset = itemOffset + itemsPerPage;
-        setcurrentProduct(listProducts.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(listProducts.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage, listProducts]);
-
-    const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % listProducts.length;
-        setItemOffset(newOffset);
-        window.location.pathname(`/${pageCount}`)
-    };
-    useEffect(() => {
-        axios
-            .get(`http://127.0.0.1:8000/api/v1/products`, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            })
-            .then((response) => {
-                if (response.data.success) {
-                    console.log(response.data.data)
-                    setistProducts(response.data.data)
-
-                } else {
-                    alert('cccc');
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }, [])
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -75,38 +42,46 @@ const Product = () => {
                                                 <th scope="col">Product Name</th>
                                                 <th scope="col">Category</th>
                                                 <th scope="col">Price</th>
-                                                <th scope="col">Stock</th>
                                                 <th scope="col">Sales</th>
                                                 <th scope="col">Edit/Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <ListProducts currentProduct={currentProduct} />
-
+                                            <ListProducts listProducts={data} />
                                         </tbody>
                                     </table>
                                     < Col lg={12}>
-                                        <ReactPaginate
-                                            nextLabel="»"
-                                            onPageChange={handlePageClick}
-                                            pageRangeDisplayed={3}
-                                            marginPagesDisplayed={2}
-                                            pageCount={pageCount}
-                                            previousLabel="«"
-                                            pageClassName={styles.pageItem}
-                                            pageLinkClassName={styles.pageLink}
-                                            previousClassName={styles.pageItem}
-                                            previousLinkClassName={styles.pageLink}
-                                            nextClassName={styles.pageItem}
-                                            nextLinkClassName={styles.pageLink}
-                                            breakLabel="..."
-                                            breakClassName={styles.pageItem}
-                                            breakLinkClassName={styles.pageLink}
-                                            containerClassName={styles.pagination}
-                                            activeClassName={styles.active}
-                                            renderOnZeroPageCount={null}
-                                        />
+                                        <ul className={styles.pagination}>
+                                            {page > 1 && <li className={styles.pageItem}>
+                                                <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
+                                            </li>}
+                                            {page === lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
+                                            </li>}
+                                            {page === lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                                <Link className={styles.pageLink}>...</Link>
+                                            </li>}
+                                            {page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${prevPage}`} className={styles.pageLink}>{page - 1}</Link></li>}
+
+                                            <li className={`${styles.pageItem} ${styles.active}`}>
+                                                <Link to={`?page=${page}`} className={styles.pageLink}>{page}</Link>
+                                            </li>
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>{page + 1}</Link>
+                                            </li>}
+                                            {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>}
+                                            {page !== lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                                <Link className={styles.pageLink}>...</Link>
+                                            </li>}
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${lastPage}`} className={styles.pageLink}>{lastPage}</Link>
+                                            </li>}
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>»</Link>
+                                            </li>}
+                                        </ul>
                                     </Col>
+
                                 </div>
                             </div>
                         </Col>
