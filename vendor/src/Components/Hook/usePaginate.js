@@ -8,11 +8,9 @@ function usePaginate(url, query) {
         page: 0,
         nextPage: 0,
         prevPage: 0,
-        // limit: 0,
+        lastPage: 0,
         total: 0,
     });
-    console.log('1', query)
-    console.log('2', query.toString())
 
     useEffect(() => {
         axios
@@ -26,9 +24,9 @@ function usePaginate(url, query) {
 
                 setData({
                     data: response.data.data,
-                    // limit: response.data.meta.per_page,
                     total: response.data.total,
                     page: response.data.meta.current_page,
+                    lastPage: response.data.meta.last_page,
                     nextPage: response.data.meta.current_page + 1,
                     prevPage: response.data.meta.current_page - 1,
                 });

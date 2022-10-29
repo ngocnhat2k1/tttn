@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link, useSearchParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
-// import ReactPaginate from 'react-paginate'
 import '../DashBoard.css'
 import './Order.css'
-// import Cookies from 'js-cookie';
-// import axios from '../../../service/axiosClient';
 import usePaginate from "../../Hook/usePaginate";
-// import styles from './PaginatedItems.module.scss'
 import ListOrder from './ListOrder/ListOrder';
+import styles from './PaginatedItems.module.scss'
 
 
 const Order = () => {
     const [searchParams] = useSearchParams();
-    const { data, page, nextPage, prevPage } = usePaginate(
+    const { data, page, nextPage, prevPage, lastPage } = usePaginate(
         "http://127.0.0.1:8000/api/v1/orders",
         searchParams
     );
@@ -44,32 +41,39 @@ const Order = () => {
 
                                         </tbody>
                                     </table>
-                                    {/* < Col lg={12}>
-                                        <ReactPaginate
-                                            nextLabel="»"
-                                            onPageChange={handlePageClick}
-                                            pageRangeDisplayed={3}
-                                            marginPagesDisplayed={2}
-                                            pageCount={pageCount}
-                                            previousLabel="«"
-                                            pageClassName={styles.pageItem}
-                                            pageLinkClassName={styles.pageLink}
-                                            previousClassName={styles.pageItem}
-                                            previousLinkClassName={styles.pageLink}
-                                            nextClassName={styles.pageItem}
-                                            nextLinkClassName={styles.pageLink}
-                                            breakLabel="..."
-                                            breakClassName={styles.pageItem}
-                                            breakLinkClassName={styles.pageLink}
-                                            containerClassName={styles.pagination}
-                                            activeClassName={styles.active}
-                                            renderOnZeroPageCount={null}
-                                        />
-                                    </Col> */}
-                                    <div className="pagination">
-                                        <Link to={`?page=${prevPage}`}>Prev page</Link>
-                                        <Link to={`?page=${nextPage}`}>Next page</Link>
-                                    </div>
+                                    < Col lg={12}>
+                                        <ul className={styles.pagination}>
+                                            {page > 1 && <li className={styles.pageItem}>
+                                                <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
+                                            </li>}
+                                            {page === lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
+                                            </li>}
+                                            {page === lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                                <Link className={styles.pageLink}>...</Link>
+                                            </li>}
+                                            {page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${prevPage}`} className={styles.pageLink}>{page - 1}</Link></li>}
+
+                                            <li className={`${styles.pageItem} ${styles.active}`}>
+                                                <Link to={`?page=${page}`} className={styles.pageLink}>{page}</Link>
+                                            </li>
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>{page + 1}</Link>
+                                            </li>}
+                                            {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>}
+                                            {page !== lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                                <Link className={styles.pageLink}>...</Link>
+                                            </li>}
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${lastPage}`} className={styles.pageLink}>{lastPage}</Link>
+                                            </li>}
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>»</Link>
+                                            </li>}
+
+                                        </ul>
+
+                                    </Col>
                                 </div>
                             </div>
                         </Col>
