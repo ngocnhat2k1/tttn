@@ -2,7 +2,6 @@ import React from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 
 const ListProducts = ({ listProducts }) => {
-    console.log('ccc', listProducts)
     return (
         <>
             {listProducts.map((Product) => {

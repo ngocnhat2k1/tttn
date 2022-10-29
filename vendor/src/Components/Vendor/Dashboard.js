@@ -1,10 +1,45 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
+import Cookies from 'js-cookie';
+import { Link, useSearchParams } from "react-router-dom";
+import usePaginate from "../Hook/usePaginate";
+import axios from 'axios';
 import './DashBoard.css'
-import { Orders } from './FakeData/FakeData';
 
 const Dashboard = () => {
+
+
+    const [RecentOrders, setRecenOrders] = useState([])
+    const [totalProduct, setTotalProduct] = useState(0)
+    useEffect(() => {
+        axios
+            .get(`http://127.0.0.1:8000/api/v1/orders`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                setRecenOrders(response.data.data)
+
+            })
+    }, [RecentOrders])
+    useEffect(() => {
+        axios
+            .get(`http://127.0.0.1:8000/api/v1/products`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then((response) => {
+                setTotalProduct(response.data.meta.total)
+
+            })
+    }, [totalProduct])
+
+    // for (let RecentOrder of RecentOrders) {
+
+    // }
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -12,7 +47,7 @@ const Dashboard = () => {
                     <Row>
                         <Col lg={4} md={4} sm={6} xs={12}>
                             <div className='vendor_top_box'>
-                                <h2>25</h2>
+                                <h2>{totalProduct}</h2>
                                 <h4>Total Product</h4>
                             </div>
                         </Col>
@@ -45,15 +80,15 @@ const Dashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Orders.map((Order) => {
+                                    {RecentOrders.map((Order) => {
                                         return (
-                                            <tr>
+                                            <tr key={Order.id}>
                                                 <td>
-                                                    <a className='text-primary' href=".">{Order.OrderId}</a>
+                                                    <a className='text-primary' href=".">{Order.id}</a>
                                                 </td>
-                                                <td>{Order.Details}</td>
+                                                <td>{Order.nameReceiver}</td>
                                                 <td>
-                                                    <span className={Order.Status}>{Order.Status}</span>
+                                                    {Order.deletedBy ? <span className='Cancelled'>Cancelled</span> : Order.status === 0 ? <span className='Pending'>Pending</span> : Order.status === 1 ? <span className='Confirmed'>Confirm</span> : <span className='Completed'>Completed</span>}
                                                 </td>
                                             </tr>
                                         )
@@ -68,4 +103,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard
+export default Dashboard;
