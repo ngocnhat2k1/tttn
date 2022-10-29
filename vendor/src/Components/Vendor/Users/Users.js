@@ -2,9 +2,9 @@ import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import '../DashBoard.css'
-import './Profile.css'
+import './Users.css'
 
-const Profile = () => {
+const Users = () => {
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -109,4 +109,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default Users

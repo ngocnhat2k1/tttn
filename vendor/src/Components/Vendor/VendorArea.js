@@ -9,7 +9,7 @@ import TabList from './TabList';
 import DashBoard from './Dashboard.js'
 import Product from './Product/Product'
 import Order from './Order/Order'
-import Profile from './Profile/Profile'
+import Users from './Users/Users'
 import AddProduct from './AddProduct/AddProduct'
 import LoginArea from '../LoginArea';
 
@@ -26,7 +26,7 @@ const VendorArea = () => {
                         <Route path='*' element={<DashBoard />} />
                         <Route path='/all-product' element={<Product />} />
                         <Route path='/all-order' element={<Order />} />
-                        <Route path='/vendor-profile' element={<Profile />} />
+                        <Route path='/vendor-users' element={<Users />} />
                         <Route path='/add-products' element={<AddProduct />} />
                     </Routes>
                 </Row>
