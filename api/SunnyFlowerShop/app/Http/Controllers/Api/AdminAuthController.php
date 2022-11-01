@@ -8,6 +8,9 @@ use App\Models\AdminAuth;
 use App\Models\AdminToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AdminAuthController extends Controller
 {
@@ -77,8 +80,174 @@ class AdminAuthController extends Controller
         ]);
     }
 
+    public function update(Request $request)
+    {
+        $data = Validator::make($request->all(), [
+            "userName" => "string|min:2|max:50",
+            "email" => "email",
+            "password" => "string|min:6|max:24",
+        ]);
+
+        if ($data->fails()) {
+            $errors = $data->errors();
+
+            return response()->json([
+                "success" => false,
+                "errors" => $errors,
+            ]);
+        }
+
+        $query = Admin::where("id", "=", $request->user()->id);
+
+        $admin_data = $query->first(); // For some reason, don't know why can't put this instance after if condition
+
+        // If new email doesn't belong to current customer
+        if (!$query->where("email", "=", $request->email)->exists()) {
+
+            // Check existence of email in database
+            $check = Admin::where("email", "=", $request->email)->exists();
+            if ($check) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Email has already been used"
+                ]);
+            }
+        }
+
+        $password = "";
+        $user_name = $request->userName ?? $request->user()->user_name;
+        // Checking if user make chane to password
+        if ($request->password !== null) {
+            $password = Hash::make($request->password);
+        } else {
+            $password = $admin_data->password;
+        }
+
+        // Check field is null or not to decide to udpate with old value or new value
+        $user_name = $request->userName ?? $admin_data->user_name;
+        $email = $request->email ?? $admin_data->email;
+
+        $check = Admin::find($request->user()->id)->update([
+            "user_name" => $user_name,
+            "email" => $email,
+            "password" => $password,
+        ]);
+
+        if (!$check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error had occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Change admin information successfully"
+        ]);
+    }
+
     public function profile(Request $request)
     {
         return $request->user();
+    }
+
+    /** UPLOAD AVATAR **/
+    public function moveAndRenameImageName($request)
+    {
+        $user_name = $request->userName ?? $request->user()->user_name;
+
+        $destination = "avatars/admin/" . time() . "_" . $request->user()->id;
+
+        // Delete all image relate to this product first before put new image in public file
+        $check = Storage::disk('public')->deleteDirectory($destination);
+        $oldPath = Storage::disk("public")->putFile($destination, $request->avatar);
+
+        /** 
+         * These below code basically did this:
+         * - Create new image name through explode function
+         * - Create new destination image (in case if needed in future)
+         * - Then move and rename old existed image to new (old) existed name image
+         */
+        $imageName = explode("/", $oldPath);
+        $imageType = explode('.', end($imageName));
+
+        $newImageName = time() . "_" . $request->user()->id . "." . end($imageType);
+        $newDestination = "";
+
+        for ($i = 0; $i < sizeof($imageName) - 1; $i++) {
+            if (rtrim($newDestination) === "") {
+                $newDestination = $imageName[$i];
+                continue;
+            }
+            $newDestination = $newDestination . "/" . $imageName[$i];
+        }
+
+        $newDestination = $newDestination . "/" . $newImageName;
+
+        // $checkPath return True/ False value
+        $checkPath = Storage::disk("public")->move($oldPath, $destination . "/" . $newImageName);
+
+        // Check existend Path (?)
+        if (!$checkPath) {
+            return false;
+        }
+
+        return $newImageName;
+    }
+
+    public function upload(Request $request) {
+        $data = Validator::make($request->all(), [
+            // "avatar" => "required|file|image"
+        ]);
+
+        if ($data->fails()) {
+            $errors = $data->errors();
+
+            return response()->json([
+                "success" => false,
+                "errors" => $errors,
+            ]);
+        }
+
+        $query = Admin::where("id", "=", $request->user()->id);
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't upload avatar with invalid Customer ID"
+            ]);
+        }
+
+        $admin = $query->first();
+
+        // If in column value is not default then proceed to delete old value in order to put new one in
+        if ($admin->avatar !== "admin_default.png") {
+            $image = explode('.', $admin->avatar);
+            $dir = "avatars/admin/" . $image[0];
+
+            // Delete all old file before add new one
+            Storage::disk('public')->deleteDirectory($dir);
+        }
+
+        $newImageName = $this->moveAndRenameImageName($request);
+        $admin->avatar = $newImageName;
+
+        $result = $admin->save();
+
+        // If result is false, that means save process has occurred some issues
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+        
+        return response()->json([
+            "success" => true,
+            "message" => "Uploaded avatar successfully"
+        ]);
+    }
+
+    public function destroyAvatar() {
+        // Delete already existed (not default value) to default value (avatar)
     }
 }

@@ -9,6 +9,13 @@ class Admin extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "user_name",
+        "email",
+        "password",
+        "avatar"
+    ];
+
     protected $table = "admins";
 
     public function admin_token() {

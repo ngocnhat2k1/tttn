@@ -16,9 +16,6 @@ class AdminAuth extends Authenticatable
         "email",
         "password",
         "level",
-
-        // Temporary
-        'token',
     ];
 
     protected $table = "admins";

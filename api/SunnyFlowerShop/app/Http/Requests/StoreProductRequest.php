@@ -46,6 +46,11 @@ class StoreProductRequest extends FormRequest
                 "min:1",
                 "max:100",
             ],
+            "img" => [
+                "required",
+                "file",
+                "image",
+            ],
             "quantity" => [
                 "required",
                 "integer"
