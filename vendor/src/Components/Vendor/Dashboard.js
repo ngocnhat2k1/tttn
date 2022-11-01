@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
-import { Link, useSearchParams } from "react-router-dom";
-import usePaginate from "../Hook/usePaginate";
 import axios from 'axios';
 import './DashBoard.css'
 
