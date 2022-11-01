@@ -9,7 +9,7 @@ function TopHeaderRightAuth(user) {
 
         axios
             .post(
-                'http://localhost:8000/api/logout',
+                'http://127.0.0.1:8000/api/admin/logout',
                 {},
                 {
                     headers: {
@@ -20,7 +20,7 @@ function TopHeaderRightAuth(user) {
             .then(function (response) {
                 if (response.data.success) {
                     Cookies.remove('token', { path: '/' });
-                    window.location.href = 'http://localhost:3000/login';
+                    window.location.href = 'http://127.0.0.1:3000/login';
                 } else {
                     console.log(response);
                 }
