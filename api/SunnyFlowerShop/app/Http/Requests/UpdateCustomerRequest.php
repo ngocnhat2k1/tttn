@@ -40,6 +40,10 @@ class UpdateCustomerRequest extends FormRequest
                 "required",
                 "email",
             ],
+            // 'avatar' => [
+            //     'file',
+            //     'image',
+            // ],
             "password" => [
                 "string",
                 "min:6",

@@ -17,6 +17,7 @@ class CustomerAuth extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'avatar',
 
         // temporary
         'token',

@@ -15,6 +15,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -73,6 +74,48 @@ class ProductController extends Controller
      * @param  \App\Http\Requests\StoreProductRequest  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function moveAndRenameImageName($request) {
+        // Set timezone to Vietname/ Ho Chi Minh City
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // Delete all image relate to this product first before put new image in public file
+        Storage::disk('public')->deleteDirectory("products/img/" . $request->name);
+        $oldPath = Storage::disk("public")->putFile(("products/img/" . $request->name), $request->img);
+
+        /** 
+         * These below code basically did this:
+         * - Create new image name through explode function
+         * - Create new destination image (in case if needed in future)
+         * - Then move and rename old existed image to new (old) existed name image
+         */
+        $imageName = explode("/", $oldPath);
+        $imageType = explode('.', end($imageName));
+
+        $newImageName = time() . "-" . $request->name . "." . end($imageType);
+        $newDestination = "";
+
+        for ($i = 0; $i < sizeof($imageName) - 1; $i++) {
+            if (rtrim($newDestination) === "") {
+                $newDestination = $imageName[$i];
+                continue;
+            }
+            $newDestination = $newDestination . "/" . $imageName[$i];
+        }
+
+        $newDestination = $newDestination . "/" . $newImageName;
+
+        // $checkPath return True/ False value
+        $checkPath = Storage::disk("public")->move($oldPath, "products/img/" . $request->name . "/" . $newImageName);
+
+        // Check existend Path (?)
+        if (!$checkPath) {
+            return false;
+        }
+
+        return $newImageName;
+    }
+
     public function store(StoreProductRequest $request)
     {
         $check_existed = Product::where("name", "=", $request->name)->exists();
@@ -85,7 +128,19 @@ class ProductController extends Controller
             ]);
         }
 
+        // Get new Image name through moveAndRenameImageName() function
+        $newImageName = $this->moveAndRenameImageName($request);
+
+        if (!$newImageName) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Something went wrong"
+            ]);
+        }
+
         $filtered = $request->except(['deletedAt', "percentSale"]);
+        $filtered['img'] = $newImageName;
+        // $filtered['img'] = $newDestination;
 
         $data = Product::create($filtered);
 
@@ -139,6 +194,11 @@ class ProductController extends Controller
 
             // If product has already existed ==> skip
             if ($check) continue;
+
+            // Turn $product[$i] to array and pass into moveAndRenameImageName() function
+            $newImageName = $this->moveAndRenameImageName((object) $products[$i]);
+
+            $products[$i]['img'] = $newImageName;
 
             // Insert value into product table with $products at $i index
             $result = Product::create($products[$i]);
@@ -214,10 +274,25 @@ class ProductController extends Controller
             ]);
         }
 
+        // Delete all old file before add new one
+        Storage::disk('public')->deleteDirectory("products/img/" . $product->name);
+
         // Save all value was changed
         foreach ($data as $key => $value) {
             $product->{$key} = $value;
         }
+
+        // Get new Image name through moveAndRenameImageName() function
+        $newImageName = $this->moveAndRenameImageName($request);
+
+        if (!$newImageName) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Something went wrong"
+            ]);
+        }
+
+        $product['img'] = $newImageName;
 
         $result = $product->save();
 
@@ -273,7 +348,7 @@ class ProductController extends Controller
             if ($data->deleted_at !== null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Product with ID = " . $productId ." has already been (Soft) deleted"
+                    "errors" => "Product with ID = " . $productId . " has already been (Soft) deleted"
                 ]);
             }
 
@@ -295,7 +370,7 @@ class ProductController extends Controller
                 ]
             );
 
-        // If value is not 1, it will be Reverse Delete
+            // If value is not 1, it will be Reverse Delete
         } else {
             // Check if product Has already been reversed delete?
             if ($data->deleted_at === null) {

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("last_name");
             $table->string("email")->unique()->index();
             $table->string("password");
-            $table->string("avatar")->nullable();
+            $table->string("avatar")->default("customer_default.jpg");
             // $table->string("phone_number");
             $table->boolean("disabled")->nullable()->comment("Default value is NULL, 0 for disable");
             // $table->rememberToken();
