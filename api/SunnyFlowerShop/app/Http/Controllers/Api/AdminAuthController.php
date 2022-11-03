@@ -17,7 +17,7 @@ class AdminAuthController extends Controller
     // ******* Admin ******* \\
     public function __construct()
     {
-        $this->middleware("auth:sanctum", ["except" => ["setup", "login"]]);
+        $this->middleware("auth:sanctum", ["except" => ["setup", "login", "retrieveToken"]]);
     }
 
     public function login(Request $request)
@@ -149,6 +149,26 @@ class AdminAuthController extends Controller
     public function profile(Request $request)
     {
         return $request->user();
+    }
+
+    // Use when user first enter website (Admin site)
+    public function retrieveToken(Request $request)
+    {
+        // Checking token existence
+        $token = AdminToken::where("token", "=", $request->bearerToken())->first();
+
+        if ($token === null) {
+            return response()->json([
+                "success" => false,
+                "errors" => "No token found"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "token" => $request->bearerToken() ?? null,
+            "tokenType" => "Bearer Token"
+        ]);
     }
 
     /** UPLOAD AVATAR **/
