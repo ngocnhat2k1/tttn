@@ -20,8 +20,7 @@ class CustomerDetailResource extends JsonResource
             "lastName" => $this->last_name,
             "email" => $this->email,
             "avatar" => $this->avatar,
-            "phoneNumber" => $this->phone_number,
-            "token" => $this->token, // This column will be potentially be removed
+            "subscribed" => $this->subscribed,
             "createdAt" => $this->created_at,
         ];
     }

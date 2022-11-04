@@ -14,7 +14,8 @@ class Customer extends Model
         "last_name",
         "email",
         "password",
-        "avatar"
+        "avatar",
+        "subscribed"
     ];
 
     public function addresses() {

@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class AddressCustomerController extends Controller
 {
-    public function all() {
+    public function all()
+    {
         $addresses = Address::with("customers");
 
         $count = $addresses->get()->count();
@@ -81,7 +82,8 @@ class AddressCustomerController extends Controller
 
     public function store(StoreAddressRequest $request, Customer $customer)
     {
-        $check = Address::where("name_receiver", "=", $request->nameReceiver)
+        $check = Address::where("first_name_receiver", "=", $request->firstNameReceiver)
+            ->where("last_name_receiver", "=", $request->lastNameReceiver)
             ->where("street_name", $request->streetName)
             ->where("district", $request->district)
             ->where("ward", $request->ward)
@@ -96,7 +98,7 @@ class AddressCustomerController extends Controller
 
         $user = Customer::find($customer->id);
 
-        $filtered = $request->except(['nameReceiver', "phoneReceiver", "streetName"]);
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", "streetName"]);
 
         $address = Address::create($filtered);
 
@@ -130,7 +132,7 @@ class AddressCustomerController extends Controller
             ]);
         }
 
-        $filtered = $request->except(['nameReceiver', "phoneReceiver", "streetName"]);
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", "streetName"]);
 
         $update = Address::where("id", "=", $address->id)->update($filtered);
 

@@ -22,6 +22,7 @@ class ProductDetailResource extends JsonResource
             "precentSale" => $this->percent_sale,
             "img" => $this->img,
             "quantity" => $this->quantity,
+            "quality" => $this->quality,
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
             "categories" => CategoryListResource::collection($this->categories)
