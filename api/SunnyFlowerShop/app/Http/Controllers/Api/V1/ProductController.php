@@ -75,7 +75,9 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function moveAndRenameImageName($request) {
+    // Use for upload product image API
+    public function moveAndRenameImageName($request)
+    {
         // Set timezone to Vietname/ Ho Chi Minh City
         date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -238,7 +240,6 @@ class ProductController extends Controller
     public function show(Request $request)
     {
         $data = Product::find($request->id);
-        // dd($data);
 
         if (empty($data)) {
             return response()->json([
@@ -246,6 +247,46 @@ class ProductController extends Controller
                 "errors" => "Product doesn't not exist"
             ]);
         }
+
+        $average_quality = DB::table("customer_product_feedback")
+            ->where("product_id", "=", $data->id);
+
+        // calculate average of total quality that product has
+        $quality = 0;
+
+        /** Checking if quality of feedback has been made */
+        // If not then average of total quality is 0
+        if (!$average_quality->exists()) {
+            $quality = 0;
+        }
+        // If so then calculate it
+        else {
+            $total = $average_quality->get(); // Get all quality feedback
+
+            for ($i = 0; $i < sizeof($total); $i++) { // Sum all quality to make an average calculation
+                $quality += $total[$i]->quality;
+            }
+
+            $quality = $quality / sizeof($total);
+
+            $float_point = explode(".", $quality);
+
+            if (sizeof($float_point) >= 2) {
+                $decimal_number = (int)$float_point[1];
+
+                while ($decimal_number > 10) {
+                    $decimal_number = $decimal_number / 10;
+                }
+
+                if ($decimal_number >= 5) {
+                    $quality = ceil($quality);
+                } else {
+                    $quality = floor($quality);
+                }
+            }
+        }
+
+        $data['quality'] = $quality;
 
         return response()->json([
             "success" => true,

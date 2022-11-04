@@ -31,6 +31,7 @@ class UserAuthController extends Controller
             "email" => "required|email",
             "password" => "required|min:6|max:24",
             "confirmPassword" => "required|string",
+            "subscribed" => "required|boolean"
         ]);
 
         if ($data->fails()) {
@@ -65,6 +66,7 @@ class UserAuthController extends Controller
                 'last_name' => $request->lastName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'subscribed' => $request->subscribed,
             ]);
 
             // token abilities will be detemined later - i mean will be consider to be deleted or not
@@ -109,7 +111,8 @@ class UserAuthController extends Controller
             ]);
         }
 
-        $token = $customer->createToken("Customer - " . $customer->id, ["update_profile", "fav_product", "place_order", "make_feedback", "create_address", "update_address", "remove_address"])->plainTextToken;
+        // Token ability base from admin perspective, "none" for not allow to do anything what admin can
+        $token = $customer->createToken("Customer - " . $customer->id, ["none"])->plainTextToken;
 
         // Use normal model to check User to store token
         $customer_token = Customer::where('email', "=", $request->email)->first();
@@ -141,7 +144,7 @@ class UserAuthController extends Controller
                 "lastName" => $customer->last_name,
                 "email" => $customer->email,
                 "avatar" => $customer->avatar,
-                "phoneNumber" => $customer->phone_number,
+                "subscribed" => $customer->subscribed,
             ]
         ]);
     }
@@ -234,6 +237,7 @@ class UserAuthController extends Controller
             "lastName" => "string|min:2|max:50",
             "email" => "email",
             "password" => "string|min:6|max:24",
+            "subscribed" => "boolean"
         ]);
 
         if ($data->fails()) {
@@ -273,11 +277,13 @@ class UserAuthController extends Controller
             }
         }
 
+        
         $customer_get = $customer_data->first();
 
         $customer_get['first_name'] = $request->firstName ?? $customer_get['first_name'];
         $customer_get['last_name'] = $request->lastName ?? $customer_get['last_name'];
         $customer_get['email'] = $request->email ?? $customer_get['email'];
+        $customer_get['subscribed'] = $request->subscribed ?? $customer_get['subscribed'];
 
         /* Check password and avatar first */
         // Create check for password

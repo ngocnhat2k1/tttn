@@ -24,7 +24,13 @@ class UpdateAddressRequest extends FormRequest
     public function rules()
     {
         return [
-            "nameReceiver" => [
+            "firstNameReceiver" => [
+                "required",
+                "string",
+                "min:2",
+                "max:100",
+            ],
+            "lastNameReceiver" => [
                 "required",
                 "string",
                 "min:2",
@@ -58,7 +64,8 @@ class UpdateAddressRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'name_receiver' => $this->nameReceiver,
+            'first_name_receiver' => $this->firstNameReceiver,
+            'last_name_receiver' => $this->lastNameReceiver,
             'phone_receiver' => $this->phoneReceiver,
             'street_name' => $this->streetName,
         ]);

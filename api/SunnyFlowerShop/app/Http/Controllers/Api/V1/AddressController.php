@@ -40,7 +40,8 @@ class AddressController extends Controller
      */
     public function store(StoreAddressRequest $request)
     {
-        $check = Address::where("name_receiver", "=", $request->nameReceiver)
+        $check = Address::where("first_name_receiver", "=", $request->firstNameReceiver)
+            ->where("last_name_receiver", "=", $request->lastNameReceiver)
             ->where("street_name", $request->streetName)
             ->where("district", $request->district)
             ->where("ward", $request->ward)
@@ -53,7 +54,7 @@ class AddressController extends Controller
             ]);
         }
 
-        $filtered = $request->except(['nameReceiver', "phoneReceiver", 'streetName']);
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", 'streetName']);
 
         $customer = Customer::find($request->user()->id);
 
@@ -128,7 +129,6 @@ class AddressController extends Controller
         $check = DB::table("address_customer")
             ->where("address_id", "=", $request->id)
             ->where("customer_id", "=", $customer->id)
-            ->join("addresses", "address_customer.id", "=", "addresses.id")
             ->exists();
 
         if (empty($check) || empty($customer)) {
@@ -137,12 +137,12 @@ class AddressController extends Controller
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"
             ]);
         }
-        
-        $filtered = $request->except(['nameReceiver', "phoneReceiver", 'streetName']);
+
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", 'streetName']);
 
         $address = Address::find($addressId);
 
-        foreach($filtered as $key => $value) {
+        foreach ($filtered as $key => $value) {
             $address->{$key} = $value;
         }
 
@@ -157,7 +157,7 @@ class AddressController extends Controller
 
         return response()->json([
             'success' => true,
-            "data" => $address
+            "message" => "Updated address successfully"
         ]);
     }
 
@@ -197,7 +197,7 @@ class AddressController extends Controller
                 "message" => "Deleted address successfully"
             ]);
         }
-        
+
         return response()->json([
             "success" => false,
             "errors" => "An unexpected error has occurred"

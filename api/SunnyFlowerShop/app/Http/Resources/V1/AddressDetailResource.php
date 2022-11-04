@@ -17,7 +17,8 @@ class AddressDetailResource extends JsonResource
         return [
             "id" => $this->id,
             "customerId" => $this->customer_id,
-            "nameReceiver" => $this->name_receiver,
+            "firstNameReceiver" => $this->first_name_receiver,
+            "lastNameReceiver" => $this->last_name_receiver,
             "phoneReceiver" => $this->phone_receiver,
             "streetName" => $this->street_name,
             "district" => $this->district,

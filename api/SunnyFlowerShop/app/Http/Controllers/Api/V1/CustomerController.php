@@ -269,6 +269,7 @@ class CustomerController extends Controller
         $customer_get['first_name'] = $request->firstName ?? $customer_get['first_name'];
         $customer_get['last_name'] = $request->lastName ?? $customer_get['last_name'];
         $customer_get['email'] = $request->email ?? $customer_get['email'];
+        $customer_get['subscribed'] = $request->subscribed ?? $customer_get['subscribed'];
 
         $result = $customer_get->save();
 

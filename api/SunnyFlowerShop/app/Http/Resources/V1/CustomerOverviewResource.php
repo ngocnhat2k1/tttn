@@ -21,7 +21,7 @@ class CustomerOverviewResource extends JsonResource
             "lastName" => $this->last_name,
             "avatar" => $this->avatar,
             "email" => $this->email,
-            "phoneNumber" => $this->phone_number
+            "subscribed" => $this->subscribed
         ];
     }
 }
