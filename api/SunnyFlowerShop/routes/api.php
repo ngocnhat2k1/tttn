@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // ***** Admin ***** \\
-// Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
+Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
 Route::post("/admin/login", [AdminAuthController::class, "login"]);
 Route::get("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
 Route::middleware("auth:sanctum")->group(function () {

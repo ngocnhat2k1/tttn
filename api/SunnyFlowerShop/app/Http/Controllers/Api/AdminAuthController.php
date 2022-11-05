@@ -20,6 +20,42 @@ class AdminAuthController extends Controller
         $this->middleware("auth:sanctum", ["except" => ["setup", "login", "retrieveToken"]]);
     }
 
+    public function setup()
+    {
+        $admin = Admin::where("email", "=", "admin@email.com")->exists();
+        $superAdmin = Admin::where("email", "=", "sadmin@email.com")->exists();
+
+        if ($admin && $superAdmin) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Admin and Super Admin account have already created"
+            ]);
+        }
+
+        $data = [
+            'user_name' => 'admin',
+            'email' => 'admin@email.com',
+            'password' => Hash::make('123'),
+            'level' => '0',
+        ];
+
+        AdminAuth::create($data);
+
+        $data = [
+            'user_name' => 'Super Admin',
+            'email' => 'sadmin@email.com',
+            'password' => Hash::make('123'),
+            'level' => '1',
+        ];
+
+        AdminAuth::create($data);
+
+        return response()->json([
+            "success" => true,
+            "message" => "Created Admin and Super Admin account successfully"
+        ]);
+    }
+
     public function login(Request $request)
     {
         if (!Auth::guard("admin")->attempt(['email' => $request->email, 'password' => $request->password])) {
@@ -215,7 +251,8 @@ class AdminAuthController extends Controller
         return $newImageName;
     }
 
-    public function upload(Request $request) {
+    public function upload(Request $request)
+    {
         $data = Validator::make($request->all(), [
             // "avatar" => "required|file|image"
         ]);
@@ -260,14 +297,15 @@ class AdminAuthController extends Controller
                 "errors" => "An unexpected error has occurred"
             ]);
         }
-        
+
         return response()->json([
             "success" => true,
             "message" => "Uploaded avatar successfully"
         ]);
     }
 
-    public function destroyAvatar() {
+    public function destroyAvatar()
+    {
         // Delete already existed (not default value) to default value (avatar)
     }
 }
