@@ -12,7 +12,7 @@ class AdminAuth extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        "username",
+        "user_name",
         "email",
         "password",
         "level",
