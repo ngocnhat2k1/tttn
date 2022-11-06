@@ -19,7 +19,7 @@ return new class extends Migration
             $table->longText("description");
             $table->integer("price")->comment("VND format")->unsigned();
             $table->unsignedTinyInteger("percent_sale")->comment("Max is 100; Default is 1");
-            $table->string("img")->default("product_default.png");
+            $table->longText("img")->nullable();
             // $table->string("noteable")->comment("Unique thing about this product");
             $table->integer("quantity")->unsigned();
             $table->boolean("status")->comment("1 for in stock; 0 for out of stock");

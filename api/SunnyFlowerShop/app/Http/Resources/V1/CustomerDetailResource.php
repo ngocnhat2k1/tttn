@@ -20,6 +20,7 @@ class CustomerDetailResource extends JsonResource
             "lastName" => $this->last_name,
             "email" => $this->email,
             "avatar" => $this->avatar,
+            "defaultAvatar" => $this->default_avatar,
             "subscribed" => $this->subscribed,
             "createdAt" => $this->created_at,
         ];

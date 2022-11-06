@@ -177,17 +177,6 @@ class CustomerController extends Controller
             $filtered['password'] = Hash::make($filtered['password']);
         }
 
-        // if ($request->avatar !== null) {
-        //     // Delete all old file before add new one
-        //     $delete_dir = "avatars/" . $customer->id . "-" . $customer->first_name . "_" . $customer->last_name;
-
-        //     Storage::disk('public')->deleteDirectory($delete_dir);
-
-        //     // Move and then rename new/ old image file
-        //     $newImageName = $this->moveAndRenameImageName($request, $customer);
-        //     $filtered['avatar'] = $newImageName;
-        // }
-
         $update = Customer::where("id", "=", $customer->id)->update($filtered);
 
         if (empty($update)) {
@@ -287,54 +276,10 @@ class CustomerController extends Controller
         ]);
     }
 
-    /** UPLOAD AVATAR **/
-    public function moveAndRenameImageName($request, $customer)
+    public function upload(Request $request, Customer $customer)
     {
-        // Set timezone to Vietname/ Ho Chi Minh City
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
-
-        $destination = "avatars/" . time() . "_" . $customer->id;
-
-        // Delete all image relate to this product first before put new image in public file
-        Storage::disk('public')->deleteDirectory($destination);
-        $oldPath = Storage::disk("public")->putFile($destination, $request->avatar);
-
-        /** 
-         * These below code basically did this:
-         * - Create new image name through explode function
-         * - Create new destination image (in case if needed in future)
-         * - Then move and rename old existed image to new (old) existed name image
-         */
-        $imageName = explode("/", $oldPath);
-        $imageType = explode('.', end($imageName));
-
-        $newImageName = time() . "_" . $customer->id . "." . end($imageType);
-        $newDestination = "";
-
-        for ($i = 0; $i < sizeof($imageName) - 1; $i++) {
-            if (rtrim($newDestination) === "") {
-                $newDestination = $imageName[$i];
-                continue;
-            }
-            $newDestination = $newDestination . "/" . $imageName[$i];
-        }
-
-        $newDestination = $newDestination . "/" . $newImageName;
-
-        // $checkPath return True/ False value
-        $checkPath = Storage::disk("public")->move($oldPath, $destination . "/" . $newImageName);
-
-        // Check existend Path (?)
-        if (!$checkPath) {
-            return false;
-        }
-
-        return $newImageName;
-    }
-
-    public function upload(Request $request, Customer $customer) {
         $data = Validator::make($request->all(), [
-            "avatar" => "file|image"
+            "avatar" => "required|string"
         ]);
 
         if ($data->fails()) {
@@ -355,18 +300,7 @@ class CustomerController extends Controller
         }
 
         $customer_data = $query->first();
-
-        // If in column value is not default then proceed to delete old value in order to put new one in
-        if ($customer_data->avatar !== "customer_default.jpg") {
-            $image = explode('.', $customer_data->avatar);
-            $dir = "avatars/" . $image[0];
-
-            // Delete all old file before add new one
-            Storage::disk('public')->deleteDirectory($dir);
-        }
-
-        $newImageName = $this->moveAndRenameImageName($request, $customer_data);
-        $customer_data->avatar = $newImageName;
+        $customer_data->avatar = $request->avatar;
 
         $result = $customer_data->save();
 
@@ -377,14 +311,31 @@ class CustomerController extends Controller
                 "errors" => "An unexpected error has occurred"
             ]);
         }
-        
+
         return response()->json([
             "success" => true,
             "message" => "Uploaded avatar successfully"
         ]);
     }
 
-    public function destroyAvatar() {
-        // Delete already existed (not default value) to default value (avatar)
+    public function destroyAvatar(Customer $customer)
+    {
+        $customer_data = Customer::find($customer->id);
+
+        $customer_data->avatar = null;
+        $result = $customer_data->save();
+
+        // If result is false, that means save process has occurred some issues
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Remove avatar successfully"
+        ]);
     }
 }
