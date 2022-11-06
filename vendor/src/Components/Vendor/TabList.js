@@ -35,7 +35,7 @@ function TabList() {
                         <Link
                             onClick={() => setActive('/vendor-users')}
                             className={`${isActive === "/vendor-users" ? 'active_tablist' : ' '} `}
-                            to="/vendor-users">  <i> <FaRegIdBadge color='black' /></i> profile </Link>
+                            to="/vendor-users">  <i> <FaRegIdBadge color='black' /></i> users </Link>
                     </li>
                     <li>
                         <Link
