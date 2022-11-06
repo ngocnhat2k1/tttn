@@ -39,8 +39,8 @@ function TabList() {
                     </li>
                     <li>
                         <Link
-                            onClick={() => setActive('/add-product')}
-                            className={`${isActive === "/add-product" ? 'active_tablist' : ' '} `}
+                            onClick={() => setActive('/add-products')}
+                            className={`${isActive === "/add-products" ? 'active_tablist' : ' '} `}
                             to="/add-products">  <i> <FaUser color='black' /></i> add product </Link>
                     </li>
                 </ul>
