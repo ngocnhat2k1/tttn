@@ -10,6 +10,7 @@ use App\Http\Resources\V1\AddressOverviewCollection;
 use App\Http\Resources\V1\AddressOverviewResource;
 use App\Models\Address;
 use App\Models\Customer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AddressCustomerController extends Controller
@@ -56,16 +57,17 @@ class AddressCustomerController extends Controller
     public function show(Customer $customer, Address $address)
     {
         // $request->id is for customer
-        $customer_data = Customer::find($customer->id);
+        // $customer_data = Customer::where("id", "=", $customer->id);
+        $addresses = Address::where("id", "=", $address->id)
+            ->where("customer_id", "=", $customer->id);
 
-        if (empty($customer_data)) {
+        // if (!$customer_data->exists() || !$addresses->exists()) {
+        if (!$addresses->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "User ID is invalid"
+                "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
             ]);
         }
-
-        $addresses = $customer_data->addresses()->wherePivot("address_id", "=", $address->id);
 
         if ($addresses->get()->count() === 0) {
             return response()->json([
@@ -82,7 +84,8 @@ class AddressCustomerController extends Controller
 
     public function store(StoreAddressRequest $request, Customer $customer)
     {
-        $check = Address::where("first_name_receiver", "=", $request->firstNameReceiver)
+        $check = Address::where("customer_id", "=", $customer->id)
+            ->where("first_name_receiver", "=", $request->firstNameReceiver)
             ->where("last_name_receiver", "=", $request->lastNameReceiver)
             ->where("street_name", $request->streetName)
             ->where("district", $request->district)
@@ -96,9 +99,8 @@ class AddressCustomerController extends Controller
             ]);
         }
 
-        $user = Customer::find($customer->id);
-
         $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", "streetName"]);
+        $filtered['customer_id'] = $customer->id;
 
         $address = Address::create($filtered);
 
@@ -109,7 +111,7 @@ class AddressCustomerController extends Controller
             ]);
         }
 
-        $address->customers()->attach($user);
+        // $address->customers()->attach($user);
 
         return response()->json([
             "success" => true,
@@ -120,21 +122,43 @@ class AddressCustomerController extends Controller
     public function update(UpdateAddressRequest $request, Customer $customer, Address $address)
     {
         // Checking Address ID is belong to Customer ID ?
-        $check = DB::table("address_customer")
-            ->where("customer_id", "=", $customer->id)
-            ->where("address_id", "=", $address->id)
-            ->exists();
+        // $check = DB::table("address_customer")
+        //     ->where("customer_id", "=", $customer->id)
+        //     ->where("address_id", "=", $address->id)
+        //     ->exists();
 
-        if (!$check) {
+        $query = Address::where("id", "=", $address->id)
+            ->where("customer_id", "=", $customer->id);
+
+        if (!$query->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
             ]);
         }
 
-        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", "streetName"]);
+        // Check address existence in database
+        $check = Address::where("customer_id", "=", $customer->id)
+            ->where("first_name_receiver", "=", $request->firstNameReceiver)
+            ->where("last_name_receiver", "=", $request->lastNameReceiver)
+            ->where("street_name", $request->streetName)
+            ->where("district", $request->district)
+            ->where("ward", $request->ward)
+            ->where("city", $request->city)
+            ->exists();
 
-        $update = Address::where("id", "=", $address->id)->update($filtered);
+        // If address is existed, then check does it belong to current customer is updating their address
+        if ($check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Address is already associated with this account"
+            ]);
+        }
+
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", "streetName"]);
+        $filtered['customer_id'] = $customer->id;
+
+        $update = $query->update($filtered);
 
         if (empty($update)) {
             return response()->json([
@@ -152,32 +176,33 @@ class AddressCustomerController extends Controller
     public function destroy(Customer $customer, Address $address)
     {
         // Checking Address ID is belong to Customer ID ?
-        $check = DB::table("address_customer")
-            ->where("customer_id", "=", $customer->id)
-            ->where("address_id", "=", $address->id)
-            ->exists();
+        // $check = DB::table("address_customer")
+        //     ->where("customer_id", "=", $customer->id)
+        //     ->where("address_id", "=", $address->id)
+        //     ->exists();
 
-        if (!$check) {
+        $query_address = Address::where("id", "=", $address->id)
+            ->where("customer_id", "=", $customer->id);
+
+        if (!$query_address->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
             ]);
         }
 
-        // Search for address
-        $query_address = Address::where("id", "=", $address->id);
-
         // Detach address from customer
-        $detach = Customer::where("id", "=", $customer->id)
-            ->first()
-            ->addresses()
-            ->detach($query_address->first());
+        // $detach = Customer::where("id", "=", $customer->id)
+        //     ->first()
+        //     ->addresses()
+        //     ->detach($query_address->first());
 
         // Delete address with Address ID in Addresses table
         $delete = $query_address->delete();
 
 
-        if (empty($delete) || empty($detach)) {
+        // if (empty($delete) || empty($detach)) {
+        if (empty($delete)) {
             return response()->json([
                 "success" => false,
                 "errors" => "An unexpected error has occurred"

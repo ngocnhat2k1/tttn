@@ -44,7 +44,7 @@ class StoreAddressRequest extends FormRequest
             "streetName" => [
                 "required",
                 "string",
-                "min:10",
+                "min:2",
             ],
             "district" => [
                 "required",

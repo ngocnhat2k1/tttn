@@ -17,6 +17,7 @@ class AddressListResource extends JsonResource
         return [
             "id" => $this->id,
             // "customterId" => $this->pivot->customer_id,
+            "customterId" => $this->customer_id,
             "firstNameReceiver" => $this->first_name_receiver,
             "lastNameReceiver" => $this->last_name_receiver,
             "phoneReceiver" => $this->phone_receiver,

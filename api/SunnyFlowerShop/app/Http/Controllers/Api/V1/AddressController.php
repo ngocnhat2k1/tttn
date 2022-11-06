@@ -40,7 +40,17 @@ class AddressController extends Controller
      */
     public function store(StoreAddressRequest $request)
     {
-        $check = Address::where("first_name_receiver", "=", $request->firstNameReceiver)
+        $customer = Customer::find($request->user()->id);
+
+        if (empty($customer)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer doesn't exist"
+            ]);
+        }
+
+        $check = Address::where("customer_id", "=", $customer->id)
+            ->where("first_name_receiver", "=", $request->firstNameReceiver)
             ->where("last_name_receiver", "=", $request->lastNameReceiver)
             ->where("street_name", $request->streetName)
             ->where("district", $request->district)
@@ -55,15 +65,7 @@ class AddressController extends Controller
         }
 
         $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", 'streetName']);
-
-        $customer = Customer::find($request->user()->id);
-
-        if (empty($customer)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "An unexpected error has occurred - Customer doesn't exist"
-            ]);
-        }
+        $filtered['customer_id'] = $customer->id;
 
         $data = Address::create($filtered);
         if (empty($data->id)) {
@@ -73,7 +75,7 @@ class AddressController extends Controller
             ]);
         }
 
-        $data->customers()->attach($customer);
+        // $data->customers()->attach($customer);
 
         return response()->json([
             "success" => true,
@@ -92,14 +94,17 @@ class AddressController extends Controller
         $customer = Customer::find($request->user()->id);
 
         // For some reason, i can't use normal Many-to-Many relationship query
-        $query = DB::table("address_customer")
-            ->where("address_id", "=", $request->id)
-            ->where("customer_id", "=", $customer->id)
-            ->join("addresses", "address_customer.id", "=", "addresses.id");
+        $query = Address::where("id", "=", $request->id)
+            ->where("customer_id", "=", $customer->id);
+        // $query = DB::table("address_customer")
+        //     ->where("address_id", "=", $request->id)
+        //     ->where("customer_id", "=", $customer->id)
+        //     ->join("addresses", "address_customer.id", "=", "addresses.id");
 
         $check = $query->exists();
 
         if (empty($check) || empty($customer)) {
+            // if (empty($check)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Either customer id or address id doesn't exist"
@@ -126,21 +131,43 @@ class AddressController extends Controller
         $customer = Customer::find($request->user()->id);
 
         // For some reason, i can't use normal Many-to-Many relationship query
-        $check = DB::table("address_customer")
-            ->where("address_id", "=", $request->id)
-            ->where("customer_id", "=", $customer->id)
-            ->exists();
+        // $check = DB::table("address_customer")
+        //     ->where("address_id", "=", $request->id)
+        //     ->where("customer_id", "=", $customer->id)
+        //     ->exists();
 
-        if (empty($check) || empty($customer)) {
+        $query = Address::where("id", "=", $addressId)
+            ->where("customer_id", "=", $customer->id);
+
+        if (!$query->exists() || empty($customer)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"
             ]);
         }
 
-        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", 'streetName']);
+        // Check address existence in database
+        $check = Address::where("customer_id", "=", $customer->id)
+            ->where("first_name_receiver", "=", $request->firstNameReceiver)
+            ->where("last_name_receiver", "=", $request->lastNameReceiver)
+            ->where("street_name", $request->streetName)
+            ->where("district", $request->district)
+            ->where("ward", $request->ward)
+            ->where("city", $request->city)
+            ->exists();
 
-        $address = Address::find($addressId);
+        // If address is existed, then check does it belong to current customer is updating their address
+        if ($check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Address is already associated with this account"
+            ]);
+        }
+
+        $filtered = $request->except(['firstNameReceiver', 'lastNameReceiver', "phoneReceiver", 'streetName']);
+        $filtered['customer_id'] = $customer->id;
+
+        $address = $query->first();
 
         foreach ($filtered as $key => $value) {
             $address->{$key} = $value;
@@ -171,22 +198,26 @@ class AddressController extends Controller
     {
         $customer = Customer::find($request->user()->id);
 
-        $check = DB::table("address_customer")
-            ->where("address_id", "=", $request->id)
+        // $check = DB::table("address_customer")
+        //     ->where("address_id", "=", $request->id)
+        //     ->where("customer_id", "=", $customer->id)
+        //     ->exists();
+
+        $check = Address::where("id", "=", $request->id)
             ->where("customer_id", "=", $customer->id)
             ->exists();
 
-        if (empty($check)) {
+        if (empty($check) || !$customer) {
             return response()->json([
                 "success" => true,
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"
             ]);
         }
 
-        $address = Address::find($request->id);
+        $address = Address::where("id", "=", $request->id)
+            ->where("customer_id", "=", $request->user()->id);
 
-        $customer->addresses()->detach($address);
-
+        // $customer->addresses()->detach($address);
         $address->delete();
 
         $check = Address::where("id", "=", $request->id)->first();
