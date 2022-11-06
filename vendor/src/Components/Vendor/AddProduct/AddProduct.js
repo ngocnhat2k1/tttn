@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import { FaImage } from 'react-icons/fa'
@@ -7,9 +7,34 @@ import { useForm } from "react-hook-form";
 import './Addproduct.css'
 
 const AddProduct = () => {
+    const [image, setImage] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
 
+    const handleImage = (e) => {
+        const file = e.target.files[0];
+
+        const Reader = new FileReader();
+
+        Reader.readAsDataURL(file);
+
+        Reader.onload = () => {
+            if (Reader.readyState === 2) {
+                setImage(Reader.result);
+
+            }
+        };
+        console.log(Reader)
+    };
+
+    const onSubmit = data => {
+        const payload = {
+            ...data,
+            file: image
+        }
+        // const formData = new FormData();
+        // formData.append("imageInput", image)
+        console.log("cái data", payload)
+    };
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -25,9 +50,10 @@ const AddProduct = () => {
                                             <Row>
                                                 <Col lg={12}>
                                                     <div className='image-input'>
-                                                        <img src="https://andshop-react.netlify.app/static/media/product1.7190443a.png" alt="img" className='image-preview' />
-                                                        <input type="file" name="" value="" id='imageInput' accept='image/*' />
-                                                        <label for="imageInput" className='image-button'><FaImage />Chọn ảnh</label>
+                                                        <img src={image} alt="img" className='image-preview' />
+                                                        <input type="file" id='imageInput' accept='image/*'
+                                                            {...register("file", { required: true, onChange: handleImage })} />
+                                                        <label htmlFor="imageInput" className='image-button'><FaImage />Chọn ảnh</label>
                                                     </div>
                                                 </Col>
                                                 <Col lg={6}>
