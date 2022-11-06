@@ -184,7 +184,13 @@ class AdminAuthController extends Controller
 
     public function profile(Request $request)
     {
-        return $request->user();
+        return response()->json([
+            "userName" => $request->user()->user_name,
+            "email" => $request->user()->email,
+            "avatar" => $request->user()->avatar,
+            "defaultAvatar" => $request->user()->default_avatar,
+            "level" => $request->user()->level
+        ]);
     }
 
     // Use when user first enter website (Admin site)
@@ -207,54 +213,10 @@ class AdminAuthController extends Controller
         ]);
     }
 
-    /** UPLOAD AVATAR **/
-    public function moveAndRenameImageName($request)
-    {
-        $user_name = $request->userName ?? $request->user()->user_name;
-
-        $destination = "avatars/admin/" . time() . "_" . $request->user()->id;
-
-        // Delete all image relate to this product first before put new image in public file
-        $check = Storage::disk('public')->deleteDirectory($destination);
-        $oldPath = Storage::disk("public")->putFile($destination, $request->avatar);
-
-        /** 
-         * These below code basically did this:
-         * - Create new image name through explode function
-         * - Create new destination image (in case if needed in future)
-         * - Then move and rename old existed image to new (old) existed name image
-         */
-        $imageName = explode("/", $oldPath);
-        $imageType = explode('.', end($imageName));
-
-        $newImageName = time() . "_" . $request->user()->id . "." . end($imageType);
-        $newDestination = "";
-
-        for ($i = 0; $i < sizeof($imageName) - 1; $i++) {
-            if (rtrim($newDestination) === "") {
-                $newDestination = $imageName[$i];
-                continue;
-            }
-            $newDestination = $newDestination . "/" . $imageName[$i];
-        }
-
-        $newDestination = $newDestination . "/" . $newImageName;
-
-        // $checkPath return True/ False value
-        $checkPath = Storage::disk("public")->move($oldPath, $destination . "/" . $newImageName);
-
-        // Check existend Path (?)
-        if (!$checkPath) {
-            return false;
-        }
-
-        return $newImageName;
-    }
-
     public function upload(Request $request)
     {
         $data = Validator::make($request->all(), [
-            // "avatar" => "required|file|image"
+            "avatar" => "required|string"
         ]);
 
         if ($data->fails()) {
@@ -275,18 +237,7 @@ class AdminAuthController extends Controller
         }
 
         $admin = $query->first();
-
-        // If in column value is not default then proceed to delete old value in order to put new one in
-        if ($admin->avatar !== "admin_default.png") {
-            $image = explode('.', $admin->avatar);
-            $dir = "avatars/admin/" . $image[0];
-
-            // Delete all old file before add new one
-            Storage::disk('public')->deleteDirectory($dir);
-        }
-
-        $newImageName = $this->moveAndRenameImageName($request);
-        $admin->avatar = $newImageName;
+        $admin->avatar = $request->avatar;
 
         $result = $admin->save();
 
@@ -304,8 +255,24 @@ class AdminAuthController extends Controller
         ]);
     }
 
-    public function destroyAvatar()
+    public function destroyAvatar(Request $request)
     {
-        // Delete already existed (not default value) to default value (avatar)
+        $admin = Admin::find($request->user()->id);
+
+        $admin->avatar = null;
+        $result = $admin->save();
+
+        // If result is false, that means save process has occurred some issues
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Remove avatar successfully"
+        ]);
     }
 }

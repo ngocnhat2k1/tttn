@@ -48,8 +48,7 @@ class StoreProductRequest extends FormRequest
             ],
             "img" => [
                 "required",
-                "file",
-                "image",
+                "string",
             ],
             "quantity" => [
                 "required",
