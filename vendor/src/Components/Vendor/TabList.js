@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom"
-import { FaTachometerAlt, FaShoppingCart, FaShoppingBag, FaRegIdBadge, FaUser } from "react-icons/fa"
+import { FaTachometerAlt, FaShoppingCart, FaShoppingBag, FaUser, FaListAlt, FaGift } from "react-icons/fa"
 import "./TabList.css"
 
 
@@ -35,14 +35,28 @@ function TabList() {
                         <Link
                             onClick={() => setActive('/vendor-users')}
                             className={`${isActive === "/vendor-users" ? 'active_tablist' : ' '} `}
-                            to="/vendor-users">  <i> <FaRegIdBadge color='black' /></i> users </Link>
+                            to="/vendor-users">  <i> <FaUser color='black' /></i> users </Link>
                     </li>
-                    <li>
+                    <li
+                    >
+                        <Link
+                            onClick={() => setActive('/vendor-category')}
+                            className={`${isActive === "/vendor-category" ? 'active_tablist' : ' '} `}
+                            to="/vendor-category">  <i> <FaListAlt color='black' /></i> Categories </Link>
+                    </li>
+                    <li
+                    >
+                        <Link
+                            onClick={() => setActive('/vendor-voucher')}
+                            className={`${isActive === "/vendor-voucher" ? 'active_tablist' : ' '} `}
+                            to="/vendor-voucher">  <i> <FaGift color='black' /></i> Vouchers </Link>
+                    </li>
+                    {/* <li>
                         <Link
                             onClick={() => setActive('/add-products')}
                             className={`${isActive === "/add-products" ? 'active_tablist' : ' '} `}
                             to="/add-products">  <i> <FaUser color='black' /></i> add product </Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </>

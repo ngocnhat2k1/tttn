@@ -90,3 +90,8 @@ label {
     text-align: right;
     margin-top: 30px;
 }
+
+.error {
+    display: block;
+    color: red;
+}
