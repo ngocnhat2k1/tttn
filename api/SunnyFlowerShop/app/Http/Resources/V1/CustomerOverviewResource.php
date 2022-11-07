@@ -22,7 +22,8 @@ class CustomerOverviewResource extends JsonResource
             "avatar" => $this->avatar,
             "default_avatar" => $this->default_avatar,
             "email" => $this->email,
-            "subscribed" => $this->subscribed
+            "subscribed" => $this->subscribed,
+            "disabled" => $this->disabled
         ];
     }
 }

@@ -12,6 +12,7 @@ class Voucher extends Model
     protected $fillable = [
         "name",
         "percent",
+        "usage",
         "expired_date",
     ];
 

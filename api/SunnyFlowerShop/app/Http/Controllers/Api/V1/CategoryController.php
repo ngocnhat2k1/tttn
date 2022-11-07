@@ -7,6 +7,8 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CategoryDetailCollection;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -23,16 +25,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreCategoryRequest  $request
@@ -40,7 +32,28 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $check = Category::where("name", "=", $request->name)->exists();
+
+        if ($check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Category has already existed, please change category name"
+            ]);
+        }
+
+        $result = Category::create($request->all());
+
+        if (!$result) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected errors has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Created new Category successfully"
+        ]);
     }
 
     /**
@@ -49,20 +62,25 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Request $request)
     {
-        //
-    }
+        $query = Category::where("id", "=", $request->id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        //
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Category ID is invalid"
+            ]);
+        }
+
+        $data = $query->first();
+
+        return [
+            "categoryId" => $data->id,
+            "name" => $data->name,
+            "createdAt" => $data->created_at,
+            "updatedAt" => $data->updated_at,
+        ];
     }
 
     /**
@@ -72,9 +90,40 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request)
     {
-        //
+        $query = Category::where("id", "=", $request->id);
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't update with invalid Category ID"
+            ]);
+        }
+
+        // Check exists category
+        $check = Category::where("name", "=", $request->name)->exists();
+
+        if ($check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Category has already existed, please change category name"
+            ]);
+        }
+
+        $update = $query->update($request->all());
+
+        if (empty($update)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Updated Category with ID = " . $request->id . " successfully"
+        ]);
     }
 
     /**
@@ -83,8 +132,38 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Request $request)
     {
-        //
+        $category = Category::where("id", "=", $request->id);
+
+        if (!$category->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't delete Category with Invalid Category ID"
+            ]);
+        }
+
+        // Remove categories attached to product first
+        $category_product = DB::table("category_product")
+            ->where("category_id", "=", $request->id);
+
+        if ($category_product->exists()) {            
+            $category_product->delete(); // Need to check delete state
+        }
+
+        $delete = $category->delete();
+
+        // if (empty($delete) || empty($detach)) {
+        if (empty($delete)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => false,
+            "messagee" => "Deleted category successfully"
+        ]);
     }
 }

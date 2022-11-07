@@ -136,6 +136,10 @@ Route::middleware("auth:sanctum")->group(function () {
          */
         Route::group(['prefix' => 'categories'], function() {
             Route::get("/", [CategoryController::class, "index"]);
+            Route::get("/{id}", [CategoryController::class, "show"]);
+            Route::post("/create", [CategoryController::class, "store"]);
+            Route::put("/{id}/update", [CategoryController::class, "update"]);
+            Route::delete("/{id}/destroy", [CategoryController::class, "destroy"]);
         });
     
         /** Voucher
@@ -146,6 +150,10 @@ Route::middleware("auth:sanctum")->group(function () {
          */
         Route::group(['prefix' => 'vouchers'], function() {
             Route::get("/", [VoucherController::class, "index"]);
+            Route::get("/{id}", [VoucherController::class, "show"]);
+            Route::post("/create", [VoucherController::class, "store"]);
+            Route::put("/{id}/update", [VoucherController::class, "update"]);
+            Route::delete("/{id}/destroy={state}", [VoucherController::class, "destroy"]);
         });
 
         /** Feedback
@@ -163,6 +171,14 @@ Route::middleware("auth:sanctum")->group(function () {
          */
         Route::group(['prefix' => 'carts'], function() {
             Route::get("/", [CartController::class, "all"]);
+            // Check state before show (to determine whether it was viewed from admin POV or Customer POV)
+            Route::get("/{id}/state={state}", [CartController::class, "index"]);
+            Route::delete("/{id}/remove/{productId}", [CartController::class, "removedProduct"]);
+            Route::delete("/{id}/empty", [CartController::class, "emptyCart"]);
+
+            /** Still in debate about this section
+             * Add "Add product to cart" (with update function ?) (?)
+             */
         });     
     
         /** Email
@@ -200,7 +216,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/avatar/destroy", [UserAuthController::class, "destroyAvatar"]);
 
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
-        Route::get("/cart", [CartController::class, "index"]);
+        Route::get("/cart/state={state}", [CartController::class, "index"]);
         Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
         Route::post("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
         Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
@@ -211,9 +227,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
         Route::post("/order/placeorder", [OrderController::class, "store"]); // Placeorder
         Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
-
-        // Check voucher expired date
-
 
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)
