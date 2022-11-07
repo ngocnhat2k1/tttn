@@ -16,14 +16,13 @@ class VoucherCustomerController extends Controller
         $vouchers = Order::query()
         ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent", "vouchers.expired_date")
         ->where("customer_id", "=", $customer->id)
-        ->join("vouchers", "orders.voucher_id", "=", "vouchers.id")
-        ->get();
+        ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
         
         if (!$vouchers->exists()) {
             return response()->json();
         }
 
-        return new VoucherCustomerOverviewCollection($vouchers);
+        return new VoucherCustomerOverviewCollection($vouchers->get());
     }
 
     public function show(Customer $customer, Voucher $voucher) {
@@ -31,9 +30,15 @@ class VoucherCustomerController extends Controller
         ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent", "vouchers.expired_date")
         ->where("voucher_id", "=", $voucher->id)
         ->where("customer_id", "=", $customer->id)
-        ->join("vouchers", "orders.voucher_id", "=", "vouchers.id")
-        ->first();
+        ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 
-        return new OrderDetailResource($data);
+        if (!$data->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This customer hasn't used this voucher yet"
+            ]);
+        }
+
+        return new OrderDetailResource($data->first());
     }
 }

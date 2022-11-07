@@ -16,7 +16,7 @@ class CartViewResource extends JsonResource
     {
         return [
             "customerId" => $this->id,
-            "products" => ProductDetailResource::collection($this->products)
+            "products" => ProductInCartViewResource::collection($this->products)
         ];
     }
 }
