@@ -1,20 +1,9 @@
 import React from 'react'
-import { Link, useSearchParams } from 'react-router-dom';
-import usePaginate from "../../Hook/usePaginate";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
-import ListUsers from './ListUsers/ListUsers';
-import styles from './PaginatedItems.module.scss'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../DashBoard.css'
-import './Users.css'
 
-const Users = () => {
-    const [searchParams] = useSearchParams();
-    const { data, page, nextPage, prevPage, lastPage } = usePaginate(
-        "http://127.0.0.1:8000/api/v1/users",
-        searchParams
-    );
-
+const Category = () => {
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -33,11 +22,11 @@ const Users = () => {
                                         <th scope="col">Subscribed</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                {/* <tbody>
                                     <ListUsers listUsers={data} />
-                                </tbody>
+                                </tbody> */}
                             </table>
-                            < Col lg={12}>
+                            {/* < Col lg={12}>
                                 <ul className={styles.pagination}>
                                     {page > 1 && <li className={styles.pageItem}>
                                         <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
@@ -67,7 +56,7 @@ const Users = () => {
                                         <Link to={`?page=${nextPage}`} className={styles.pageLink}>»</Link>
                                     </li>}
                                 </ul>
-                            </Col>
+                            </Col> */}
 
                         </div>
                     </div>
@@ -75,9 +64,8 @@ const Users = () => {
                 </div>
 
             </div>
-
         </Col>
     )
 }
 
-export default Users
+export default Category

@@ -11,7 +11,8 @@ import Product from './Product/Product'
 import Order from './Order/Order'
 import Users from './Users/Users'
 import AddProduct from './AddProduct/AddProduct'
-import LoginArea from '../LoginArea';
+import Category from './Category/Category';
+import Voucher from './Voucher/Voucher';
 
 
 const VendorArea = () => {
@@ -28,6 +29,8 @@ const VendorArea = () => {
                         <Route path='/all-order' element={<Order />} />
                         <Route path='/vendor-users' element={<Users />} />
                         <Route path='/add-products' element={<AddProduct />} />
+                        <Route path='/vendor-category' element={<Category />} />
+                        <Route path='/vendor-voucher' element={<Voucher />} />
                     </Routes>
                 </Row>
             </Container>
