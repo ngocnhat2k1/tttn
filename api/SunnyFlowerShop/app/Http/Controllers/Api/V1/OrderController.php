@@ -92,7 +92,7 @@ class OrderController extends Controller
 
             // Check expired date and "Deleted" Attributes
             $current_date = date("Y-m-d H:i:s");
-            
+
             if ((strtotime($vouchers->expired_date) - strtotime($current_date)) < 0 || $vouchers->deleted !== null) {
                 return response()->json([
                     "success" => false,
@@ -107,6 +107,18 @@ class OrderController extends Controller
                     "errors" => "Voucher code is out of usage, better luck next time"
                 ]);
             }
+
+            // Check Customer has already used vouher (?)
+            $voucher_exist_in_customer = Order::where("voucher_id", "=", $vouchers->id)
+                ->where("customer_id", "=", $request->user()->id)->exists();
+
+            if ($voucher_exist_in_customer) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "You have already used this voucher."
+                ]);
+            }
+            
         } else {
             return response()->json([
                 "success" => false,
@@ -229,8 +241,14 @@ class OrderController extends Controller
 
         // Check Order isExists
         $query = Order::where("orders.id", "=", $request->id)
-            ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name",
-            "vouchers.percent", "vouchers.expired_date", "vouchers.deleted")
+            ->addSelect(
+                "orders.*",
+                "vouchers.id as voucher_id",
+                "vouchers.name",
+                "vouchers.percent",
+                "vouchers.expired_date",
+                "vouchers.deleted"
+            )
             ->where("customer_id", "=", $request->user()->id)
             ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 

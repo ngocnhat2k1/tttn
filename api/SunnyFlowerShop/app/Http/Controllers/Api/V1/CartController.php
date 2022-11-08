@@ -241,7 +241,14 @@ class CartController extends Controller
 
     public function update(UpdateProductToCartRequest $request)
     {
-        $customer = Customer::find($request->user()->id);
+        // If state is 0, then check Customer (from customer site)
+        if ((int) $request->state === 0){
+            $customer = Customer::find($request->user()->id);
+        }
+        // If state is 1, then check Customer (from Admin site)
+        else {
+            $customer = Customer::find($request->id);
+        }
 
         $product = Product::find($request->product_id);
 
@@ -258,10 +265,21 @@ class CartController extends Controller
 
         $check = $query->exists();
 
-        if (empty($check)) {
+        if (!$check) {
+            if ($request->quantity < 0) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Can't add product to cart with negative quantity"
+                ]);
+            }
+
+            $customer->customer_product_cart()->attach($product,[
+                "quantity" => $request->quantity
+            ]);
+
             return response()->json([
-                "success" => false,
-                "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"
+                "success" => true,
+                "message" => "Product with ID = " . $request->product_id . " has successfully been added with " . $request->quantity . " quantity"
             ]);
         }
 
