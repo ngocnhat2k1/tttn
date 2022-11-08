@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductToCartRequest;
 use App\Http\Requests\UpdateProductToCartRequest;
 use App\Http\Resources\V1\CartViewResource;
+use App\Http\Resources\V1\CustomerOverviewCollection;
+use App\Http\Resources\V1\ProductListCollection;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,22 +17,39 @@ class CartController extends Controller
 {
     // NEED TO RECONSIDER ADDING "CREATED_AT" & "UDPATED_ATT" COLUMN TO TABLE
     // REASON FOR CHECKING USER ACTIVITIES TO MAKE A DECISION TO FREE UP SPACE IN DATABASE VIA PIVOT CART TABLE
-    public function all() {
-        
+
+    /** Admin FUNCTION */
+    public function all()
+    {
+        // Because we use customer ID as Cart ID so it makes sense that we reuse the other resource api view from other controller
+        $customers = Customer::paginate(10);
+
+        return new CustomerOverviewCollection($customers);
     }
 
+    /** Admin & CUSTOMER FUNCTION */
     public function index(Request $request)
     {
-        $check = Customer::where("id", "=", $request->user()->id);
+        // if state is 0, then it's viewed from Customer POV
+        if ((int) $request->state === 0) {
+            $user = $request->user()->id;
+        }
+        // If state is not 0 (it's 1), then it's viewed from Admin POV
+        else {
+            $user = $request->id;
+        }
 
-        if ($check->get()->count() === 0) {
+        $check = DB::table("customer_product_cart")
+            ->where("customer_id", "=", $user)->exists();
+
+        if (!$check) {
             return response()->json([
                 "success" => false,
                 "errors" => "This user hasn't added any product to cart yet"
             ]);
         }
 
-        $customer = $check->first();
+        $customer = Customer::where("id", "=", $user)->first();
 
         $customer['products'] = $customer->customer_product_cart;
 
@@ -39,6 +58,85 @@ class CartController extends Controller
         ]);
     }
 
+    public function removedProduct(Request $request) {
+        $customer = Customer::where("id", "=", $request->id);
+        $product = Product::where("id", "=", $request->productId);
+
+        if (!$customer->exists() || !$product->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Something went wrong - Please recheck Customer ID and Product ID"
+            ]);
+        }
+
+        $product_cart = DB::table("customer_product_cart")
+            ->where("customer_id", "=", $customer->first()->id)
+            ->where("product_id", "=", $product->first()->id);
+
+        // Check emptiness of Customer cart
+        if (!$product_cart->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't find product in Customer Cart, product may already got deleted"
+            ]);
+        }
+
+        $delete = $product_cart->delete();
+
+        // if (empty($delete) || empty($detach)) {
+        if (empty($delete)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => false,
+            "messagee" => "Removed Product with ID = " . $product->first()->id ." from Customer Cart with ID = " . $customer->first()->id . " successfully"
+        ]);
+    }
+
+    public function emptyCart(Request $request)
+    {
+        $customer = Customer::where("id", "=", $request->id);
+
+        if (!$customer->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't empty Customer Cart with invalid Customer ID"
+            ]);
+        }
+
+        $cart_customer = DB::table("customer_product_cart")
+            ->where("customer_id", "=", $customer->first()->id);
+
+        // Check emptiness of Customer cart
+        if (!$cart_customer->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't empty an Empty Cart"
+            ]);
+        }
+
+        $delete = $cart_customer->delete();
+
+        // if (empty($delete) || empty($detach)) {
+        if (empty($delete)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => false,
+            "messagee" => "Emptied Customer Cart with ID = " . $customer->first()->id . " successfully"
+        ]);
+    }
+    /** END OF ADMIN FUNCTION */
+
+    /** CUSTOMER FUNCTION */
     public function store(StoreProductToCartRequest $request)
     {
         if ($request->quantity < 0) {
@@ -51,6 +149,13 @@ class CartController extends Controller
         $customer = Customer::find($request->user()->id);
 
         $product = Product::find($request->product_id);
+
+        if (empty($customer) || empty($product)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Please recheck Customer ID and Product ID"
+            ]);
+        }
 
         $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
 
@@ -93,6 +198,13 @@ class CartController extends Controller
 
         $product = Product::find($request->id);
 
+        if (empty($customer) || empty($product)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Please recheck Customer ID and Product ID"
+            ]);
+        }
+
         $query = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $product->id);
@@ -132,6 +244,13 @@ class CartController extends Controller
         $customer = Customer::find($request->user()->id);
 
         $product = Product::find($request->product_id);
+
+        if (empty($customer) || empty($product)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Please recheck Customer ID and Product ID"
+            ]);
+        }
 
         $query = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
@@ -181,6 +300,13 @@ class CartController extends Controller
         $customer = Customer::find($request->user()->id);
 
         $product = Product::find($request->id);
+
+        if (empty($customer) || empty($product)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Please recheck Customer ID and Product ID"
+            ]);
+        }
 
         $check = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)

@@ -12,6 +12,7 @@ class Order extends Model
     protected $fillable = [
         "customer_id",
         "voucher_id",
+        "id_delivery",
         "date_order",
         "address",
         "name_receiver",

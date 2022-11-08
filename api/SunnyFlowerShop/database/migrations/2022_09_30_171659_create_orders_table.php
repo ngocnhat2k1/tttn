@@ -18,6 +18,7 @@ return new class extends Migration
             // $table->foreign("customer_id")->references("id")->on("customers");
             $table->integer("customer_id"); // foreign key of id in customers table
             $table->foreignId("voucher_id")->nullable(); // NULL only happen when customer don't use voucher
+            $table->string("id_delivery"); // NULL only happen when customer don't use voucher
             $table->dateTime("date_order");
             $table->string("address");
             $table->string("name_receiver");

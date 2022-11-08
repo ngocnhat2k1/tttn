@@ -17,10 +17,13 @@ class OrderDetailResource extends JsonResource
         return [
             "id" => $this->id,
             "customerId" => $this->customer_id,
-            "voucherId" => $this->voucher_id,
-            "nameVoucher" => $this->name,
-            "percentSale" => $this->percent,
-            "expiredDate" => $this->expired_date,
+            // "voucherId" => $this->voucher_id,
+            "voucher" => [
+                "nameVoucher" => $this->name,
+                "percentSale" => $this->percent,
+                "expiredDate" => $this->expired_date,
+                "deleted" => $this->deleted,
+            ],
             "dataOrder" => $this->date_order,
             "address" => $this->address,
             "nameReceiver" => $this->name_receiver,

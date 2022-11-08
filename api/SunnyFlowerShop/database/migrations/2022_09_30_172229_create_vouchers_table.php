@@ -17,8 +17,10 @@ return new class extends Migration
             $table->id();
             // Will add unique to name column later
             $table->string("name")->index();
-            $table->unsignedTinyInteger("percent");
+            $table->unsignedTinyInteger("percent")->comment("Max is 100");
+            $table->unsignedInteger("usage");
             $table->dateTime("expired_date");
+            $table->boolean("deleted")->nullable()->comment("1 for deleted, NULL for default value");
             $table->timestamps();
         });
     }

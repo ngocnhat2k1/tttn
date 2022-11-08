@@ -22,6 +22,7 @@ class OrderFactory extends Factory
         return [
             "customer_id" => Customer::factory(),
             "voucher_id" => Voucher::factory(),
+            "id_delivery" => $this->faker->name(),
             "date_order" => $this->faker->dateTimeThisDecade(),
             "address" => $this->faker->streetAddress(),
             "name_receiver" => $this->faker->name(),

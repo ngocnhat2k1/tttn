@@ -9,6 +9,7 @@ use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,7 @@ class OrderController extends Controller
 
     public function store(StoreOrderRequest $request)
     {
+        /** ##### IF CONDITION SECTION ##### */
         $customer = Customer::find($request->user()->id);
 
         // Need to reconsider this IF Condition
@@ -76,37 +78,105 @@ class OrderController extends Controller
             ]);
         }
 
+        // Set to Vietnam timezone
+        // date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // Check voucher existence
+        // $query = Voucher::where("id", "=", $request->voucher_id);
+        $query = Voucher::where("name", "=", $request->voucher_code);
+
+        // If voucher is existed, then continue checking voucher attributes
+        if ($query->exists()) {
+
+            $vouchers = $query->first();
+
+            // Check expired date and "Deleted" Attributes
+            $current_date = date("Y-m-d H:i:s");
+            
+            if ((strtotime($vouchers->expired_date) - strtotime($current_date)) < 0 || $vouchers->deleted !== null) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Voucher code is expired, please recheck your voucher code"
+                ]);
+            }
+
+            // Check usage
+            if ($vouchers->usage === 0) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Voucher code is out of usage, better luck next time"
+                ]);
+            }
+        } else {
+            return response()->json([
+                "success" => false,
+                "errors" => "Voucher code doesn't exist, please recheck your voucher code"
+            ]);
+        }
+
+        // Check product is available or already got deleted
+        $count = 0;
+        for ($i = 0; $i < sizeof($data); $i++) {
+            $value = Product::where("id", "=", $data[$i]->product_id)->first();
+
+            if ($value->status === 0 || $value->deleted_at !== null) {
+                $count++;;
+            }
+        }
+
+        // if count !== 0, that mean 1 or 2 product is got deleted or already out of stock
+        if ($count !== 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "1 or 2 product got deleted or have already out of stock, please recheck your cart"
+            ]);
+        }
+        /** ##### END OF IF CONDITION SECTION ##### */
+
         $arr = [];
         $total_price = 0;
 
         for ($i = 0; $i < sizeof($data); $i++) {
-            $value = DB::table("products")
-                ->where("id", "=", $data[$i]->product_id)
-                ->first();
+            $value = Product::where("id", "=", $data[$i]->product_id)->first();
 
             $arr[$i]['product_id'] = $value->id;
             $arr[$i]['quantity'] = $data[$i]->quantity;
             $arr[$i]['price'] = $value->price;
             $arr[$i]['percent_sale'] = $value->percent_sale;
             $sale_price = $value->price * $value->percent_sale / 100;
+
             $total_price = $total_price + (($value->price - $sale_price) * $data[$i]->quantity);
         }
 
         // Check if existence of voucherId
-        if ($request->voucher_id === null) {
-            $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+        if ($request->voucher_code === null) {
+            $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
             $filtered["customer_id"] = $request->user()->id;
             $filtered["total_price"] = $total_price;
-        } else {
-            $voucher_sale = DB::table("vouchers")
-                ->where("id", "=", $request->voucher_id)
-                ->first();
 
-            $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+            dd($total_price);
+        } else {
+            $voucher_sale = $query->first();
+
+            $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+            $filtered['voucher_id'] = $voucher_sale->id;
             $filtered["customer_id"] = $request->user()->id;
             $filtered["total_price"] = $total_price - (($total_price * $voucher_sale->percent) / 100);
         }
 
+        // Change usage value of voucher
+        $voucher_data = $query->first();
+
+        if ($voucher_data->usage === 1) { // If voucher usage is = 1, then change its value to 0 and change deleted value
+            $voucher_data->usage = 0;
+            $voucher_data->deleted = 1;
+            $voucher_data->save();
+        } else { // If voucher usage is not = 0, then descrease like normal
+            $voucher_data->usage = $voucher_data->usage - 1;
+            $voucher_data->save();
+        }
+
+        // Add order to database
         $check = Order::create($filtered);
 
         // Check if data insert to database isSuccess
@@ -159,7 +229,8 @@ class OrderController extends Controller
 
         // Check Order isExists
         $query = Order::where("orders.id", "=", $request->id)
-            ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent")
+            ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name",
+            "vouchers.percent", "vouchers.expired_date", "vouchers.deleted")
             ->where("customer_id", "=", $request->user()->id)
             ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 

@@ -19,6 +19,7 @@ class VoucherFactory extends Factory
     {
         return [
             "name" => $this->faker->company(), // Uhh... I.. Don't.. Know...
+            "usage" => $this->faker->numberBetween(1, 60),
             "percent" => $this->faker->numberBetween(1, 60),
             "expired_date" => $this->faker->dateTimeThisDecade(),
         ];

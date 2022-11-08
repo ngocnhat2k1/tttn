@@ -200,7 +200,6 @@ class AddressCustomerController extends Controller
         // Delete address with Address ID in Addresses table
         $delete = $query_address->delete();
 
-
         // if (empty($delete) || empty($detach)) {
         if (empty($delete)) {
             return response()->json([
