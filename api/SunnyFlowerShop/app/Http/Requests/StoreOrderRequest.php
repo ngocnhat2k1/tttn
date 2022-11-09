@@ -50,11 +50,6 @@ class StoreOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            "status" => [
-                "required",
-                "integer",
-                Rule::in(OrderStatusEnum::asArray()),
-            ],
             "paidType" => [
                 "required",
                 "boolean",

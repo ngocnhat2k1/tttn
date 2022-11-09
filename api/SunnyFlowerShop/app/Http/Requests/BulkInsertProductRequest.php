@@ -44,10 +44,6 @@ class BulkInsertProductRequest extends FormRequest
                 "required",
                 "integer"
             ],
-            "*.status" => [
-                "required",
-                "boolean",
-            ],
             "*.img" => [
                 "required",
                 "string",
