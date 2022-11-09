@@ -22,7 +22,7 @@ return new class extends Migration
             $table->longText("img")->nullable();
             // $table->string("noteable")->comment("Unique thing about this product");
             $table->integer("quantity")->unsigned();
-            $table->boolean("status")->comment("1 for in stock; 0 for out of stock");
+            $table->boolean("status")->default(1)->comment("1 for in stock; 0 for out of stock");
             $table->boolean("deleted_at")->nullable()->comment("Value not NULL will be SOFT deleted (i mean hide)");
             $table->timestamps();
         });
