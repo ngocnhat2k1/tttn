@@ -36,12 +36,24 @@ const CategoryEditModal = ({ idDetail }) => {
     }, []);
 
     const onSubmit = (data) => {
+        console.log(data)
         axios
-            .post(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/update`, data, {
+            .put(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/update`, data, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`
                 },
             })
+            .then((response) => {
+                alert(response.data.success);
+                console.log(response.data.error);
+                if (response.data.success === true) {
+                    window.location.href = 'http://localhost:4000/vendor-category';
+                }
+            })
+            .catch(function (error) {
+                alert(error);
+                console.log(error);
+            });
     }
     const onChangeName = (e) => {
         setCategoryName(e.target.value)
@@ -60,7 +72,7 @@ const CategoryEditModal = ({ idDetail }) => {
                             <Row>
                                 <Col lg={12}>
                                     <div className="fotm-group">
-                                        <label for="name">Category Name</label>
+                                        <label htmlFor="name">Category Name</label>
                                         <input type="text"
                                             className="form-control"
                                             id="name"
@@ -69,8 +81,8 @@ const CategoryEditModal = ({ idDetail }) => {
                                     </div>
                                 </Col>
                             </Row>
-                            <div class="btn_right_table">
-                                <button class="theme-btn-one bg-black btn_sm">Save</button>
+                            <div className="btn_right_table">
+                                <button className="theme-btn-one bg-black btn_sm">Save</button>
                             </div>
                         </form>
 

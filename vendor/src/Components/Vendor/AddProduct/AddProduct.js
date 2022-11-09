@@ -6,11 +6,13 @@ import '../DashBoard.css'
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import Category from '../Category/Category';
 
 const AddProduct = () => {
     const [image, setImage] = useState('');
     const [listCategories, setListCategories] = useState([]);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    console.log(listCategories)
 
     const handleImage = (e) => {
         const file = e.target.files[0];
@@ -26,8 +28,6 @@ const AddProduct = () => {
             }
             console.log(Reader.result)
         };
-        console.log(Reader)
-        console.log(image)
     };
     // get all categories   
     useEffect(() => {
@@ -46,10 +46,9 @@ const AddProduct = () => {
         console.log('submit')
         const payload = {
             ...data,
-            file: image
+            img: image,
+            category: [{ id: Number(data.category) }]
         }
-        // const formData = new FormData();
-        // formData.append("imageInput", image)
         console.log("cái data", payload)
 
         axios
@@ -122,15 +121,24 @@ const AddProduct = () => {
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
                                                         <label htmlFor="Caterory">Caterory</label>
-                                                        <select
+                                                        {/* <select
                                                             {...register("category", { required: true })}
                                                             id="Caterory">
                                                             {listCategories.map((Categories) => {
                                                                 return (
-                                                                    <option key={Categories.id} value={Categories.name}>{Categories.name}</option>
+                                                                    <option key={Categories.id} value={Categories.id}>{Categories.name}</option>
                                                                 )
                                                             })}
-                                                        </select>
+                                                            
+                                                        </select> */}
+                                                        <input
+                                                            id='Caterory'
+                                                            type='checkbox'
+                                                            placeholder='January'
+                                                            {...register('January', {})}
+                                                            className='form-control'
+                                                            checked
+                                                        />
                                                     </div>
                                                 </Col>
                                                 <Col lg={6}>
