@@ -4,7 +4,6 @@ import Row from 'react-bootstrap/Row'
 import { FaImage } from 'react-icons/fa'
 import '../DashBoard.css'
 import { useForm } from "react-hook-form";
-import './Addproduct.css'
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -25,14 +24,17 @@ const AddProduct = () => {
                 setImage(Reader.result);
 
             }
+            console.log(Reader.result)
         };
         console.log(Reader)
+        console.log(image)
     };
+    // get all categories   
     useEffect(() => {
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories`, {
                 headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 }
             })
             .then((response) => {
@@ -51,11 +53,10 @@ const AddProduct = () => {
         console.log("cái data", payload)
 
         axios
-            .post(
-                'http://127.0.0.1:8000/api/v1/products/add', payload,
+            .post('http://127.0.0.1:8000/api/v1/products/add', payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${Cookies.get('accessToken')}`,
+                        Authorization: `Bearer ${Cookies.get('adminToken')}`,
                     },
                 },
             )

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-
 import "./VendorArea.css"
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';

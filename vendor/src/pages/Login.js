@@ -12,7 +12,7 @@ class Login extends Component {
 
 
   render() {
-    if (Cookies.get('token') !== undefined) {
+    if (Cookies.get('adminToken') !== undefined) {
       window.location.href = 'http://localhost:4000';
     };
 

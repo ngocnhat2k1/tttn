@@ -1,12 +1,11 @@
 import React from 'react'
 import { Link, useSearchParams } from 'react-router-dom';
-import usePaginate from "../../Hook/usePaginate";
+import usePaginate from "../../Hook/usePagination/usePaginate";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import ListUsers from './ListUsers/ListUsers';
-import styles from './PaginatedItems.module.scss'
+import styles from '../../Hook/usePagination/PaginatedItems.module.scss'
 import '../DashBoard.css'
-import './Users.css'
 
 const Users = () => {
     const [searchParams] = useSearchParams();

@@ -13,22 +13,21 @@ function TopHeader() {
     const [user, setUser] = useState();
 
     useEffect(() => {
-        if (Cookies.get('token') !== undefined) {
+        if (Cookies.get('adminToken') !== undefined) {
             axios
-                .get(`http://localhost:8000/api/user/profile`, {
+                .get(`http://127.0.0.1:8000/api/admin/profile`, {
                     headers: {
-                        Authorization: `Bearer ${Cookies.get('token')}`,
+                        Authorization: `Bearer ${Cookies.get('adminToken')}`,
                     },
                 })
                 .then((response) => {
-                    setUser(response.data.data);
+                    setUser(response.data);
                 })
                 .catch(function (error) {
-                    // console.log(error);
+                    console.log('error')
                 });
         }
     }, []);
-
     return (
         <section className={styles.divTopheader}>
             <Container className={styles.container}>
@@ -39,7 +38,8 @@ function TopHeader() {
                         </div>
                     </Col>
                     <Col lg={6} md={6} sm={12} xs={12}>
-                        {user && <TopHeaderRightAuth user={user} /> || !user && <TopHeaderRightDefault />}
+                        {user && <TopHeaderRightAuth user={user} />}
+                        {!user && <TopHeaderRightDefault />}
                     </Col>
                 </Row>
             </Container>

@@ -4,9 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import '../DashBoard.css'
-import './Product.css'
-import usePaginate from "../../Hook/usePaginate";
-import styles from './PaginatedItems.module.scss'
+import usePaginate from "../../Hook/usePagination/usePaginate";
+import styles from '../../Hook/usePagination/PaginatedItems.module.scss'
 import ListProducts from './ListProduct/ListProduct';
 
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from '../../../../service/axiosClient';
 
-function TopHeaderRightAuth(user) {
+function TopHeaderRightAuth({ user }) {
     const handleLogout = () => {
 
         axios
@@ -13,15 +13,16 @@ function TopHeaderRightAuth(user) {
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${Cookies.get('token')}`,
+                        Authorization: `Bearer ${Cookies.get('adminToken')}`,
                     },
                 },
             )
             .then(function (response) {
                 if (response.data.success) {
-                    Cookies.remove('token', { path: '/' });
-                    window.location.href = 'http://127.0.0.1:3000/login';
-                } else {
+                    Cookies.remove('adminToken', { path: '/' });
+                    window.location.href = 'http://127.0.0.1:4000/login';
+                }
+                else {
                     console.log(response);
                 }
             })
@@ -33,11 +34,8 @@ function TopHeaderRightAuth(user) {
     return (
         <div className={styles.divRight}>
             <ul className={styles.rightList}>
-                <li>
-                    <Link to="/order-tracking"><FaTruck fontSize={18} /> Track your Order</Link>
-                </li>
                 <li className={styles.account}>
-                    <img src={user.user.avatar} alt="avatar" />{user.user.firstName} {user.user.lastName}
+                    <img src={user.defaultAvatar} alt="avatar" />{user.userName}
                     <FaAngleDown fontSize={12} />
                     <ul className={styles.dropDown}>
                         <li>

@@ -7,14 +7,6 @@ import CommonBanner from '../Components/CommonBanner';
 import RegisterArea from '../Components/RegisterArea';
 
 class Register extends Component {
-  // state = {
-  //   message: ''
-  // };
-
-  // componentDidMount() {
-  //   axios.get('/api/test')
-  //     .then(result => this.setState({ message: result.data.message }))
-  // };
 
   render() {
     return (
