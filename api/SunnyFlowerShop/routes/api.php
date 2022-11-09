@@ -86,12 +86,6 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post("/{customer}/address/create", [AddressCustomerController::class, "store"]);
             Route::put("/{customer}/address/{address}/update", [AddressCustomerController::class, "update"]);
             Route::delete("/{customer}/address/{address}/destroy", [AddressCustomerController::class, "destroy"]);
-            
-            /** Cart from User info
-             * Add product to cart from specific user (add 1 value of product; Update any value of any product to cart; Reduce 1 value of product)
-             * Remove product from cart from specific user
-             * Empty cart from specific user
-             */
 
             // Order from User info
             Route::get("/{customer}/orders", [OrderCustomerController::class, "index"]);
@@ -175,10 +169,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{id}/state={state}", [CartController::class, "index"]);
             Route::delete("/{id}/remove/{productId}", [CartController::class, "removedProduct"]);
             Route::delete("/{id}/empty", [CartController::class, "emptyCart"]);
-
-            /** Still in debate about this section
-             * Add "Add product to cart" (with update function ?) (?)
-             */
+            Route::put("/{id}/update/state={state}", [CartController::class, "update"]);
         });     
     
         /** Email
@@ -218,7 +209,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
         Route::get("/cart/state={state}", [CartController::class, "index"]);
         Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
-        Route::post("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
+        Route::put("/cart/update/state={state}", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
         Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
         Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
 
