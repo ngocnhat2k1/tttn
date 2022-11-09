@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
-import { FaImage } from 'react-icons/fa'
+import { FaImage, FaCheck } from 'react-icons/fa'
 import '../DashBoard.css'
 import { useForm } from "react-hook-form";
 import axios from 'axios';
@@ -12,7 +12,7 @@ const AddProduct = () => {
     const [image, setImage] = useState('');
     const [listCategories, setListCategories] = useState([]);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    console.log(listCategories)
+    const [isChecked, setIsChecked] = useState(false);
 
     const handleImage = (e) => {
         const file = e.target.files[0];
@@ -43,11 +43,16 @@ const AddProduct = () => {
     }, [])
 
     const onSubmit = data => {
-        console.log('submit')
+        const list = []
+
+        for (let i = 0; i < data.category.length; i++) {
+            list.push({ id: data.category[i] })
+        }
+        console.log(list)
         const payload = {
             ...data,
             img: image,
-            category: [{ id: Number(data.category) }]
+            category: list
         }
         console.log("cái data", payload)
 
@@ -63,7 +68,7 @@ const AddProduct = () => {
                 alert(response.data.success);
                 console.log(response.data.error);
                 if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/products';
+                    window.location.href = 'http://localhost:4000/all-products';
                 }
             })
             .catch(function (error) {
@@ -120,27 +125,18 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="Caterory">Caterory</label>
-                                                        {/* <select
-                                                            {...register("category", { required: true })}
-                                                            id="Caterory">
-                                                            {listCategories.map((Categories) => {
-                                                                return (
-                                                                    <option key={Categories.id} value={Categories.id}>{Categories.name}</option>
-                                                                )
-                                                            })}
-                                                            
-                                                        </select> */}
+                                                        <label htmlFor="quantity">Quantity</label>
                                                         <input
-                                                            id='Caterory'
-                                                            type='checkbox'
-                                                            placeholder='January'
-                                                            {...register('January', {})}
+                                                            id='quantity'
+                                                            type="number"
                                                             className='form-control'
-                                                            checked
-                                                        />
+                                                            placeholder='45'
+                                                            {...register("quantity", { required: true }, { min: 1 })} />
+                                                        {errors.quantity?.type && <span className='error'>Không được bỏ trống mục này</span>}
+                                                        {errors.percentSale && <span className='error'>Số lượng phải lớn hơn 1</span>}
                                                     </div>
                                                 </Col>
+
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
                                                         <label htmlFor="percent_sale">Percent Sale</label>
@@ -152,17 +148,29 @@ const AddProduct = () => {
                                                         {errors.percentSale && <span className='error'>Phần trăm giảm giá chỉ có thể từ 1-99</span>}
                                                     </div>
                                                 </Col>
-                                                <Col lg={6}>
+                                                <Col lg={12}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="quantity">Quantity</label>
-                                                        <input
-                                                            id='quantity'
-                                                            type="number"
-                                                            className='form-control'
-                                                            placeholder='45'
-                                                            {...register("quantity", { required: true }, { min: 1 })} />
-                                                        {errors.quantity?.type && <span className='error'>Không được bỏ trống mục này</span>}
-                                                        {errors.percentSale && <span className='error'>Số lượng phải lớn hơn 1</span>}
+                                                        <label htmlFor="Caterory">Caterory</label>
+                                                        <Row>
+                                                            {listCategories.map((category) => {
+                                                                return (
+
+                                                                    <Col lg={3} key={category.id}>
+                                                                        <div className='checkbox_group'>
+                                                                            <input
+                                                                                id='Caterory'
+                                                                                type='checkbox'
+                                                                                value={category.id}
+                                                                                className='check_box'
+                                                                                {...register("category")}
+                                                                            />
+
+                                                                            <p>{category.name}</p>
+                                                                        </div>
+                                                                    </Col>
+                                                                )
+                                                            })}
+                                                        </Row>
                                                     </div>
                                                 </Col>
                                                 <Col lg={12}>
@@ -193,9 +201,7 @@ const AddProduct = () => {
                                     </div>
                                 </Col>
                             </Row>
-
                         </div>
-
                     </div>
                 </div>
 

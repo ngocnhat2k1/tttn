@@ -4,7 +4,9 @@ import CategoryEditModal from '../CategoryEditModal/CategoryEditModal'
 
 const ListCategories = ({ currentCategory }) => {
 
+    const handleDelte = () => {
 
+    }
     return (
         <>
             {currentCategory.map((Category) => {
@@ -18,7 +20,7 @@ const ListCategories = ({ currentCategory }) => {
 
                         <td><CategoryEditModal idDetail={Category.id} />
                             <button >
-                                <FaTrash></FaTrash>
+                                <FaTrash onClick={handleDelte}></FaTrash>
                             </button>
                         </td>
 
