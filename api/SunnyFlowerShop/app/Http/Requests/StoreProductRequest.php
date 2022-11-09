@@ -54,10 +54,6 @@ class StoreProductRequest extends FormRequest
                 "required",
                 "integer"
             ],
-            "status" => [
-                "required",
-                "boolean",
-            ],
             "category" => [
                 "*.id" => [
                     "required",

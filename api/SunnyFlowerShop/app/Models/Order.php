@@ -18,7 +18,6 @@ class Order extends Model
         "name_receiver",
         "phone_receiver",
         "total_price",
-        "status",
         "paid_type",
         "deleted_by",
     ];
