@@ -162,7 +162,7 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            "success" => false,
+            "success" => true,
             "messagee" => "Deleted category successfully"
         ]);
     }
