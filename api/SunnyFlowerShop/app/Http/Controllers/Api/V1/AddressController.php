@@ -209,7 +209,7 @@ class AddressController extends Controller
 
         if (empty($check) || !$customer) {
             return response()->json([
-                "success" => true,
+                "success" => false,
                 "errors" => "Something went wrong - Either customer_id or address_id is invalid"
             ]);
         }

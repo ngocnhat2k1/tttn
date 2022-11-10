@@ -99,6 +99,14 @@ class AdminAuthController extends Controller
             "success" => true,
             "token_type" => "Bearer",
             "token" => $token,
+            "data" => [
+                "id" => $admin->id,
+                "userName" => $admin->user_name,
+                "email" => $admin->email,
+                "avatar" => $admin->avatar,
+                "defaultAvatar" => $admin->default_avatar,
+                "level" => $admin->level,
+            ]
         ]);
     }
 
