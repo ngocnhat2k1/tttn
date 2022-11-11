@@ -14,7 +14,9 @@ use Illuminate\Http\Request;
 
 class OrderCustomerController extends Controller
 {
-    public function all() {
+    /** ADMIN FUNCTIONs */
+    public function all()
+    {
         $check = Order::get()->count();
 
         if (empty($check)) {
@@ -26,19 +28,12 @@ class OrderCustomerController extends Controller
 
         return new OrderListCollection(Order::paginate(10));
     }
-    
+
+    /** END OF ADMIN FUNCTIONs */
+
     public function index(Customer $customer)
     {
-        $customer_data = Customer::find($customer->id);
-
-        if (empty($customer_data)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "User ID is invalid"
-            ]);
-        }
-
-        $order = $customer_data->orders;
+        $order = $customer->orders;
 
         if (empty($order)) {
             return response()->json([
@@ -56,14 +51,12 @@ class OrderCustomerController extends Controller
     public function show(Customer $customer, Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
-        $check = Customer::find($customer->id);
-
         $query = Order::where("orders.id", "=", $order->id)
             ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent")
             ->where("customer_id", "=", $customer->id)
             ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 
-        if (!$query->exists() || empty($check)) {
+        if (!$query->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck your Customer ID and Order ID"
@@ -85,28 +78,43 @@ class OrderCustomerController extends Controller
 
     public function update(UpdateOrderRequest $request, Customer $customer, Order $order)
     {
-        // Check existence of Order ID
-        $order = Order::find($order->id);
+        $query = Order::where("id", "=", $order->id)
+            ->where("customer_id", "=", $customer->id);
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer don't have this Order with ID = " . $order->id
+            ]);
+        }
+
+        $order_data = $query->first();    
 
         // Checking Order_status or Deleted_by column isNull
         // 0 fresh new and null is order doesn't get cancelled
-        if ($order->status === 0 && $order->deleted_by === null) {
+        if ($order_data->status === 0 && $order_data->deleted_by === null) {
             // Create products array
             $products = $request->products;
 
             // Get voucher & create total_price variable
-            $voucher = Voucher::find($request->voucher_id);
+            if ($request->voucher_id !== null) {
+                $voucher = Voucher::find($request->voucher_id);
+                $voucher_value = $voucher->percent;
+            } else {
+                $voucher_value = 0;
+            }
+
             $total_price = 0;
 
             // Delete all previous products in pivot "order_product" table
-            $order->products()->detach();
+            $order_data->products()->detach();
 
             // ReAdd all new products to pivot "order_product" table
             for ($i = 0; $i < sizeof($products); $i++) {
 
                 // Check product ID
                 $product = Product::find($products[$i]['id']);
-                $order->products()->attach($product, [
+                $order_data->products()->attach($product, [
                     "quantity" => $products[$i]["quantity"],
                     "price" => $product->price,
                     "percent_sale" => $product->percent_sale
@@ -117,14 +125,12 @@ class OrderCustomerController extends Controller
                 $total_price = $total_price + (($product->price - $sale_price) * $products[$i]["quantity"]);
             }
 
-            dd($total_price);
-
             // Calculate total price with voucher
             $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
             $filtered["customer_id"] = $customer->id;
-            $filtered["total_price"] = $total_price - (($total_price * $voucher->percent) / 100);
+            $filtered["total_price"] = $total_price - (($total_price * $voucher_value) / 100);
 
-            $check = $order->update($filtered);
+            $check = $order_data->update($filtered);
 
             // Check if data insert to database isSuccess
             if (empty($check)) {
@@ -149,28 +155,79 @@ class OrderCustomerController extends Controller
     public function updateStatus(Request $request, Customer $customer, Order $order)
     {
         /** Update current status of order 
-         * Status can only be changed from "In_prodgress" to "Shipping", "Completed" or "Received" Only available for customers (Maybe)
-         * When status is in "Shipping" status, quantity was store in pivot table "order_prodcut" with use to minus the quantity of products in "products" table
+         * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
+         * Status can only be changed from "Confirmed" to "Completed", no reverse allow
+         * When status is in "Completed" status, quantity was store in pivot table "order_prodcut" with use to minus the quantity of products in "products" table
          */
+
+        // Check order (Soft) Delete state and Order status
+        if ($order->deleted_by !==  null || $order->status === 2) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't Update Status when Order got cancelled or Order is in Completed state"
+            ]);
+        }
+
+        $query = Order::where("id", "=", $order->id)
+        ->where("customer_id", "=", $customer->id);
+
+        // Check Connection between Customer and Order
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer don't have this Order with ID = " . $order->id
+            ]);
+        }
+
+        $order_data = $query->first();
+
+        $state = (int) $request->state;
+        $order_data->status = $state;
+        $result = $order_data->save();
+
+        if (empty($result)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        if ($state === 0) { $order_state = "Pending"; }
+        else if ($state === 1) { $order_state = "Confirmed"; }
+        else { $order_state = "Completed"; }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Successfully Updated Order with ID = " . $order->id .  " to " . $order_state . " state"
+        ]);
     }
 
     public function destroy(Customer $customer, Order $order, Request $request)
     {
         // Checking The connection between Order and Customer
-        $order = Order::where("id", "=", $order->id)
+        $order_data = Order::where("id", "=", $order->id)
             ->where("customer_id", "=", $customer->id)
-            ->first();
+            ->exists();
 
-        if (empty($order)) {
+        if (!$order_data) {
             return response()->json([
                 "success" => false,
                 "errors" => "Please recheck Order ID and Customer ID"
             ]);
         }
 
+        // If Order state is 2 (Completed state), then return
+        if ($order->status === 2) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't cancelled Order in Completed State"
+            ]);
+        }
+
         // Check state to switch between (Soft) Delete and Reverse Delete
         // If value state is 1, it will be (Soft) Delete
-        if ((int)$request->state === 1) {
+        // State right here is delete state not Order state
+        if ((int)$request->state !== 0) {
             // Checking whether Deleted_by column is null or not
             if ($order->deleted_by !== null || $order->deleted_by === 0) {
                 return response()->json([
@@ -181,7 +238,6 @@ class OrderCustomerController extends Controller
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
             $order->deleted_by = 1;
-
             $result = $order->save();
 
             if (!$result) {
@@ -197,15 +253,11 @@ class OrderCustomerController extends Controller
                     'errors' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
                 ]
             );
-        
-        // If value state is not 1, it will be Reverse Delete
+
+            // If value state is not 1, it will be Reverse Delete
         } else {
             // Checking The connection between Order and Customer
-            $order = Order::where("id", "=", $order->id)
-                ->where("customer_id", "=", $customer->id)
-                ->first();
-
-            if (empty($order)) {
+            if (!$order_data) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Please recheck Order ID and Customer ID"
@@ -222,7 +274,6 @@ class OrderCustomerController extends Controller
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
             $order->deleted_by = null;
-
             $result = $order->save();
 
             if (!$result) {

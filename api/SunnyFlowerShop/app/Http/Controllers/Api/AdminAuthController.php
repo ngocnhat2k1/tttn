@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AdminAuth;
 use App\Models\AdminToken;
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +20,24 @@ class AdminAuthController extends Controller
     public function __construct()
     {
         $this->middleware("auth:sanctum", ["except" => ["setup", "login", "retrieveToken"]]);
+    }
+
+    public function dashboard() {
+        $orders = Order::where("status", "=", 2)->get()->count(); // Orders have status Completed considered as Sales
+        $recent_orders = Order::orderBy('created_at', 'DESC')->take(10)->get(); // Take top 10 orders are created ordered by "created_at" in descending order
+        $products = Product::get()->count(); // Total products has been created so far
+        $pending_orders = Order::where("status", "=", 0)->get()->count(); // Orders have status = 0 will be considered as Pending
+
+        if ($recent_orders->count() === 0) {
+            $recent_orders = "There is no any Recent Orders";
+        }
+        
+        return response()->json([
+            "totalSales" => $orders,
+            "totalProducts" => $products,
+            "totalOrdersPending" => $pending_orders,
+            "recentOrders" => $recent_orders
+        ]);
     }
 
     public function setup()
@@ -99,6 +119,14 @@ class AdminAuthController extends Controller
             "success" => true,
             "token_type" => "Bearer",
             "token" => $token,
+            "data" => [
+                "id" => $admin->id,
+                "userName" => $admin->user_name,
+                "email" => $admin->email,
+                "avatar" => $admin->avatar,
+                "defaultAvatar" => $admin->default_avatar,
+                "level" => $admin->level,
+            ]
         ]);
     }
 
@@ -228,15 +256,7 @@ class AdminAuthController extends Controller
             ]);
         }
 
-        $query = Admin::where("id", "=", $request->user()->id);
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Can't upload avatar with invalid Customer ID"
-            ]);
-        }
-
-        $admin = $query->first();
+        $admin = Admin::where("id", "=", $request->user()->id)->first();
         $admin->avatar = $request->avatar;
 
         $result = $admin->save();

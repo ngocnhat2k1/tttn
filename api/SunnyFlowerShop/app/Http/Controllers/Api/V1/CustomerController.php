@@ -27,19 +27,9 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        // Checking User ID
-        $customer_data = Customer::find($customer->id);
-
-        if (empty($customer_data)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "User ID is invalid"
-            ]);
-        }
-
         return response()->json([
             "success" => true,
-            "data" => new CustomerDetailResource($customer_data)
+            "data" => new CustomerDetailResource($customer)
         ]);
     }
 
@@ -75,9 +65,9 @@ class CustomerController extends Controller
 
     public function disable(Customer $customer, Request $request)
     {
-        $data = Customer::find($customer->id);
+        $customer = Customer::find($customer->id);
 
-        if (empty($data)) {
+        if (empty($customer)) {
             return response()->json([
                 "success" => false,
                 "errors" => "User ID is invalid"
@@ -87,15 +77,15 @@ class CustomerController extends Controller
         // Checking state value to switch between: Disable or Reverse Disable
         // If state value is 1, it will be Disable
         if ((int)$request->state === 1) {
-            if ($data->disabled !== null) {
+            if ($customer->disabled !== null) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Customer with ID = " . $customer->id . " has already been disabled"
                 ]);
             }
 
-            $data->disabled = 0;
-            $data->save();
+            $customer->disabled = 0;
+            $result = $customer->save();
 
             // Log out account
             Auth::guard("customer")->logout();
@@ -109,7 +99,7 @@ class CustomerController extends Controller
             // Delete all available tokens in Token table
             Token::where("customer_id", "=", $customer->id)->delete();
 
-            if (!$data) {
+            if (!$result) {
                 return response()->json([
                     "success" => false,
                     "errors" => "An unexpected error has occurred"
@@ -122,20 +112,20 @@ class CustomerController extends Controller
                     'errors' => "Sucessfully disabled account customer with ID = " . $customer->id
                 ]
             );
-
-            // if state value is not 1, it will Reverse Disable
-        } else {
-            if ($data->disabled === null) {
+        }
+        // if state value is not 1, it will Reverse Disable
+        else {
+            if ($customer->disabled === null) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Customer with ID = " . $customer->id . " has already been reversed disabled"
                 ]);
             }
 
-            $data->disabled = null;
-            $data->save();
+            $customer->disabled = null;
+            $result = $customer->save();
 
-            if (!$data) {
+            if (!$result) {
                 return response()->json([
                     "success" => false,
                     "errors" => "An unexpected error has occurred"
@@ -177,7 +167,7 @@ class CustomerController extends Controller
             $filtered['password'] = Hash::make($filtered['password']);
         }
 
-        $update = Customer::where("id", "=", $customer->id)->update($filtered);
+        $update = $customer->update($filtered);
 
         if (empty($update)) {
             return response()->json([
@@ -218,23 +208,12 @@ class CustomerController extends Controller
             ]);
         }
 
-        // Check existence of email belong user
-        $customer_data = Customer::where("email", "=", $customer->email)
-            ->where("id", "=", $customer->id);
-
-        if (!$customer_data->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer doesn't exist"
-            ]);
-        }
-
         // Check email belong to customer that being check (from request)
-        $customer_email = Customer::where("email", "=", $request->email)
+        $check = Customer::where("email", "=", $request->email)
             ->where("id", "=", $customer->id)->exists();
 
         // Check If new email doesn't belong to current customer
-        if (!$customer_email) {
+        if (!$check) {
 
             // Check existence of email in database
             $check = Customer::where("email", "=", $request->email)->exists();
@@ -246,21 +225,19 @@ class CustomerController extends Controller
             }
         }
 
-        $customer_get = $customer_data->first();
-
         // Create check for password
         if ($request->password !== null) {
-            $customer_get['password'] = Hash::make($request->password);
+            $customer->password = Hash::make($request->password);
         } else {
-            $customer_get['password'] = $customer_get['password'];
+            $customer->password = $customer->password;
         }
 
-        $customer_get['first_name'] = $request->firstName ?? $customer_get['first_name'];
-        $customer_get['last_name'] = $request->lastName ?? $customer_get['last_name'];
-        $customer_get['email'] = $request->email ?? $customer_get['email'];
-        $customer_get['subscribed'] = $request->subscribed ?? $customer_get['subscribed'];
+        $customer->first_name = $request->firstName ?? $customer->first_name;
+        $customer->last_name = $request->lastName ?? $customer->last_name;
+        $customer->email = $request->email ?? $customer->email;
+        $customer->subscribed = $request->subscribed ?? $customer->subscribed;
 
-        $result = $customer_get->save();
+        $result = $customer->save();
 
         // If result is false, that means save process has occurred some issues
         if (!$result) {
@@ -291,18 +268,9 @@ class CustomerController extends Controller
             ]);
         }
 
-        $query = Customer::where("id", "=", $customer->id);
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Can't upload avatar with invalid Customer ID"
-            ]);
-        }
+        $customer->avatar = $request->avatar;
 
-        $customer_data = $query->first();
-        $customer_data->avatar = $request->avatar;
-
-        $result = $customer_data->save();
+        $result = $customer->save();
 
         // If result is false, that means save process has occurred some issues
         if (!$result) {
@@ -320,10 +288,8 @@ class CustomerController extends Controller
 
     public function destroyAvatar(Customer $customer)
     {
-        $customer_data = Customer::find($customer->id);
-
-        $customer_data->avatar = null;
-        $result = $customer_data->save();
+        $customer->avatar = null;
+        $result = $customer->save();
 
         // If result is false, that means save process has occurred some issues
         if (!$result) {

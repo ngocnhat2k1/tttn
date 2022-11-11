@@ -23,15 +23,6 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $check = Customer::find($request->user()->id);
-
-        if (empty($check)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer ID is invalid"
-            ]);
-        }
-
         $data = Order::where("customer_id", "=", $request->user()->id)->get();
         $count = $data->count();
 
@@ -58,15 +49,7 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         /** ##### IF CONDITION SECTION ##### */
-        $customer = Customer::find($request->user()->id);
-
-        // Need to reconsider this IF Condition
-        if (empty($customer)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer ID is invalid"
-            ]);
-        }
+        $customer = Customer::find($request->user()->id); // Later use for detach value from intermediate table
 
         $data = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)->get();
@@ -118,7 +101,6 @@ class OrderController extends Controller
                     "errors" => "You have already used this voucher."
                 ]);
             }
-            
         } else {
             return response()->json([
                 "success" => false,
@@ -128,12 +110,28 @@ class OrderController extends Controller
 
         // Check product is available or already got deleted
         $count = 0;
+        $invalid_product_quantity_arr = [];
+        $index = 0; // use for invalid_quatity_arr array
         for ($i = 0; $i < sizeof($data); $i++) {
             $value = Product::where("id", "=", $data[$i]->product_id)->first();
 
-            if ($value->status === 0 || $value->deleted_at !== null) {
-                $count++;;
+            // Comparing Quantity product from Cart is "smaller than" Total remaining Product currently has
+            if ($data[$i]->quantity > $value->quantity) {
+                $invalid_product_quantity_arr[$index] = $value->name;
+                $index++;
             }
+
+            if ($value->status === 0 || $value->deleted_at !== null) {
+                $count++;
+            }
+        }
+
+        // Check if Current Customer Cart has any invalid Product Quantity
+        if (!empty($invalid_product_quantity_arr)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Some products don't have enough quantity in Cart. These are: " . implode(", ", $invalid_product_quantity_arr)
+            ]);
         }
 
         // if count !== 0, that mean 1 or 2 product is got deleted or already out of stock
@@ -237,7 +235,7 @@ class OrderController extends Controller
     // Can't check order id is existed in database for some
     public function show(Request $request)
     {
-        $check = Customer::find($request->user()->id);
+        // $check = Customer::find($request->user()->id);
 
         // Check Order isExists
         $query = Order::where("orders.id", "=", $request->id)
@@ -252,10 +250,10 @@ class OrderController extends Controller
             ->where("customer_id", "=", $request->user()->id)
             ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 
-        if (!$query->exists() || empty($check)) {
+        if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck your Customer ID and Order ID"
+                "errors" => "Something went wrong, Please recheck Order ID"
             ]);
         }
 
@@ -280,10 +278,10 @@ class OrderController extends Controller
      */
     public function destroy(Request $request)
     {
-        $customer = Customer::find($request->user()->id);
+        // $customer = Customer::find($request->user()->id);
 
         $query = Order::where("id", "=", $request->id)
-            ->where("customer_id", "=", $customer->id);
+            ->where("customer_id", "=", $request->user()->id);
 
         if (!$query->exists()) {
             return response()->json([
@@ -293,6 +291,13 @@ class OrderController extends Controller
         }
 
         $order = $query->first();
+
+        if ($order->deleted_by !== null) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Order has already cancelled"
+            ]);
+        }
 
         // This function cancel by customer so value will be 0
         $order->deleted_by = 0;
@@ -312,5 +317,77 @@ class OrderController extends Controller
                 'errors' => "Sucessfully canceled Order ID = " . $request->id
             ]
         );
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $query = Order::where("id", "=", $request->id)
+            ->where("customer_id", "=", $request->user()->id);
+
+        // Check connection between Customer and Order
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer don't have this Order with ID = " . $request->id
+            ]);
+        }
+
+        $order = $query->first();
+
+        // We only allow customer to change Order Status to Completed state
+        if ($order->status === 0 || $order->status === 2) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This Order was updated to Completed State"
+            ]);
+        }
+
+        $products = DB::table("order_product")
+            ->where("order_id", "=", $order->id)->get();
+
+        if ($products->count() === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "HOW AN ORDER DON'T HAVE ANY PRODUCTS??? WHAT IS THIS???"
+            ]);
+        }
+
+        $order->status = 2;
+        // $order_detach = Order::find($request->id); // Create this to only
+
+        // Descrease Product Quantity
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $product = Product::find($products[$i]->product_id);
+
+            $remain = $product->quantity - $products[$i]->quantity; // Remain quantity after decrease
+            if ($remain <= 0) { // If Remain Quantity is less equal than 0 then set it to out of stock
+                $product->quantity = 0;
+                $product->status = 0;
+            }
+            else { // If not then nope
+                $product->quantity = $remain;
+            }
+
+            $product->save();
+        }
+
+        $result = $order->save();
+
+        if(empty($result)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected errors has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Successfully Updated Order state to Completed state"
+        ]);
+
+        /**
+         * Save Order new Status
+         * Decrease all Product quantity in from Order
+         */
     }
 }

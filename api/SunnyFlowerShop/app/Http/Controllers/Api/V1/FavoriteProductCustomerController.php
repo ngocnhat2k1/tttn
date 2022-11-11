@@ -14,11 +14,9 @@ class FavoriteProductCustomerController extends Controller
 {
     public function index(Customer $customer)
     {
-        $customer_data = Customer::find($customer->id);
-
         // Check existence of product in favorite section
         $check = DB::table("customer_product_favorite")
-            ->where("customer_id", "=", $customer_data->id)
+            ->where("customer_id", "=", $customer->id)
             ->get()->count();
             
         if ($check === 0) {
@@ -28,18 +26,15 @@ class FavoriteProductCustomerController extends Controller
             ]);
         }
 
-        return new ProductListCollection($customer_data->customer_product_favorite);
+        return new ProductListCollection($customer->customer_product_favorite);
     }
 
     public function destroy(Customer $customer, Product $product)
     {
-        // $request->id is Product ID
-        $customer_data = Customer::find($customer->id);
-
         $product_data = Product::find($product->id);
 
         $check = DB::table("customer_product_favorite")
-            ->where("customer_id", "=", $customer_data->id)
+            ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $product_data->id)
             ->exists();
 
@@ -50,7 +45,7 @@ class FavoriteProductCustomerController extends Controller
             ]);
         }
 
-        $data = $customer_data->customer_product_favorite()->detach($product_data);
+        $data = $customer->customer_product_favorite()->detach($product_data);
 
         if (empty($data)) {
             return response()->json([

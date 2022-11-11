@@ -19,6 +19,16 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        // Check amount of categories before paginating
+        $categories = Category::get()->count();
+
+        if ($categories === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "There is no categories existed in database"
+            ]);
+        }
+
         $categories = Category::paginate(10);
 
         return new CategoryDetailCollection($categories);
@@ -162,7 +172,7 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            "success" => false,
+            "success" => true,
             "messagee" => "Deleted category successfully"
         ]);
     }
