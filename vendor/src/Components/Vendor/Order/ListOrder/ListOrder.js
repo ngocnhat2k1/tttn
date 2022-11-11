@@ -4,7 +4,7 @@ const ListOrder = ({ currentOrder }) => {
 
     return (
         <>
-            {currentOrder.map((Order, index) => {
+            {currentOrder && currentOrder.map((Order, index) => {
                 return (
                     <tr key={index}>
                         <td>

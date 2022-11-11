@@ -1,51 +1,50 @@
 import React from 'react'
-import { Link, useSearchParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
+import { Link, useSearchParams } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ListVoucher from './ListVoucher/ListVoucher'
 import '../DashBoard.css'
 import usePaginate from "../../Hook/usePagination/usePaginate";
 import styles from '../../Hook/usePagination/PaginatedItems.module.scss'
-import ListProducts from './ListProduct/ListProduct';
 
-
-
-const Product = () => {
+const Voucher = () => {
     const [searchParams] = useSearchParams();
     const { data, page, nextPage, prevPage, lastPage } = usePaginate(
-        "http://localhost:8000/api/v1/products",
+        "http://127.0.0.1:8000/api/v1/vouchers",
         searchParams
     );
-
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
                 <div className='tab-pane fade show active'>
-                    <Row>
-                        <Col lg={12} md={12} sm={12} xs={12} className='position-relative'>
-                            <div className='vendor_order_boxed pt-4'>
-                                <div className='mb-2'>
-                                    <h4>
-                                        All Product
-                                    </h4>
-                                    <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-products">
-                                        Add Product
-                                    </Link>
+                    <div className='vendors_profiles'>
+                        <Row>
+                            <Col lg={12} md={12} sm={12} xs={12} className='position-relative'>
+                                <div className='vendors_profiles pt-4'>
+                                    <div className='mb-2'>
+                                        <h4>
+                                            All Voucher
+                                        </h4>
+                                        <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-voucher">
+                                            Add Voucher
+                                        </Link>
+                                    </div>
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>
                                         <thead className='thead-light'>
                                             <tr>
-                                                <th scope="col">Image</th>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Category</th>
-                                                <th scope="col">Price</th>
-                                                <th scope="col">Sales</th>
-                                                <th scope="col">Edit/Delete</th>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Usage</th>
+                                                <th scope="col">Percent Sale</th>
+                                                <th scope="col">Expired Date</th>
+                                                <th scope="col">Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <ListProducts listProducts={data} />
+                                            <ListVoucher currentVoucher={data} />
                                         </tbody>
                                     </table>
                                     < Col lg={12}>
@@ -79,15 +78,14 @@ const Product = () => {
                                             </li>}
                                         </ul>
                                     </Col>
-
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
             </div>
         </Col>
     )
 }
 
-export default Product
+export default Voucher

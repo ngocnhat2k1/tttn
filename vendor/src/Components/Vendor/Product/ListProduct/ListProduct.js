@@ -4,7 +4,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa'
 const ListProducts = ({ listProducts }) => {
     return (
         <>
-            {listProducts.map((Product) => {
+            {listProducts && listProducts.map((Product) => {
                 return (
                     <tr key={Product.id}>
                         <td>
@@ -15,7 +15,17 @@ const ListProducts = ({ listProducts }) => {
                         <td>
                             <a href="/product-details-one/1 ">{Product.name}</a>
                         </td>
-                        <td>{Product.categories}</td>
+                        <td>
+                            {Product.categories.map((Categories, i) => {
+                                if (i + 1 === Product.categories.length) {
+                                    return (Categories.name)
+                                }
+                                else {
+                                    return `${Categories.name}, `
+                                }
+                                // return `${Categories.name}, `
+                            })}
+                        </td>
                         <td>${Product.price}</td>
                         <td>{Product.precentSale}</td>
                         <td><a href="/vendor/add-products">

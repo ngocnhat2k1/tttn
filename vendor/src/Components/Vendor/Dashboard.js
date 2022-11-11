@@ -14,7 +14,7 @@ const Dashboard = () => {
         axios
             .get(`http://127.0.0.1:8000/api/v1/orders`, {
                 headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
             })
             .then((response) => {
@@ -26,7 +26,7 @@ const Dashboard = () => {
         axios
             .get(`http://127.0.0.1:8000/api/v1/products`, {
                 headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
             })
             .then((response) => {
@@ -78,7 +78,7 @@ const Dashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {RecentOrders.map((Order) => {
+                                    {RecentOrders && RecentOrders.map((Order) => {
                                         return (
                                             <tr key={Order.id}>
                                                 <td>

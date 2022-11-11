@@ -23,8 +23,8 @@ function LoginArea() {
             .post('http://localhost:8000/api/admin/login', data)
             .then(function (response) {
                 if (response.data.success) {
-                    const token = response.data.token;
-                    Cookies.set('token', token, { path: '/' });
+                    const adminToken = response.data.token;
+                    Cookies.set('adminToken', adminToken, { path: '/' });
                     window.location.href = 'http://localhost:4000';
                 } else {
                     alert('Sai tài khoản hoặc mật khẩu!');

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-
 import "./VendorArea.css"
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -11,7 +10,10 @@ import Product from './Product/Product'
 import Order from './Order/Order'
 import Users from './Users/Users'
 import AddProduct from './AddProduct/AddProduct'
-import LoginArea from '../LoginArea';
+import Category from './Category/Category';
+import Voucher from './Voucher/Voucher';
+import AddCategory from './AddCategory/AddCategory';
+import AddVoucher from './AddVoucher/AddVoucher';
 
 
 const VendorArea = () => {
@@ -28,6 +30,10 @@ const VendorArea = () => {
                         <Route path='/all-order' element={<Order />} />
                         <Route path='/vendor-users' element={<Users />} />
                         <Route path='/add-products' element={<AddProduct />} />
+                        <Route path='/vendor-category' element={<Category />} />
+                        <Route path='/vendor-voucher' element={<Voucher />} />
+                        <Route path='/add-category' element={<AddCategory />} />
+                        <Route path='/add-voucher' element={<AddVoucher />} />
                     </Routes>
                 </Row>
             </Container>

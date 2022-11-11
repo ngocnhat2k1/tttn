@@ -16,12 +16,11 @@ function usePaginate(url, query) {
         axios
             .get(`${url}?${query.toString()}`, {
                 headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
             })
 
             .then((response) => {
-
                 setData({
                     data: response.data.data,
                     total: response.data.total,
