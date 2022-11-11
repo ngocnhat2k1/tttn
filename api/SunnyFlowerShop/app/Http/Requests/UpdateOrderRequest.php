@@ -27,7 +27,6 @@ class UpdateOrderRequest extends FormRequest
     {
         return [
             "voucherId" => [
-                "required",
                 "integer"
             ],
             "dateOrder" => [

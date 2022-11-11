@@ -23,7 +23,7 @@ class VoucherController extends Controller
         if (empty($count)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address list is empty"
+                "errors" => "Voucher list is empty"
             ]);
         }
 

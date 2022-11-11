@@ -43,6 +43,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // Route for admin
     Route::group(["prefix" => "admin"], function() {
+        Route::get("/dashboard", [AdminAuthController::class, "dashboard"]);
         Route::get("/profile", [AdminAuthController::class, "profile"]);
         Route::put("/update", [AdminAuthController::class, "update"]);
         Route::put("/avatar/upload", [AdminAuthController::class, "upload"]);
@@ -74,7 +75,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/", [CustomerController::class, "index"]); // Show all user available
             Route::get("/{customer}", [CustomerController::class, "show"]); // Show detail information from specific customer
             Route::post("/create", [CustomerController::class, "store"]); // Create account from admin site
-            // Route::put("{customer}/update_og", [CustomerController::class, "update"]); // Update information for specific customer from admin site
+            Route::put("{customer}/update_og", [CustomerController::class, "update"]); // Update information for specific customer from admin site
             Route::put("{customer}/update", [CustomerController::class, "updateValue"]); // Update information for specific customer from admin site
             Route::delete("/{customer}/disable={state}", [CustomerController::class, "disable"]); // Disable customer account
             Route::put("{customer}/avatar/upload", [CustomerController::class, "upload"]);
@@ -90,9 +91,8 @@ Route::middleware("auth:sanctum")->group(function () {
             // Order from User info
             Route::get("/{customer}/orders", [OrderCustomerController::class, "index"]);
             Route::get("/{customer}/orders/{order}", [OrderCustomerController::class, "show"]);
-            /* Route::post // Create order from admin site */
             Route::put("/{customer}/orders/{order}/update", [OrderCustomerController::class, "update"]);
-            Route::put("/{customer}/orders/{order}/update/status", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
+            Route::put("/{customer}/orders/{order}/update/status={state}", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
             Route::delete("/{customer}/orders/{order}/destroy={state}", [OrderCustomerController::class, "destroy"]);
 
             // Voucher from User info
@@ -218,6 +218,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
         Route::post("/order/placeorder", [OrderController::class, "store"]); // Placeorder
         Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
+        Route::put("/order/{id}/status", [OrderController::class, "updateStatus"]); // Customer only allow to confirm "Completed" state for order
 
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)

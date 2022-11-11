@@ -20,7 +20,7 @@ class UserAuthController extends Controller
     // ******* CUSOMTER ******* \\
     public function __construct()
     {
-        $this->middleware("auth:sanctum", ["except" => ["register", "login", "retrieveToken"]]);
+        $this->middleware("auth:sanctum", ["except" => ["register", "login", "retrieveToken", "upload"]]);
     }
 
     public function register(Request $request)
@@ -334,15 +334,7 @@ class UserAuthController extends Controller
             ]);
         }
 
-        $query = Customer::where("id", "=", $request->user()->id);
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Can't upload avatar with invalid Customer ID"
-            ]);
-        }
-
-        $customer = $query->first();
+        $customer = Customer::where("id", "=", $request->user()->id)->first();
         $customer->avatar = $request->avatar;
 
         $result = $customer->save();

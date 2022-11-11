@@ -157,6 +157,13 @@ class CartController extends Controller
             ]);
         }
 
+        if ($product->quantity < $request->quantity) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+            ]);
+        }
+
         $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
 
         $check = $data->where("product_id", "=", $product->id)->exists();
@@ -173,8 +180,16 @@ class CartController extends Controller
         } else {
             $data = $data->where("product_id", "=", $request->product_id)->first();
 
+            $total = $data->quantity + $request->quantity;
+            if ($total > $product->quantity) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                ]);
+            }
+
             $result = $customer->customer_product_cart()->updateExistingPivot($product, [
-                "quantity" => $data->quantity + $request->quantity
+                "quantity" => $total
             ]);
 
             if (!$result) {
@@ -258,14 +273,22 @@ class CartController extends Controller
                 "errors" => "Please recheck Customer ID and Product ID"
             ]);
         }
+        
+        // Check Request Quantity before update quantity value to cart
+        if ($product->quantity < $request->quantity) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+            ]);
+        }
 
         $query = DB::table("customer_product_cart")
             ->where("customer_id", "=", $customer->id)
             ->where("product_id", "=", $product->id);
 
-        $check = $query->exists();
-
-        if (!$check) {
+        // If customer hasn't added this product to cart yet, then add it
+        /** THIF CHECK CREATE FOR ADMIN TO USE */
+        if (!$query->exists()) {
             if ($request->quantity < 0) {
                 return response()->json([
                     "success" => false,
@@ -295,14 +318,23 @@ class CartController extends Controller
             ]);
         }
 
+        // Check current total quantity product before add
+        $total = $data->quantity + $request->quantity;
+        if ($total > $product->quantity) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+            ]);
+        }
+
         $customer->customer_product_cart()->updateExistingPivot($product, [
-            "quantity" => $data->quantity + $request->quantity
+            "quantity" => $total
         ]);
 
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity . " quantity"
+                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity*(-1) . " quantity"
             ]);
         }
 
