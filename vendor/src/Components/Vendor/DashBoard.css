@@ -336,3 +336,8 @@ input[type="checkbox"]:checked:after {
     margin: 0;
     padding: 10px 15px;
 }
+
+.edit_icon {
+    display: inline;
+    padding: 10%;
+}

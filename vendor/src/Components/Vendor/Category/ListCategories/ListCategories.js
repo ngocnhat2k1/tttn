@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
+import axios from 'axios'
+import React, { useState, useEffect, useReducer } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import CategoryEditModal from '../CategoryEditModal/CategoryEditModal'
+import Cookies from 'js-cookie';
+import DeleteCategory from '../DeleteCategory/DeleteCategory';
 
 const ListCategories = ({ currentCategory }) => {
 
-    const handleDelte = () => {
 
-    }
     return (
         <>
-            {currentCategory.map((Category) => {
+            {currentCategory && currentCategory.map((Category) => {
                 return (
 
                     <tr key={Category.id}>
@@ -18,10 +19,9 @@ const ListCategories = ({ currentCategory }) => {
                         </td>
                         <td>{Category.name}</td>
 
-                        <td><CategoryEditModal idDetail={Category.id} />
-                            <button >
-                                <FaTrash onClick={handleDelte}></FaTrash>
-                            </button>
+                        <td><div className='edit_icon'> <CategoryEditModal idDetail={Category.id} /></div>
+
+                            <div className='edit_icon'><DeleteCategory idDetail={Category.id} nameDetail={Category.name} /></div>
                         </td>
 
                     </tr>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTimes } from 'react-icons/fa'
 import axios from 'axios';
 import Col from 'react-bootstrap/Col';
@@ -14,15 +14,7 @@ const CategoryEditModal = ({ idDetail }) => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
-    };
-
-    if (modal) {
-        document.body.classList.add('active-modal')
-    } else {
-        document.body.classList.remove('active-modal')
-    }
-    // lấy tên mặc định của category
-    useEffect(() => {
+        console.log(idDetail)
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories/${idDetail}`, {
                 headers: {
@@ -33,7 +25,15 @@ const CategoryEditModal = ({ idDetail }) => {
             .then((response) => {
                 setCategoryName(response.data.name);
             });
-    }, []);
+    };
+    const closeModal = () => {
+        setModal(!modal);
+    }
+    if (modal) {
+        document.body.classList.add('active-modal')
+    } else {
+        document.body.classList.remove('active-modal')
+    }
 
     const onSubmit = (data) => {
         console.log(data)
@@ -86,7 +86,7 @@ const CategoryEditModal = ({ idDetail }) => {
                             </div>
                         </form>
 
-                        <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
+                        <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
 
                     </div>
                 </div>

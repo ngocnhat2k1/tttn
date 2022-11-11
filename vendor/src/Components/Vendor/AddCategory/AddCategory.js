@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
-import { FaImage, FaCheck } from 'react-icons/fa'
 import '../DashBoard.css'
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Category from '../Category/Category';
 
 const AddCategory = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const [isChecked, setIsChecked] = useState(false);
 
     const onSubmit = data => {
         axios
@@ -25,7 +22,7 @@ const AddCategory = () => {
                 alert(response.data.success);
                 console.log(response.data.error);
                 if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/vendor-category';
+                    window.location.reload = 'http://localhost:4000/vendor-category';
                 }
             })
             .catch(function (error) {

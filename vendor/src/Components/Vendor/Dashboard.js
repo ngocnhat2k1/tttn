@@ -78,7 +78,7 @@ const Dashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {RecentOrders.map((Order) => {
+                                    {RecentOrders && RecentOrders.map((Order) => {
                                         return (
                                             <tr key={Order.id}>
                                                 <td>

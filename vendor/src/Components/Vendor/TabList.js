@@ -21,7 +21,7 @@ function TabList() {
                     <li>
                         <Link
                             onClick={() => setActive('/all-product')}
-                            className={`${isActive === "/all-product" ? 'active_tablist' : ' '} `}
+                            className={`${isActive === "/all-product" ? 'active_tablist' : isActive === "/add-product" ? 'acitve_tablist' : ' '} `}
                             to="/all-product">  <i> <FaShoppingCart color='black' /></i> product </Link>
                     </li>
                     <li>
@@ -41,14 +41,14 @@ function TabList() {
                     >
                         <Link
                             onClick={() => setActive('/vendor-category')}
-                            className={`${isActive === "/vendor-category" ? 'active_tablist' : ' '} `}
+                            className={`${isActive === "/vendor-category" ? 'active_tablist' : isActive === "/add-category" ? 'active_tablist' : ''} `}
                             to="/vendor-category">  <i> <FaListAlt color='black' /></i> Categories </Link>
                     </li>
                     <li
                     >
                         <Link
                             onClick={() => setActive('/vendor-voucher')}
-                            className={`${isActive === "/vendor-voucher" ? 'active_tablist' : ' '} `}
+                            className={`${isActive === "/vendor-voucher" ? 'active_tablist' : isActive === "/add-voucher" ? 'active_tablist' : ''} `}
                             to="/vendor-voucher">  <i> <FaGift color='black' /></i> Vouchers </Link>
                     </li>
                     {/* <li>

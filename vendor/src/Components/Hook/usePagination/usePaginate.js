@@ -21,7 +21,6 @@ function usePaginate(url, query) {
             })
 
             .then((response) => {
-
                 setData({
                     data: response.data.data,
                     total: response.data.total,

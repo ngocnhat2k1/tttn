@@ -45,7 +45,7 @@ const Category = () => {
                                             <ListCategories currentCategory={data} />
                                         </tbody>
                                     </table>
-                                    {page !== 1 ?
+                                    {/* {page !== 1 ?
                                         < Col lg={12}>
                                             <ul className={styles.pagination}>
                                                 {page > 1 && <li className={styles.pageItem}>
@@ -77,7 +77,7 @@ const Category = () => {
                                                 </li>}
                                             </ul>
                                         </Col> : <div>
-                                        </div>}
+                                        </div>} */}
 
 
                                 </div>

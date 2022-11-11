@@ -13,6 +13,7 @@ import AddProduct from './AddProduct/AddProduct'
 import Category from './Category/Category';
 import Voucher from './Voucher/Voucher';
 import AddCategory from './AddCategory/AddCategory';
+import AddVoucher from './AddVoucher/AddVoucher';
 
 
 const VendorArea = () => {
@@ -32,6 +33,7 @@ const VendorArea = () => {
                         <Route path='/vendor-category' element={<Category />} />
                         <Route path='/vendor-voucher' element={<Voucher />} />
                         <Route path='/add-category' element={<AddCategory />} />
+                        <Route path='/add-voucher' element={<AddVoucher />} />
                     </Routes>
                 </Row>
             </Container>

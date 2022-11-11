@@ -26,7 +26,7 @@ const Voucher = () => {
                                         <h4>
                                             All Voucher
                                         </h4>
-                                        <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-products">
+                                        <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-voucher">
                                             Add Voucher
                                         </Link>
                                     </div>

@@ -4,7 +4,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa'
 const ListProducts = ({ listProducts }) => {
     return (
         <>
-            {listProducts.map((Product) => {
+            {listProducts && listProducts.map((Product) => {
                 return (
                     <tr key={Product.id}>
                         <td>
