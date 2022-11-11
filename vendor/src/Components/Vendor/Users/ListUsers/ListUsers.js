@@ -1,4 +1,6 @@
 import React from 'react'
+import UserDetail from '../UserDetail/UserDetail'
+
 
 const ListUsers = ({ listUsers }) => {
     return (
@@ -18,6 +20,7 @@ const ListUsers = ({ listUsers }) => {
                         </td>
                         <td>{User.email}</td>
                         {User.subscribed === 0 ? <td>No</td> : <td>Yes</td>}
+                        <td><UserDetail idDetail={User.id} /></td>
 
 
                     </tr>

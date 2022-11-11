@@ -248,6 +248,10 @@ img {
     margin-bottom: 20px;
 }
 
+.fotm-group {
+    padding: 20px 10px;
+}
+
 label {
     display: inline-block;
     margin-bottom: 0.5rem;
@@ -293,6 +297,11 @@ label {
 
 .btn_right_table {
     text-align: right;
+    margin-top: 20px;
+}
+
+.btn_left_table {
+    text-align: left;
     margin-top: 20px;
 }
 
@@ -345,4 +354,17 @@ input[type="checkbox"]:checked:after {
 .edit_icon {
     display: inline;
     padding: 10%;
+}
+
+.modal-content-edit-voucher {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 25px 50px;
+    border-radius: 3px;
+    max-width: 1080px;
+    min-width: 300px;
 }

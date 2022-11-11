@@ -15,6 +15,7 @@ const VoucherEditModal = ({ idDetail }) => {
     const [voucherPercent, setVoucherPercent] = useState('')
     const [voucherUsage, setVoucherUsage] = useState('')
     const [VoucherExpiredDate, setVoucherexpiredDate] = useState('')
+    const [deleted, setDeleted] = useState('')
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
@@ -31,6 +32,7 @@ const VoucherEditModal = ({ idDetail }) => {
                 setVoucherPercent(response.data.percent)
                 setVoucherUsage(response.data.usage)
                 setVoucherexpiredDate(response.data.expiredDate)
+                setDeleted(response.data.deleted)
             });
     };
     if (modal) {
@@ -70,6 +72,9 @@ const VoucherEditModal = ({ idDetail }) => {
     const onChangeUsage = (e) => {
         setVoucherUsage(e.target.value)
     }
+    const onChangeDate = (e) => {
+        setVoucherexpiredDate(e.target.value)
+    }
 
     return (
         <>
@@ -79,7 +84,7 @@ const VoucherEditModal = ({ idDetail }) => {
             {modal && (
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
-                    <div className="modal-content">
+                    <div className="modal-content-edit-voucher">
                         <h2 className="title_modal">Edit Voucher {idDetail}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
@@ -109,25 +114,31 @@ const VoucherEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="usage"
-                                            value={voucherName}
+                                            value={voucherUsage}
                                             {...register('usage', { required: true, onChange: onChangeUsage })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="name">Voucher Name</label>
-                                        <input type="text"
+                                        <label htmlFor="VoucherExpiredDate">Voucher Expired Date</label>
+                                        <input type="datetime-local"
                                             className="form-control"
-                                            id="name"
-                                            value={voucherName}
-                                            {...register('name', { required: true, onChange: onChangeName })} />
+                                            id="VoucherExpiredDate"
+                                            value={VoucherExpiredDate}
+                                            {...register('expiredDate', { required: true, onChange: onChangeDate })} />
                                     </div>
                                 </Col>
 
                             </Row>
-                            <div className="btn_right_table">
-                                <button className="theme-btn-one bg-black btn_sm">Save</button>
-                            </div>
+                            <Col lg={12}>
+                                {deleted ?
+                                    <div className="btn_left_table">
+                                        <button className="theme-btn-one bg-black btn_sm">Restore</button>
+                                    </div> : ""}
+                                <div className="btn_right_table">
+                                    <button className="theme-btn-one bg-black btn_sm">Save</button>
+                                </div>
+                            </Col>
                         </form>
 
                         <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
