@@ -23,7 +23,7 @@ const Users = () => {
 
                         <div className='table-responsive'>
                             <table className='table pending_table'>
-                                <thead className='thead-light'>
+                                <thead>
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Avatar</th>

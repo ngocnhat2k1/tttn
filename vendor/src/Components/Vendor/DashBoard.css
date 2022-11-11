@@ -139,6 +139,11 @@
     text-decoration: none;
 }
 
+.table-responsive table thead {
+    background: #f79837;
+    color: #fff;
+}
+
 .table-responsive table tbody tr td {
     border-right: 1px solid #ededed;
     font-weight: 500;

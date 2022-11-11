@@ -34,7 +34,7 @@ const Product = () => {
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>
-                                        <thead className='thead-light'>
+                                        <thead>
                                             <tr>
                                                 <th scope="col">Image</th>
                                                 <th scope="col">Product Name</th>

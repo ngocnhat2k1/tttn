@@ -26,7 +26,7 @@ const Order = () => {
                                 <h4>All order</h4>
                                 <div className='table-resposive'>
                                     <table className='table pending_table'>
-                                        <thead className='thead-light'>
+                                        <thead>
                                             <tr>
                                                 <th scope='col'>Order Id</th>
                                                 <th scope='col'>Product Detail</th>

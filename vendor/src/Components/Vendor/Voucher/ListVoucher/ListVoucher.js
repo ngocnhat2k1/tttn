@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaTrash } from 'react-icons/fa'
+import DeleteVoucher from '../DeleteVoucher/DeleteVoucher'
 import VoucherEditModal from "../VoucherEditModal/VoucherEditModal"
 
 const ListVoucher = ({ currentVoucher }) => {
@@ -15,12 +16,13 @@ const ListVoucher = ({ currentVoucher }) => {
                         <td>{Voucher.usage}</td>
                         <td>{Voucher.percent}</td>
                         <td>{Voucher.expiredDate}</td>
+                        {Voucher.deleted === 1 ? <td>Deleted</td> : <td>Availability</td>}
                         <td>
                             <div className='edit_icon'>
                                 <VoucherEditModal idDetail={Voucher.id} />
                             </div>
                             <div className='edit_icon'>
-                                <FaTrash></FaTrash>
+                                <DeleteVoucher idDetail={Voucher.id} nameDetail={Voucher.name} />
                             </div>
                         </td>
 

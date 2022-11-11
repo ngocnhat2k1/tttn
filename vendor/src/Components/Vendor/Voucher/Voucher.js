@@ -33,13 +33,14 @@ const Voucher = () => {
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>
-                                        <thead className='thead-light'>
+                                        <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Usage</th>
                                                 <th scope="col">Percent Sale</th>
                                                 <th scope="col">Expired Date</th>
+                                                <th scope='col'>Status</th>
                                                 <th scope="col">Edit</th>
                                             </tr>
                                         </thead>

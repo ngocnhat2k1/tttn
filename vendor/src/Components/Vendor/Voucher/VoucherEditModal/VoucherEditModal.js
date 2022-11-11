@@ -53,7 +53,7 @@ const VoucherEditModal = ({ idDetail }) => {
                 alert(response.data.success);
                 console.log(response.data.error);
                 if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/vendor-category';
+                    window.location.reload = (false);
                 }
             })
             .catch(function (error) {
