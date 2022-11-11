@@ -14,12 +14,14 @@ use BenSampo\Enum\Enum;
 final class OrderStatusEnum extends Enum
 {
   private const Pending = 0;
-  private const Completed = 1;
+  private const Confirmed = 1;
+  private const Completed = 2;
 
   public static function getStatusEnum()
   {
     return [
       "Pending" => self::Pending,
+      "Confirmed" => self::Confirmed,
       "Completed" => self::Completed,
     ];
   }

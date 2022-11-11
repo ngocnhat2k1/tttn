@@ -17,7 +17,10 @@ class VoucherSeeder extends Seeder
     {
         Voucher::factory()
         ->count(6)
-        ->hasOrders(8)
+        ->hasOrders(3)
         ->create();
+        // Voucher::factory()
+        // ->count(10)
+        // ->create();
     }
 }

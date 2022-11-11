@@ -35,13 +35,6 @@ class AddressCustomerController extends Controller
     {
         $customer_data = Customer::find($customer->id);
 
-        if (empty($customer_data)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "User ID is invalid"
-            ]);
-        }
-
         $addresses = $customer_data->addresses;
 
         if (empty($addresses)) {
@@ -61,18 +54,11 @@ class AddressCustomerController extends Controller
         $addresses = Address::where("id", "=", $address->id)
             ->where("customer_id", "=", $customer->id);
 
-        // if (!$customer_data->exists() || !$addresses->exists()) {
+        // Use this only when customer_id and address_id are not belong to each other (Both of IDs need to be existed)
         if (!$addresses->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
-            ]);
-        }
-
-        if ($addresses->get()->count() === 0) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Address ID is invalid"
             ]);
         }
 
@@ -121,15 +107,10 @@ class AddressCustomerController extends Controller
 
     public function update(UpdateAddressRequest $request, Customer $customer, Address $address)
     {
-        // Checking Address ID is belong to Customer ID ?
-        // $check = DB::table("address_customer")
-        //     ->where("customer_id", "=", $customer->id)
-        //     ->where("address_id", "=", $address->id)
-        //     ->exists();
-
         $query = Address::where("id", "=", $address->id)
             ->where("customer_id", "=", $customer->id);
 
+        // Use this only when customer_id and address_id are not belong to each other (Both of IDs need to be existed)
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
@@ -175,27 +156,16 @@ class AddressCustomerController extends Controller
 
     public function destroy(Customer $customer, Address $address)
     {
-        // Checking Address ID is belong to Customer ID ?
-        // $check = DB::table("address_customer")
-        //     ->where("customer_id", "=", $customer->id)
-        //     ->where("address_id", "=", $address->id)
-        //     ->exists();
-
         $query_address = Address::where("id", "=", $address->id)
             ->where("customer_id", "=", $customer->id);
 
+        // Use this only when customer_id and address_id are not belong to each other (Both of IDs need to be existed)
         if (!$query_address->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
             ]);
         }
-
-        // Detach address from customer
-        // $detach = Customer::where("id", "=", $customer->id)
-        //     ->first()
-        //     ->addresses()
-        //     ->detach($query_address->first());
 
         // Delete address with Address ID in Addresses table
         $delete = $query_address->delete();

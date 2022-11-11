@@ -368,13 +368,6 @@ class ProductController extends Controller
 
     public function destroyCategory(Category $category, Product $product)
     {
-        // $category is category_id
-        // $product is product_id
-
-        $product = Product::find($product->id);
-
-        $category = Category::find($category->id);
-
         $result = $product->categories()->detach($category);
 
         if (empty($result)) {
