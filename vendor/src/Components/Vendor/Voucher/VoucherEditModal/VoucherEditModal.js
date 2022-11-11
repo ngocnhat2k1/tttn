@@ -35,6 +35,20 @@ const VoucherEditModal = ({ idDetail }) => {
                 setDeleted(response.data.deleted)
             });
     };
+    const reversedVoucher = () => {
+        axios
+            .delete(`http://127.0.0.1:8000/api/v1/vouchers/${idDetail}/destroy=0`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
+                },
+            })
+            .then((response) => {
+                alert(response.data.message)
+                if (response.data.success === true) {
+                    window.location.reload();
+                }
+            })
+    }
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -132,7 +146,7 @@ const VoucherEditModal = ({ idDetail }) => {
                             </Row>
                             <Col lg={12}>
                                 {deleted ?
-                                    <div className="btn_left_table">
+                                    <div className="btn_left_table" onClick={reversedVoucher}>
                                         <button className="theme-btn-one bg-black btn_sm">Restore</button>
                                     </div> : ""}
                                 <div className="btn_right_table">
