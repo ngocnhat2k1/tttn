@@ -22,6 +22,7 @@ class CustomerDetailResource extends JsonResource
             "avatar" => $this->avatar,
             "defaultAvatar" => $this->default_avatar,
             "subscribed" => $this->subscribed,
+            "disabled" => $this->disabled,
             "createdAt" => $this->created_at,
         ];
     }
