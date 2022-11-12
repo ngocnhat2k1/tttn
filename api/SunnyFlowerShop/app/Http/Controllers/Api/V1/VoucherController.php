@@ -92,8 +92,8 @@ class VoucherController extends Controller
             "usage" => $data->usage,
             "expiredDate" => $data->expired_date,
             "deleted" => $data->deleted,
-            "createdAt" => $data->created_at,
-            "updatedAt" => $data->updated_at
+            "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
+            "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
         ];
     }
 

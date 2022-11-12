@@ -17,7 +17,6 @@ class Product extends Model
         'img',
         "quantity",
         "status",
-        'deleted_at',
     ];
 
     public function categories() {
