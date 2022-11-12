@@ -11,11 +11,12 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrderCustomerController extends Controller
 {
     /** ADMIN FUNCTIONs */
-    public function all()
+    public function all(Request $request)
     {
         $check = Order::get()->count();
 
@@ -26,7 +27,51 @@ class OrderCustomerController extends Controller
             ]);
         }
 
-        return new OrderListCollection(Order::paginate(10));
+        // $orders = Order::with("customers")->paginate(10);
+        $customers_orders = Customer::with("orders")->get();
+        // return $customers_orders;
+        $arr = [];
+        $index = 0;
+
+        // Do two for loop to add all order to array
+        for ($i = 0; $i < sizeof($customers_orders); $i++) { // First loop is used to get into Customer index at $i
+            // Second loop is used to get Order index at $j from Customer index at $i
+            for ($j = 0; $j < sizeof($customers_orders[$i]->orders); $j++) {
+                $arr[$index]['orderId'] = $customers_orders[$i]->orders[$j]->id;
+                $arr[$index]['firstName'] = $customers_orders[$i]->first_name;
+                $arr[$index]['lastName'] = $customers_orders[$i]->last_name;
+                // $arr[$index]['disabled'] = $customers_orders[$i]->disabled;
+                $arr[$index]['voucherId'] = $customers_orders[$i]->orders[$j]->voucher_id;
+                $arr[$index]['id_delivery'] = $customers_orders[$i]->orders[$j]->id_delivery;
+                $arr[$index]['address'] = $customers_orders[$i]->orders[$j]->address;
+                $arr[$index]['nameReceiver'] = $customers_orders[$i]->orders[$j]->name_receiver;
+                $arr[$index]['phoneReceiver'] = $customers_orders[$i]->orders[$j]->phone_receiver;
+                $arr[$index]['price'] = $customers_orders[$i]->orders[$j]->total_price;
+                $arr[$index]['status'] = $customers_orders[$i]->orders[$j]->status;
+                $arr[$index]['createdAt'] = date_format($customers_orders[$i]->orders[$j]->created_at, "Y-m-d H:i:s");
+                $arr[$index]['updatedAt'] = date_format($customers_orders[$i]->orders[$j]->updated_at, "Y-m-d H:i:s");
+                $arr[$index]['deletedBy'] = $customers_orders[$i]->orders[$j]->deleted_by;
+
+                $index++; // index for array we currently use
+            }
+        }
+
+        $total = count($arr);
+        $per_page = 5;
+        $current_page = $request->input("page") ?? 1;
+
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $arr = array_slice($arr, $starting_point, $per_page, true);
+
+        $arr = new LengthAwarePaginator($arr, $total, $per_page, $current_page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
+
+        return ((object) $arr);
+
+        // return new OrderCustomerListCollection($customers_orders);
     }
 
     /** END OF ADMIN FUNCTIONs */
@@ -52,7 +97,14 @@ class OrderCustomerController extends Controller
     {
         // Check existence of Customer and Order via Customer ID and Order ID
         $query = Order::where("orders.id", "=", $order->id)
-            ->addSelect("orders.*", "vouchers.id as voucher_id", "vouchers.name", "vouchers.percent")
+            ->addSelect(
+                "orders.*",
+                "vouchers.id as voucher_id",
+                "vouchers.name",
+                "vouchers.percent",
+                "vouchers.expired_date",
+                "vouchers.deleted"
+            )
             ->where("customer_id", "=", $customer->id)
             ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
 
@@ -88,7 +140,7 @@ class OrderCustomerController extends Controller
             ]);
         }
 
-        $order_data = $query->first();    
+        $order_data = $query->first();
 
         // Checking Order_status or Deleted_by column isNull
         // 0 fresh new and null is order doesn't get cancelled
@@ -169,7 +221,7 @@ class OrderCustomerController extends Controller
         }
 
         $query = Order::where("id", "=", $order->id)
-        ->where("customer_id", "=", $customer->id);
+            ->where("customer_id", "=", $customer->id);
 
         // Check Connection between Customer and Order
         if (!$query->exists()) {
@@ -192,9 +244,13 @@ class OrderCustomerController extends Controller
             ]);
         }
 
-        if ($state === 0) { $order_state = "Pending"; }
-        else if ($state === 1) { $order_state = "Confirmed"; }
-        else { $order_state = "Completed"; }
+        if ($state === 0) {
+            $order_state = "Pending";
+        } else if ($state === 1) {
+            $order_state = "Confirmed";
+        } else {
+            $order_state = "Completed";
+        }
 
         return response()->json([
             "success" => true,

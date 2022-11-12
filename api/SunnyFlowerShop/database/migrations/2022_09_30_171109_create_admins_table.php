@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string("password");
             $table->longText("avatar")->nullable();
             // this "default_avatar" is temporary
-            $table->string("default_avatar")->default("https://i.pinimg.com/170x/d4/2b/d0/d42bd0c5b8092fda6c6bc32915e8bed8.jpg");
+            $table->string("default_avatar")->default("https://i.kym-cdn.com/photos/images/facebook/001/923/856/7a0");
             $table->boolean("level")->comment("1 for Super Admin; 0 for Admin");
 
             // Temporary, will be deleted after i need to do a login function again
