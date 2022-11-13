@@ -244,7 +244,7 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $productId)
     {
-        $data = $request->except(['category', 'deletedAt', "percentSale"]);
+        $data = $request->except(['category', "percentSale"]);
 
         // Checking Product ID
         $product = Product::find($productId);

@@ -3,7 +3,7 @@ import { FaTrash, FaTimes } from 'react-icons/fa'
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
-import "./Modal.css";
+import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const DeleteCategory = ({ idDetail, nameDetail }) => {

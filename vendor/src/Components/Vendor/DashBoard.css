@@ -215,7 +215,7 @@
     padding: 0.3rem 0.6rem;
     font-size: 17px;
     cursor: pointer;
-    width: 26%;
+    width: 25%;
     margin: 21px auto 33px;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .image-input img {
-    max-width: 200px;
+    max-width: 100px;
     max-height: 200px;
     border: 2px solid #ffc107;
     margin: 0 auto;
@@ -349,6 +349,7 @@ input[type="checkbox"]:checked:after {
 .checkbox_group p {
     margin: 0;
     padding: 10px 15px;
+    width: 85%;
 }
 
 .edit_icon {
@@ -358,13 +359,39 @@ input[type="checkbox"]:checked:after {
 
 .modal-content-edit-voucher {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     line-height: 1.4;
     background: #f1f1f1;
     padding: 25px 50px;
     border-radius: 3px;
-    max-width: 1080px;
+    max-width: 1080px !important;
+    min-width: 300px;
+}
+
+.modal-content-edit-product {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 25px 50px;
+    border-radius: 3px;
+    max-width: 1080px !important;
+    min-width: 300px;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 25px 50px;
+    border-radius: 3px;
+    max-width: 600px;
     min-width: 300px;
 }

@@ -164,7 +164,6 @@ const AddProduct = () => {
                                                                                 className='check_box'
                                                                                 {...register("category")}
                                                                             />
-
                                                                             <p>{category.name}</p>
                                                                         </div>
                                                                     </Col>

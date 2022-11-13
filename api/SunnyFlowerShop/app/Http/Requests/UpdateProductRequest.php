@@ -71,7 +71,6 @@ class UpdateProductRequest extends FormRequest
         $this->merge([
             // 'category_id' => $this->categoryId,
             'percent_sale' => $this->percentSale,
-            'deleted_at' => $this->deletedAt,
         ]);
     }
 }

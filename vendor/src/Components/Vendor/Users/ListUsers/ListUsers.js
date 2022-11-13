@@ -20,7 +20,7 @@ const ListUsers = ({ listUsers }) => {
                         </td>
                         <td>{User.email}</td>
                         {User.subscribed === 0 ? <td>No</td> : <td>Yes</td>}
-                        <td><UserDetail idDetail={User.id} /></td>
+                        <td><UserDetail idDetail={User.id} firstNameDetail={User.firstName} lastNameDetail={User.lastName} /></td>
 
 
                     </tr>

@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
-import "./Modal.css";
+import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const VoucherEditModal = ({ idDetail }) => {

@@ -41,7 +41,10 @@ const Product = () => {
                                                 <th scope="col">Category</th>
                                                 <th scope="col">Price</th>
                                                 <th scope="col">Sales</th>
+                                                <th scope='col'>Status</th>
+                                                <th scope='col'>Deleted</th>
                                                 <th scope="col">Edit/Delete</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>

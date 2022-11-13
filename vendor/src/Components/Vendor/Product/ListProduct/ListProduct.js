@@ -1,5 +1,7 @@
 import React from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import DeleteProduct from '../DeleteProduct/DeleteProduct'
+import ProductEditModal from '../ProductEditModal/ProductEditModal'
 
 const ListProducts = ({ listProducts }) => {
     return (
@@ -23,17 +25,16 @@ const ListProducts = ({ listProducts }) => {
                                 else {
                                     return `${Categories.name}, `
                                 }
-                                // return `${Categories.name}, `
                             })}
                         </td>
                         <td>${Product.price}</td>
                         <td>{Product.precentSale}</td>
-                        <td><a href="/vendor/add-products">
-                            <FaEdit></FaEdit>
-                        </a>
-                            <button type="">
-                                <FaTrash></FaTrash>
-                            </button>
+                        {Product.status == 1 ? <td>Còn hàng</td> : <td>hết hàng</td>}
+                        {console.log(Product.deleteAt)}
+                        {Product.deleteAt ? <td>chưa xoá</td> : <td>đã xoá</td>}
+                        <td>
+                            <div className='edit_icon'><ProductEditModal idDetail={Product.id} /></div>
+                            <div className='edit_icon'><DeleteProduct idDetail={Product.id} nameDetail={Product.name} /></div>
                         </td>
                     </tr>
                 )

@@ -5,12 +5,12 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
-import "./Modal.css";
+import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const CategoryEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
-    const [categoryName, setCategoryName] = useState('')
+    const [categoryName, setcategoryName] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
@@ -23,7 +23,7 @@ const CategoryEditModal = ({ idDetail }) => {
             })
 
             .then((response) => {
-                setCategoryName(response.data.name);
+                setcategoryName(response.data.name);
             });
     };
     const closeModal = () => {
@@ -56,7 +56,7 @@ const CategoryEditModal = ({ idDetail }) => {
             });
     }
     const onChangeName = (e) => {
-        setCategoryName(e.target.value)
+        setcategoryName(e.target.value)
     }
     return (
         <>
