@@ -8,19 +8,28 @@ use App\Http\Requests\StoreFeedBackRequest;
 use App\Http\Requests\UpdateFeedBackRequest;
 use App\Http\Resources\V1\FeedBackDetailCollection;
 use App\Http\Resources\V1\FeedBackDetailResource;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FeedBackController extends Controller
 {
     // **** Feedback **** \\
-    public function all() {
-        // Using Query builder to query all data from pivot table "customer_product_feedback"
-    }
-
-    public function viewFeedBack(Request $productId)
+    public function viewFeedBack(Request $request)
     {
-        $customer = Customer::find($productId->user()->id)->first();
+        $customer = Customer::find($request->user()->id);
+
+        $feedbacks = DB::table("customer_product_feedback")
+            ->where("customer_id", "=", $customer->id)
+            ->exists();
+
+        if (!$feedbacks) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This user hasn't made any feedback yet"
+            ]);
+        }
 
         return response()->json([
             "success" => true,
@@ -34,12 +43,12 @@ class FeedBackController extends Controller
         $customer = Customer::find($request->user()->id);
 
         $query = $customer->customer_product_feedback()
-            ->wherePivot("customer_product_feedback.id", "=", "$request->id");
+            ->wherePivot("customer_product_feedback.id", "=", $request->id);
 
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Something went wrong, please rechack Feedback ID"
             ]);
         }
 
@@ -51,24 +60,38 @@ class FeedBackController extends Controller
 
     public function storeFeedBack(StoreFeedBackRequest $request)
     {
-        // Will add condition for product are purchased or not (check in orders table)
         // Check validation for customer_id 
         $customer = Customer::find($request->user()->id);
 
-        $request['customer_id'] = $customer->id;
+        // Check customer has bought product yet before created a feedback
+        $orders_customers = Order::where("customer_id", "=", $customer->id)->get();
 
-        $product = Product::find($request->product_id);
+        for ($i = 0; $i < sizeof($orders_customers); $i++) {
+            $product = Product::find($request->product_id);
+            $check = DB::table("order_product")
+                ->where("order_id", "=", $orders_customers[$i]->id)
+                ->where("product_id", "=", $product->id)
+                ->exists();
 
-        // Can't do a foreach loop to check value in pivot table for some reason. It can't check null value
+            if (!$check) continue;
+            // Can't do a foreach loop to check value in pivot table for some reason. It can't check null value
 
-        $customer->customer_product_feedback()->attach($product, [
-            "quality" => $request->quality,
-            "comment" => $request->comment,
-        ]);
+            $customer->customer_product_feedback()->attach($product, [
+                "quality" => $request->quality,
+                "comment" => $request->comment,
+                "created_at" => date("Y-m-d H:i:s"),
+                "updated_at" => date("Y-m-d H:i:s"),
+            ]);
+
+            return response()->json([
+                "success" => true,
+                "message" => "Created feedback product Successfully"
+            ]);
+        }
 
         return response()->json([
-            "success" => true,
-            "message" => "Created feedback product Successfully"
+            "success" => false,
+            "errors" => "You have to bought this product before making a feedback for it"
         ]);
     }
 
@@ -87,6 +110,7 @@ class FeedBackController extends Controller
             ->updateExistingPivot($product, [
                 "quality" => $request->quality,
                 "comment" => $request->comment,
+                "updated_at" => date("Y-m-d H:i:s"),
             ]);
 
         if (!$result) {

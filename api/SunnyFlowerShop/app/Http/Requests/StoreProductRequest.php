@@ -41,9 +41,8 @@ class StoreProductRequest extends FormRequest
                 "integer",
             ],
             "percentSale" => [
-                "required",
                 "integer",
-                "min:1",
+                "min:0",
                 "max:100",
             ],
             "img" => [

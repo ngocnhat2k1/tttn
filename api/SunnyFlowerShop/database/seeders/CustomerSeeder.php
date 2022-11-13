@@ -25,6 +25,8 @@ class CustomerSeeder extends Seeder
                 Product::factory()->count(10),
                 [
                     'quality' => rand(1, 5),
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s"),
                 ],
                 "customer_product_feedback"
             )
@@ -47,6 +49,8 @@ class CustomerSeeder extends Seeder
                 Product::factory()->count(5),
                 [
                     'quality' => rand(1, 5),
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s"),
                 ],
                 "customer_product_feedback"
             )

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer("product_id");
             $table->integer("quality")->comment("QualityStatusEnum");
             $table->longText("comment")->nullable();
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 

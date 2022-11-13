@@ -314,8 +314,8 @@ class UserAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "token" => $request->bearerToken() ?? null,
-            "tokenType" => "Bearer Token"
+            "token" => $request->bearerToken(),
+            "tokenType" => "Bearer Token",
         ]);
     }
 

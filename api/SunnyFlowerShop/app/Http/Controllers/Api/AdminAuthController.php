@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\OrderListCollection;
 use App\Models\Admin;
 use App\Models\AdminAuth;
 use App\Models\AdminToken;
@@ -36,7 +37,7 @@ class AdminAuthController extends Controller
             "totalSales" => $orders,
             "totalProducts" => $products,
             "totalOrdersPending" => $pending_orders,
-            "recentOrders" => $recent_orders
+            "recentOrders" => new OrderListCollection($recent_orders)
         ]);
     }
 
