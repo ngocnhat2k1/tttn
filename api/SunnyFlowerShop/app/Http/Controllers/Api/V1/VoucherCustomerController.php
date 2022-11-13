@@ -19,7 +19,10 @@ class VoucherCustomerController extends Controller
         ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
         
         if (!$vouchers->exists()) {
-            return response()->json();
+            return response()->json([
+                "success" => false,
+                "errors" => "This user hasn't used any voucher yet"
+            ]);
         }
 
         return new VoucherCustomerOverviewCollection($vouchers->get());

@@ -88,6 +88,7 @@ class ProductController extends Controller
         }
 
         $filtered = $request->except(["percentSale"]);
+        $filtered['percent_sale'] = $request->percent_sale ?? 0; // Just in case percent_sale doesn't get filled
 
         $data = Product::create($filtered);
 
@@ -97,7 +98,7 @@ class ProductController extends Controller
                 "success" => false,
                 "errors" => "An unexpected error has occurred"
             ]);
-        }        
+        }
 
         // Add each categories to pivot table "category_product"
         for ($i = 0; $i < sizeof($filtered['category']); $i++) {
@@ -368,6 +369,18 @@ class ProductController extends Controller
 
     public function destroyCategory(Category $category, Product $product)
     {
+        $count = DB::table("category_product")
+            ->where("product_id", "=", $product->id)
+            ->get()
+            ->count();
+
+        if ($count === 1) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't delete all categories from product (remain category left from this product: 1)"
+            ]);
+        }
+
         $result = $product->categories()->detach($category);
 
         if (empty($result)) {

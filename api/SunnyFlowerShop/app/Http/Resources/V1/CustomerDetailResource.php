@@ -23,7 +23,7 @@ class CustomerDetailResource extends JsonResource
             "defaultAvatar" => $this->default_avatar,
             "subscribed" => $this->subscribed,
             "disabled" => $this->disabled,
-            "createdAt" => $this->created_at,
+            "createdAt" => date_format($this->created_at, "Y-m-d H:i:s"),
         ];
     }
 }
