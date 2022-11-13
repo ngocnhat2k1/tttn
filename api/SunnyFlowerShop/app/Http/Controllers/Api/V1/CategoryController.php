@@ -88,8 +88,8 @@ class CategoryController extends Controller
         return [
             "categoryId" => $data->id,
             "name" => $data->name,
-            "createdAt" => $data->created_at,
-            "updatedAt" => $data->updated_at,
+            "createdAt" => date_format($data->created_at,"Y-m-d H:i:s"),
+            "updatedAt" => date_format($data->updated_at,"Y-m-d H:i:s"),
         ];
     }
 

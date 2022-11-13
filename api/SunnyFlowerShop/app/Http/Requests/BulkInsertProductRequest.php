@@ -64,8 +64,6 @@ class BulkInsertProductRequest extends FormRequest
         foreach ($this->toArray() as $obj) {
             // $obj['category_id'] = $obj['categoryId'] ?? null;
             $obj['percent_sale'] = $obj['percentSale'] ?? null;
-            $obj['deleted_at'] = $obj['deletedAt'] ?? null;
-
             $data[] = $obj;
         }
 

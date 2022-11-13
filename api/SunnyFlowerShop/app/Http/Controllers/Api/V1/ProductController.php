@@ -87,7 +87,7 @@ class ProductController extends Controller
             ]);
         }
 
-        $filtered = $request->except(['deletedAt', "percentSale"]);
+        $filtered = $request->except(["percentSale"]);
 
         $data = Product::create($filtered);
 
@@ -97,7 +97,7 @@ class ProductController extends Controller
                 "success" => false,
                 "errors" => "An unexpected error has occurred"
             ]);
-        }
+        }        
 
         // Add each categories to pivot table "category_product"
         for ($i = 0; $i < sizeof($filtered['category']); $i++) {
@@ -123,7 +123,7 @@ class ProductController extends Controller
     {
         // Main Data use for blueprint
         $bulk = collect($request->all())->map(function ($arr, $key) {
-            return Arr::except($arr, ["category", "percentSale", "deletedAt"]);
+            return Arr::except($arr, ["category", "percentSale"]);
         });
 
         // Data use for searching in category table to insert to intermediate (category_product) table - $data is an array

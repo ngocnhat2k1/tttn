@@ -22,9 +22,9 @@ class CustomerRegisterResource extends JsonResource
             "lastName" => $this->last_name,
             "email" => $this->email,
             "password" => $this->password,
-            "subscribed" => $this->subscribed,
-            "updatedAt" => $this->updated_at,
-            "createdAt" => $this->created_at,
+            "subscribed" => $this->subscribed,            
+            "updatedAt" => date_format($this->updated_at,"Y/m/d H:i:s"),
+            "createdAt" => date_format($this->created_at,"Y/m/d H:i:s"),
         ];
     }
 }
