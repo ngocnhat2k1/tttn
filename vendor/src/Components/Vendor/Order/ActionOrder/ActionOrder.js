@@ -77,7 +77,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
                     <div className="modal-content">
-                        <h2 className="title_modal">User Profile {idOrder}</h2>
+                        <h2 className="title_modal">Detail Order {idOrder}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
                                 <Col lg={6}>

@@ -29,14 +29,16 @@ const Order = () => {
                                         <thead>
                                             <tr>
                                                 <th scope='col'>Order Id</th>
-                                                <th scope='col'>Product Detail</th>
+                                                <th scope='col'>Name Customer</th>
+                                                <th scope='col'>Name Receiver</th>
+                                                <th scope='col'>Phone Receiver</th>
+                                                <th scope='col'>Address</th>
                                                 <th scope='col'>Status</th>
                                                 <th scope='col'>Price</th>
                                                 <th scope='col'>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                             <ListOrder currentOrder={data} />
 
                                         </tbody>
