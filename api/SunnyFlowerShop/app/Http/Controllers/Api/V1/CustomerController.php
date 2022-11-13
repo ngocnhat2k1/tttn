@@ -20,6 +20,15 @@ class CustomerController extends Controller
 {
     public function index()
     {
+        $check = Customer::get()->count();
+
+        if ($check === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "User list is empty"
+            ]);
+        }
+
         $customers = Customer::paginate(10);
 
         return new CustomerOverviewCollection($customers);

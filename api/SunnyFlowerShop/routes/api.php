@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AddressCustomerController;
 use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CartAdminController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\FeedBackController;
@@ -12,9 +13,11 @@ use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteProductCustomerController;
-use App\Http\Controllers\Api\V1\OrderCustomerController;
+use App\Http\Controllers\Api\V1\FeedBackAdminController;
+use App\Http\Controllers\Api\V1\OrderAdminController;
 use App\Http\Controllers\Api\V1\VoucherController;
 use App\Http\Controllers\Api\V1\VoucherCustomerController;
+use App\Http\Controllers\Api\V1\ProductQueryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +71,14 @@ Route::middleware("auth:sanctum")->group(function () {
              * Query products got the most favorite product out of all products
              */
         });
+
+        // Route for manage Admin
+        /**
+         * View all admin
+         * Create new (low level) admin
+         * Update (low level) admin information
+         * Delete (or Soft ?) (low level) admin account
+         */
     
         // Route for User
         Route::group(['prefix' => "users"], function () {
@@ -111,7 +122,7 @@ Route::middleware("auth:sanctum")->group(function () {
          * Update state for orders
          */
         Route::group(['prefix' => 'orders'], function() {
-            Route::get("/", [OrderCustomerController::class, "all"]);
+            Route::get("/", [OrderAdminController::class, "all"]);
         });
     
         /** Address
@@ -155,7 +166,7 @@ Route::middleware("auth:sanctum")->group(function () {
          * Create-Update-Delete feedback from admin site (?)
          */
         Route::group(['prefix' => 'feedbacks'], function() {
-            Route::get("/", [FeedBackController::class, "all"]);
+            Route::get("/", [FeedBackAdminController::class, "all"]);
         });
 
         /** Cart
@@ -164,12 +175,12 @@ Route::middleware("auth:sanctum")->group(function () {
          * Update-Delete Cart (?)
          */
         Route::group(['prefix' => 'carts'], function() {
-            Route::get("/", [CartController::class, "all"]);
+            Route::get("/", [CartAdminController::class, "all"]);
             // Check state before show (to determine whether it was viewed from admin POV or Customer POV)
-            Route::get("/{id}/state={state}", [CartController::class, "index"]);
-            Route::delete("/{id}/remove/{productId}", [CartController::class, "removedProduct"]);
-            Route::delete("/{id}/empty", [CartController::class, "emptyCart"]);
-            Route::put("/{id}/update/state={state}", [CartController::class, "update"]);
+            Route::get("/{id}", [CartAdminController::class, "index"]);
+            Route::delete("/{id}/remove/{productId}", [CartAdminController::class, "removedProduct"]);
+            Route::delete("/{id}/empty", [CartAdminController::class, "emptyCart"]);
+            Route::put("/{id}/update", [CartAdminController::class, "update"]);
         });     
     
         /** Email
@@ -191,6 +202,9 @@ Route::middleware("auth:sanctum")->group(function () {
 
 // ***** CUSTOMER ***** \\
 Route::get('/products', [ProductController::class, "index"]); // Show all products
+Route::get('/products/newArrival', [ProductQueryController::class, "arrival"]); // Show all products
+Route::get('/products/saleProduct', [ProductQueryController::class, "sale"]); // Show all products
+Route::get('/products/bestSeller', [ProductQueryController::class, "best"]); // Show all products
 Route::get('/products/{id}', [ProductController::class, "show"]); // Show detail of a specific product
 
 Route::post("/register", [UserAuthController::class, "register"]); // Register
@@ -207,9 +221,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/avatar/destroy", [UserAuthController::class, "destroyAvatar"]);
 
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
-        Route::get("/cart/state={state}", [CartController::class, "index"]);
+        Route::get("/cart", [CartController::class, "index"]);
         Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
-        Route::put("/cart/update/state={state}", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
+        Route::put("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
         Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
         Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
 
@@ -223,6 +237,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)
         Route::get("/feedback/{id}", [FeedBackController::class, "feedbackDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
+        // Route::get("/feedback/product/{id}", [FeedBackController::class, "feedbackProductDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
         Route::post("/feedback/create", [FeedBackController::class, "storeFeedBack"]); // Create new feedback for a specific proudct
         Route::put("/feedback/update/{id}", [FeedBackController::class, "updateFeedBack"]); // {id} is feedback_id; Update existed feedback of a specific product
         Route::delete("/feedback/destroy/{id}", [FeedBackController::class, "destroyFeedBack"]); // {id} is feedback_id; Delete existed feedback of a specific product

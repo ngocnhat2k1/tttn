@@ -101,7 +101,7 @@ class OrderController extends Controller
                     "errors" => "You have already used this voucher."
                 ]);
             }
-        } else {
+        } else if (!empty($request->voucher_code)) {
             return response()->json([
                 "success" => false,
                 "errors" => "Voucher code doesn't exist, please recheck your voucher code"
@@ -145,6 +145,8 @@ class OrderController extends Controller
 
         $arr = [];
         $total_price = 0;
+        $voucher_data = $query->first();
+        $voucher_sale_value = $voucher_data->percent ?? 0;
 
         for ($i = 0; $i < sizeof($data); $i++) {
             $value = Product::where("id", "=", $data[$i]->product_id)->first();
@@ -158,32 +160,21 @@ class OrderController extends Controller
             $total_price = $total_price + (($value->price - $sale_price) * $data[$i]->quantity);
         }
 
-        // Check if existence of voucherId
-        if ($request->voucher_code === null) {
-            $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
-            $filtered["customer_id"] = $request->user()->id;
-            $filtered["total_price"] = $total_price;
+        $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+        $filtered['voucher_id'] = $voucher_data->id ?? null;
+        $filtered["customer_id"] = $request->user()->id;
+        $filtered["total_price"] = $total_price - (($total_price * $voucher_sale_value) / 100);
 
-            dd($total_price);
-        } else {
-            $voucher_sale = $query->first();
-
-            $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
-            $filtered['voucher_id'] = $voucher_sale->id;
-            $filtered["customer_id"] = $request->user()->id;
-            $filtered["total_price"] = $total_price - (($total_price * $voucher_sale->percent) / 100);
-        }
-
-        // Change usage value of voucher
-        $voucher_data = $query->first();
-
-        if ($voucher_data->usage === 1) { // If voucher usage is = 1, then change its value to 0 and change deleted value
-            $voucher_data->usage = 0;
-            $voucher_data->deleted = 1;
-            $voucher_data->save();
-        } else { // If voucher usage is not = 0, then descrease like normal
-            $voucher_data->usage = $voucher_data->usage - 1;
-            $voucher_data->save();
+        // Change usage value of voucher, But first need to check VoucherCode field
+        if (!empty($request->voucher_code)) {
+            if ($voucher_data->usage === 1) { // If voucher usage is = 1, then change its value to 0 and change deleted value
+                $voucher_data->usage = 0;
+                $voucher_data->deleted = 1;
+                $voucher_data->save();
+            } else { // If voucher usage is not = 0, then descrease like normal
+                $voucher_data->usage = $voucher_data->usage - 1;
+                $voucher_data->save();
+            }
         }
 
         // Add order to database
@@ -266,7 +257,36 @@ class OrderController extends Controller
 
         return response()->json([
             "success" => true,
-            "data" => new OrderDetailResource($data)
+            "data" => [
+                "customer" => [
+                    "customerId" => $request->user()->id,
+                    "firstName" => $request->user()->first_name,
+                    "lastName" => $request->user()->last_name,
+                    "email" => $request->user()->email,
+                    "avatar" => $request->user()->avatar,
+                    "defaultAvatar" => $request->user()->default_avatar,
+                ],
+                "voucher" => [
+                    "voucherId" => $data->voucher_id,
+                    "name" => $data->name,
+                    "expiredDate" => $data->expired_date,
+                    "deleted" => $data->deleted,
+                ],
+                "order" => [
+                    "id" => $data->id,
+                    "idDelivery" => $data->id_delivery,
+                    "dateOrder" => $data->date_order,
+                    "address" => $data->address,
+                    "nameReceiver" => $data->name_receiver,
+                    "phoneReceiver" => $data->phone_receiver,
+                    "totalPrice" => $data->total_price,
+                    "status" => $data->status,
+                    "paidType" => $data->paid_type,
+                    "deleted_by" => $data->deleted_by,
+                    "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
+                    "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
+                ]                
+            ]
         ]);
     }
 
@@ -363,8 +383,7 @@ class OrderController extends Controller
             if ($remain <= 0) { // If Remain Quantity is less equal than 0 then set it to out of stock
                 $product->quantity = 0;
                 $product->status = 0;
-            }
-            else { // If not then nope
+            } else { // If not then nope
                 $product->quantity = $remain;
             }
 
@@ -373,7 +392,7 @@ class OrderController extends Controller
 
         $result = $order->save();
 
-        if(empty($result)) {
+        if (empty($result)) {
             return response()->json([
                 "success" => false,
                 "errors" => "An unexpected errors has occurred"

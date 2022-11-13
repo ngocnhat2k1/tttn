@@ -22,13 +22,18 @@ class AddressController extends Controller
      */
     public function index(Request $request)
     {
-        $customer = Customer::find($request->user()->id);
+        $address = Address::where("customer_id", "=", $request->user()->id);
 
-        $data = $customer->addresses;
+        if (!$address->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This use hasn't created any address yet"
+            ]);
+        }
 
         return response()->json([
             "success" => true,
-            "data" => new AddressOverviewCollection($data)
+            "data" => new AddressOverviewCollection($address->get())
         ]);
     }
 
