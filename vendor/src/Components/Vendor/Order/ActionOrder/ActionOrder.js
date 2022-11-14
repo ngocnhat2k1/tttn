@@ -9,11 +9,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ActionOrder = ({ idOrder, idCustomer }) => {
     const [modal, setModal] = useState(false);
+    const [idDelivery, setIdDelivery] = useState('')
+    const [createdAt, setCreatedAt] = useState('')
+    const [email, setEmail] = useState('')
+    const [totalPrice, settotalPrice] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setlastName] = useState('')
-    const [email, setEmail] = useState('')
+
     const [avatar, setAvatar] = useState('')
     const [subscribed, setSubscribed] = useState('')
+    const [address, setAddress] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
@@ -25,6 +30,9 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
 
             .then((response) => {
+                setIdDelivery(response.data.data.idDelivery)
+                setCreatedAt(response.data.data.createdAt)
+                settotalPrice(response.data.data.totalPrice)
                 setFirstName(response.data.data.firstName);
                 setlastName(response.data.data.lastName)
                 setEmail(response.data.data.email)
@@ -76,7 +84,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             {modal && (
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
-                    <div className="modal-content">
+                    {/* <div className="modal-content">
                         <h2 className="title_modal">Detail Order {idOrder}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
@@ -102,9 +110,72 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
 
                         <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
 
+                    </div> */}
+                    <div className="modal-content-order">
+                        <Row>
+                            <div className='detail-wrapper'>
+                                <div className='detail-header'>
+                                    <Row className='header-conten'>
+                                        <h4>
+                                            Detail Order {idDelivery}
+                                        </h4>
+                                    </Row>
+                                    <div className='detail-bottom'>
+                                        <ul>
+                                            <li>
+                                                <span>Issue Date: </span>
+                                                <h6>{createdAt}</h6>
+                                            </li>
+                                        </ul>
+                                        <ul>
+                                            <li>
+                                                <span>Email: </span>
+                                                <h6>{email}</h6>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className='detail-body'>
+                                    <table className='table table-borderless mb-0'>
+                                        <thead>
+                                            <tr>
+                                                <th scope='col'>#</th>
+                                                <th scope='col'>Product</th>
+                                                <th scope='col'>PRICE</th>
+                                                <th scope='col'>Quantity</th>
+                                                <th scope='col'>TOTAL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope='col'>#</th>
+                                                <th scope='col'>Productsssssssssssssssssssssssssssssss</th>
+                                                <th scope='col'>PRICE</th>
+                                                <th scope='col'>Quantity</th>
+                                                <th scope='col'>TOTAL</th>
+                                                {/* chạy vòng lặp ở đây  */}
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colSpan={2}></td>
+                                                <td className='font-bold text-dark' colSpan={2}>Grand total</td>
+                                                <td className='font-bold text-theme'>{totalPrice}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <div className='detail-footer text-right'>
+                                        <div className='buttons'>
+                                            <button className='theme-btn-one btn-black-overlay btn_sm'>Confirm</button>
+                                            <button className='theme-btn-one btn-red-overlay btn_sm ml-2'>Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Row>
                     </div>
-                </div>)}
-        </div>
+                </div >)}
+        </div >
     )
 }
 

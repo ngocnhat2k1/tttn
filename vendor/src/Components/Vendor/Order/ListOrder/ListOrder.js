@@ -2,9 +2,10 @@ import React from 'react'
 import ActionOrder from '../ActionOrder/ActionOrder'
 
 const ListOrder = ({ currentOrder }) => {
+    console.log(currentOrder)
     return (
         <>
-            {currentOrder && currentOrder.map((Order, index) => {
+            {currentOrder && Object.values(currentOrder).map((Order, index) => {
                 return (
                     <tr key={index}>
                         <td>

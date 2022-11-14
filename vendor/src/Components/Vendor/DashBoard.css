@@ -395,3 +395,113 @@ input[type="checkbox"]:checked:after {
     max-width: 600px;
     min-width: 300px;
 }
+
+.modal-content-order {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 25px 50px;
+    border-radius: 3px;
+    max-width: 1140px;
+    min-width: 600px;
+
+}
+
+.detail-wrapper {
+    background-color: #fff;
+    box-shadow: 0 0 14px 3px #e6e6e6;
+}
+
+.detail-header {
+    padding: calc(9px + 1.875vw);
+    background-color: #f8f8f8;
+}
+
+.detail-header .detail-bottom {
+    padding-top: 24px;
+    margin-top: 24px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.detail-header .detail-bottom ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detail-header .detail-bottom ul li {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.detail-header .detail-bottom ul li h6 {
+    margin: auto 0 auto 4px;
+}
+
+.detail-header .detail-bottom ul li span {
+    color: #f79837;
+    text-transform: capitalize;
+}
+
+.detail-wrapper .detail-body {
+    padding: calc(9px + 1.875vw);
+}
+
+.detail-wrapper .detail-body .table {
+    font-size: 16px;
+}
+
+.detail-wrapper .detail-body .table thead th {
+    text-transform: uppercase;
+    font-weight: 400;
+    padding-bottom: 16px;
+    border-color: #f79837 !important;
+    border-bottom: 1px solid;
+}
+
+.detail-wrapper .detail-body .table tbody th {
+    font-weight: 400;
+    color: #646464;
+}
+
+.detail-body .table tfoot {
+    border-top: 1px solid #ddd;
+}
+
+.detail-body .table tfoot td {
+    padding-top: 15px;
+}
+
+.detail-wrapper .detail-footer {
+    padding: calc(9px + 1.875vw);
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.btn-black-overlay {
+    background-color: #000;
+    color: #fff;
+}
+
+.btn-black-overlay:hover {
+    background-color: #262626;
+    color: #fff;
+}
+
+.ml-2, .mx-2 {
+    margin-left: 0.5rem !important;
+}
+
+.btn-red-overlay {
+    background-color: red;
+    border: 2px solid red;
+    color: #fff;
+}
