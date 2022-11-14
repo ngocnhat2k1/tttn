@@ -23,21 +23,24 @@ class AdminAuthController extends Controller
         $this->middleware("auth:sanctum", ["except" => ["setup", "login", "retrieveToken"]]);
     }
 
-    public function dashboard() {
+    public function dashboard()
+    {
+        if (Order::get()->count() === 0) {
+            $display_recent_orders = "There is no any Recent Orders";
+        } else {
+            $recent_orders = Order::orderBy('created_at', 'DESC')->take(10)->get(); // Take top 10 orders are created ordered by "created_at" in descending order
+            $display_recent_orders = new OrderListCollection($recent_orders);
+        }
+
         $orders = Order::where("status", "=", 2)->get()->count(); // Orders have status Completed considered as Sales
-        $recent_orders = Order::orderBy('created_at', 'DESC')->take(10)->get(); // Take top 10 orders are created ordered by "created_at" in descending order
         $products = Product::get()->count(); // Total products has been created so far
         $pending_orders = Order::where("status", "=", 0)->get()->count(); // Orders have status = 0 will be considered as Pending
 
-        if ($recent_orders->count() === 0) {
-            $recent_orders = "There is no any Recent Orders";
-        }
-        
         return response()->json([
             "totalSales" => $orders,
             "totalProducts" => $products,
             "totalOrdersPending" => $pending_orders,
-            "recentOrders" => new OrderListCollection($recent_orders)
+            "recentOrders" => $display_recent_orders
         ]);
     }
 
