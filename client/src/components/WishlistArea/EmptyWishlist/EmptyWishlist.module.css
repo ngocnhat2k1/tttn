@@ -1,0 +1,11 @@
+.emptyCartArea img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.emptyCartArea h2 {
+    margin: 0;
+    font-size: 36px;
+    line-height: 40px;
+}

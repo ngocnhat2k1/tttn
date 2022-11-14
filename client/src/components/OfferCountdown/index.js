@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import styles from './OfferCountdown.module.css'
+import styles from './OfferCountdown.module.scss'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -12,7 +12,7 @@ function OfferCountdown() {
     const [timeSeconds, setSeconds] = useState('00');
 
     let interval = useRef();
-
+    
     const startCountDown = () => {
         const countDownDate = new Date('October 1, 2022 00:00:00').getTime();
 

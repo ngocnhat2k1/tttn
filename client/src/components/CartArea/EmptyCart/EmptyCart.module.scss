@@ -1,0 +1,30 @@
+.emptyCartArea img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.emptyCartArea h2 {
+    margin: 0;
+    font-size: 36px;
+    line-height: 40px;
+}
+
+.emptyCartArea h3 {
+    padding-top: 15px;
+    margin: 0;
+    font-size: 24px;
+}
+
+.emptyCartArea a {
+    display: inline-block;
+    font-weight: 400;
+    margin-top: 25px;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+}

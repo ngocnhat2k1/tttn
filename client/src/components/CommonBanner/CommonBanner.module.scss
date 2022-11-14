@@ -1,0 +1,41 @@
+
+#commonBanner {
+    background-image: url(../../../src/images/common_banner1.jpg);
+    padding: 90px 0;
+    
+}
+
+.commonBannerText {
+    text-align: center;
+    color: white;
+}
+
+.commonBannerText h2 {
+    font-size: 36px;
+    font-weight: 500;
+    margin-bottom: 0px;
+}
+
+.commonBannerText ul{
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px 0px 0px;
+    margin-bottom: 0px;
+}
+
+.commonBannerText a {
+    color: white;
+
+    &:hover{
+        color: #f79837;
+    }
+}
+
+.commonBannerText ul li.slash{
+    padding: 0 10px;
+}
+
+.commonBannerText ul li.active{
+        color: #f79837;
+}
+

@@ -50,7 +50,7 @@
 
 .offerTimeText h2 {
     font-size: 40px;
-    font-weight: bolder;
+    font-weight: 500;
     line-height: 55px;
     letter-spacing: 2px;
 }
@@ -64,12 +64,18 @@
 }
 
 .offerTimeText a {
+    transition: all .3s ease-in-out .1s;
     padding: 16px 35px;
-    text-decoration: none;
     font-size: 12px;
     font-weight: 500;
     background-color: black;
     color: white;
     line-height: 18px;
     letter-spacing: 2px;
+    border: 1px solid black;
+
+    &:hover {
+        color: black;
+        background-color: white;
+    }
 }

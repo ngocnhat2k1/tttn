@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+section {
+    padding-top: 50px;
+}
+
+.pb50 {
+    padding-bottom: 50px;
+}
+
+.container, .container-lg, .container-md, .container-sm, .container-xl {
+    max-width: 1440px !important;
+}
+
+.colorOrange {
+    color: #f79837 !important;
+}
+
+body {
+    font-family: "Poppins", sans-serif !important;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.clear {
+    clear: both;
+}
+
+input[type=date], input[type=email], input[type=number], input[type=password], input[type=text], select {
+    min-height: 45px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+input[type=date]:focus, input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=text]:focus, select:focus, textarea:focus {
+    background-color: #fff;
+    outline: none;
+    box-sizing: none;
+    border: 1px solid #f79837 !important;
+    box-shadow: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+    /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+    /* Firefox */
+}

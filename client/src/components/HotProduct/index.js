@@ -2,11 +2,14 @@ import styles from './HotProduct.module.scss'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import {Tabs, Tab} from 'react-bootstrap'
+import ProductWrapper from './ProductWrapper';
+import { useState } from 'react';
 
 function HotProduct() {
+    const [unit, setUnit] = useState('New Arrival');
+
     return (
-        <section className="pb50">
+        <section className="pb100">
             <Container>
                 <Row>
                     <Col lg={12}>
@@ -20,11 +23,10 @@ function HotProduct() {
                     <Col lg={12}>
                         <div>
                             <ul className={styles.navTabs}>
-                                <li >NEW ARRIVAL</li>
-                                <li>TRENDING</li>
-                                <li>BEST SELLERS</li>
-                                <li>FEATURED</li>
-                                <li>ON SALL</li>
+                                <li className={unit === "New Arrival" ? styles.tabOnClick : ''} onClick={() => setUnit('New Arrival')}>NEW ARRIVAL</li>
+                                <li className={unit === "Trending" ? styles.tabOnClick : ''} onClick={() => setUnit('Trending')}>TRENDING</li>
+                                <li className={unit === "Best Seller" ? styles.tabOnClick : ''} onClick={() => setUnit('Best Seller')}>BEST SELLERS</li>
+                                <li className={unit === "On Sell" ? styles.tabOnClick : ''}onClick={() => setUnit('On Sell')}>ON SELL</li>
                             </ul>
                         </div>
                     </Col>
@@ -33,30 +35,7 @@ function HotProduct() {
                             <div>
                                 <div>
                                     <Row>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
-                                        <Col lg={3} md={4} sm={6} xs={12}>
-                                            
-                                        </Col>
+                                        <ProductWrapper productUnit={unit} />
                                     </Row>
                                 </div>
                             </div>
