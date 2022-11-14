@@ -19,7 +19,7 @@ const ListOrder = ({ currentOrder }) => {
                         </td>
                         <td>{Order.price}₫</td>
                         {console.log(currentOrder)}
-                        <td><ActionOrder idOrder={Order.orderId} idCustomer={Order.lastName + Order.fistName} /> </td>
+                        <td><ActionOrder idOrder={Order.orderId} idCustomer={Order.customerId} /> </td>
                     </tr>
                 )
             })

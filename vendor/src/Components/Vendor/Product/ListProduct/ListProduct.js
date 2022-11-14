@@ -29,9 +29,9 @@ const ListProducts = ({ listProducts }) => {
                         </td>
                         <td>${Product.price}</td>
                         <td>{Product.precentSale}</td>
-                        {Product.status == 1 ? <td>Còn hàng</td> : <td>hết hàng</td>}
-                        {console.log(Product.deleteAt)}
-                        {Product.deleteAt ? <td>chưa xoá</td> : <td>đã xoá</td>}
+                        {Product.status === 1 ? <td>Còn hàng</td> : <td>hết hàng</td>}
+                        {/* {console.log('cc', Product.deletedAt)} */}
+                        {Product.deletedAt === 1 ? <td>đã xoá</td> : <td>chưa xoá</td>}
                         <td>
                             <div className='edit_icon'><ProductEditModal idDetail={Product.id} /></div>
                             <div className='edit_icon'><DeleteProduct idDetail={Product.id} nameDetail={Product.name} /></div>
