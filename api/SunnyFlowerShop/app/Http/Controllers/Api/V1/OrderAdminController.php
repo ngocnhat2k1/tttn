@@ -18,7 +18,7 @@ class OrderAdminController extends Controller
     /** ADMIN FUNCTIONs */
     public function paginator($arr, $request) {
         $total = count($arr);
-        $per_page = 5;
+        $per_page = 12;
         $current_page = $request->input("page") ?? 1;
 
         $starting_point = ($current_page * $per_page) - $per_page;
