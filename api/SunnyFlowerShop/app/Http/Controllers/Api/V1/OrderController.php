@@ -279,7 +279,8 @@ class OrderController extends Controller
                 "paidType" => $data->paid_type,
                 "deleted_by" => $data->deleted_by,
                 "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
-                "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
+                "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s"),
+                "products" => ProductDetailResource::collection($data->products)
             ]
         ]);
     }
