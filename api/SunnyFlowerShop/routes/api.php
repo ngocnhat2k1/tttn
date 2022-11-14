@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteProductCustomerController;
 use App\Http\Controllers\Api\V1\FeedBackAdminController;
 use App\Http\Controllers\Api\V1\OrderAdminController;
+use App\Http\Controllers\Api\V1\OrderCustomerController;
 use App\Http\Controllers\Api\V1\VoucherController;
 use App\Http\Controllers\Api\V1\VoucherCustomerController;
 use App\Http\Controllers\Api\V1\ProductQueryController;
