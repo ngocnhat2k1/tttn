@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderListCollection;
+use App\Http\Resources\V1\ProductDetailResource;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -64,28 +65,36 @@ class OrderCustomerController extends Controller
         return response()->json([
             "success" => true,
             "data" => [
-                "customerId" => $customer->id,
-                "firstName" => $customer->first_name,
-                "lastName" => $customer->last_name,
-                "email" => $customer->email,
-                "avatar" => $customer->avatar,
-                "defaultAvatar" => $customer->default_avatar,
-                "voucherId" => $data->voucher_id,
-                "name" => $data->name,
-                "expiredDate" => $data->expired_date,
-                "deleted" => $data->deleted,
-                "id" => $data->id,
-                "idDelivery" => $data->id_delivery,
-                "dateOrder" => $data->date_order,
-                "address" => $data->address,
-                "nameReceiver" => $data->name_receiver,
-                "phoneReceiver" => $data->phone_receiver,
-                "totalPrice" => $data->total_price,
-                "status" => $data->status,
-                "paidType" => $data->paid_type,
-                "deleted_by" => $data->deleted_by,
-                "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
-                "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
+                "customer" => [
+                    "customerId" => $customer->id,
+                    "firstName" => $customer->first_name,
+                    "lastName" => $customer->last_name,
+                    "email" => $customer->email,
+                    "avatar" => $customer->avatar,
+                    "defaultAvatar" => $customer->default_avatar,
+                ],
+                "voucher" => [
+                    "voucherId" => $data->voucher_id,
+                    "percent" => $data->percent,
+                    "name" => $data->name,
+                    "expiredDate" => $data->expired_date,
+                    "deleted" => $data->deleted,
+                ],
+                "order" => [
+                    "id" => $data->id,
+                    "idDelivery" => $data->id_delivery,
+                    "dateOrder" => $data->date_order,
+                    "address" => $data->address,
+                    "nameReceiver" => $data->name_receiver,
+                    "phoneReceiver" => $data->phone_receiver,
+                    "totalPrice" => $data->total_price,
+                    "status" => $data->status,
+                    "paidType" => $data->paid_type,
+                    "deleted_by" => $data->deleted_by,
+                    "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
+                    "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s"),
+                ],
+                "products" => ProductDetailResource::collection($data->products)
             ]
         ]);
     }

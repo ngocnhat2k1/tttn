@@ -206,6 +206,7 @@ class CustomerController extends Controller
             "lastName" => "string|min:2|max:50",
             "email" => "email",
             "password" => "string|min:6|max:24",
+            "subscribed" => "boolean"
         ]);
 
         if ($data->fails()) {
