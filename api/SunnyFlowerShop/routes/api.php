@@ -206,6 +206,7 @@ Route::get('/products', [ProductController::class, "index"]); // Show all produc
 Route::get('/products/newArrival', [ProductQueryController::class, "arrival"]); // Show all products
 Route::get('/products/saleProduct', [ProductQueryController::class, "sale"]); // Show all products
 Route::get('/products/bestSeller', [ProductQueryController::class, "best"]); // Show all products
+Route::get('/products/trending/day={day}', [ProductQueryController::class, "trending"]); // Show all products
 Route::get('/products/{id}', [ProductController::class, "show"]); // Show detail of a specific product
 
 Route::post("/register", [UserAuthController::class, "register"]); // Register

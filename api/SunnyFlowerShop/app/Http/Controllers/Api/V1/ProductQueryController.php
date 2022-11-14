@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\ProductListCollection;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class ProductQueryController extends Controller
 
     public function best()
     {
+        // Count duplicate products
         $products_filter = DB::table("order_product")
             ->select("product_id", DB::raw('count(product_id) as count'))
             ->groupBy('product_id')
@@ -51,5 +53,60 @@ class ProductQueryController extends Controller
         }
 
         return $products_best_seller;
+    }
+
+    public function trending(Request $request)
+    {
+        // $orders = Order::orderBy("created_at", "ASC")->take(100)->get();
+
+        // $arr_orders = [];
+        // $current_date = date("Y-m-d H:i:s");
+        // $index = 0;
+
+        // // Get all recent orders meet the require days (base on {day} calculated on second)
+        // for ($i = 0; $i < sizeof($orders); $i++) {
+        //     if ((strtotime($current_date) - strtotime($orders[$i]['created_at'])) >= ((int) $request->day) * 60 * 60 * 24) {
+        //         $arr_orders[$index]['orderId'] = $orders[$i]['id'];
+        //         $index++;
+        //     }
+        // }
+
+        // $arr_products = [];
+        // $index = 0;
+        // // Get all products store in order
+        // for ($i = 0; $i < sizeof($arr_orders); $i++) {
+        //     $products_in_order = DB::table("order_product")
+        //         ->select("product_id", DB::raw('count(product_id) as count'))
+        //         ->groupBy('product_id')
+        //         ->orderBy('count', 'DESC')
+        //         ->where("order_id", "=", $arr_orders[$i]['orderId'])
+        //         ->get()
+        //         ->take(20);
+
+        //     if ($products_in_order->count() !== 0) {
+        //         $arr_products[$index] = $products_in_order;
+        //         $index++;
+        //     }
+        // }
+
+        // $arr_products_filter = [];
+        // $index = 0;
+
+        // dd($arr_products[0][sizeof($arr_products[0])-1]);
+
+        // // Filter duplicated products
+        // for ($i = 0; $i < sizeof($arr_products); $i++) { // Loop go from the top
+        //     for ($j = sizeof($arr_products)-1; $j > $i; $j++) { // Loop go from the bottom
+        //         $stay = sizeof($arr_products[$j])-1;
+        //         $answer = in_array($arr_products[$j][$stay]->product_id, (array) $arr_products[$i]);
+        //         dd($answer);
+        //         for ($k = 0; $k < sizeof($arr_products[$i]); $k++) { // Loop to into detail
+
+        //         }
+        //     }
+        // }
+
+
+        // return $arr_products[0][0]->id;
     }
 }
