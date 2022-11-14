@@ -31,10 +31,12 @@ class AddressController extends Controller
             ]);
         }
 
-        return response()->json([
-            "success" => true,
-            "data" => new AddressOverviewCollection($address->get())
-        ]);
+        return new AddressOverviewCollection($address->paginate(10));
+
+        // return response()->json([
+        //     "success" => true,
+        //     "data" => new AddressOverviewCollection($address->get())
+        // ]);
     }
 
     /**
