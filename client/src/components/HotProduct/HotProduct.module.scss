@@ -3,13 +3,13 @@
     text-align: center;
 }
 
-.Content h2{
+.Content h2 {
     font-size: 36px;
     font-weight: 600;
     margin-bottom: 0px;
 }
 
-.Content p{
+.Content p {
     margin-bottom: 0px;
     padding-top: 10px;
     font-size: 16px;
@@ -31,21 +31,22 @@
     margin-left: 50px;
     transition: inherit;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     text-transform: uppercase;
     background: transparent;
-    padding-bottom: 5px;    
-    
+    padding-bottom: 5px;
+
     &:hover {
         color: #f79837;
-    }
-
-    &:focus {
-        color: #f79837;
-        border-bottom: 1px solid #f79837;
+        cursor: pointer;
     }
 }
 
 .navTabs li:first-child {
     margin-left: 0px;
+}
+
+.tabOnClick {
+    color: #f79837;
+    border-bottom: 2px solid #f79837;
 }

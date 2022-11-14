@@ -1,0 +1,41 @@
+.dashboard_tab_button {
+    margin-bottom: 50px;
+}
+
+.dashboard_tab_button li a {
+    border: 1px solid #e8e8e8;
+    border-bottom: none;
+    color: #212121;
+    font-weight: 500;
+    font-size: 15px;
+    display: block;
+    padding: 18px 15px;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.dashboard_tab_button li a i svg {
+    font-size: 14px;
+    text-align: center;
+    width: 25px;
+}
+
+
+
+.active_tablist {
+    background-color: #f79837;
+    border-color: #f79837;
+    color: #fff;
+}
+
+.dashboard_tab_button li a.active_tablist, .dashboard_tab_button li a:hover {
+    background-color: #f79837;
+    border-color: #f79837;
+    color: #fff;
+    transition: .3s;
+}
+
+.dashboard_tab_button li a.active_tablist i svg, .dashboard_tab_button li a:hover i svg {
+    color: #fff !important;
+    transition: .3s;
+}

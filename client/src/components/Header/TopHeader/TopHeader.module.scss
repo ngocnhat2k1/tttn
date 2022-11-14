@@ -11,45 +11,106 @@
     padding: 9px 0px;
 }
 
-.divTopheader a {
-    text-decoration: none;
-    color: black;
-    font-size: 14px;
-    font-family: "Poppins", sans-serif;
-
-    &:hover {
-        cursor: pointer;
-        color: #f79837;
-    }
-}
-
 .divLeft {
     text-align: left;
-    width: 100%;
-    margin-right: 0;
+}
+
+.divLeft a {
+    color: #f79837;
+    padding-left: 5px;
 }
 
 .divLeft p {
     color: black;
     font-size: 14px;
-    font-family: "Poppins", sans-serif;
-    margin: 0;
+    margin-bottom: 0;
 }
 
-.divRight {}
-
-.divRight li {
-    margin: 0;
-    padding: 0% 11px;
-    float: right;
+.divRight ul li a {
+    font-size: 14px;
 }
 
-.divRight ul {
-    padding: 0;
+.rightList {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin: 0;
+}
+
+.rightList li {
+    padding-left: 26px;
+}
+
+.rightList li:first-child {
+    padding-left: 0;
+}
+
+.account {
+    padding-left: 26px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.account img {
+    max-width: 100%;
+    width: 25px;
+    margin-right: 6px;
+    height: 25px;
+    border-radius: 50%;
+    background: #f79837;
+}
+
+.divRight ul li svg {
+    margin-right: 3px;
+}
+
+.account svg {
+    margin-left: 6px;
+}
+
+.dropDown {
+    display: block;
+    height: auto;
+    z-index: 999999;
+    position: absolute;
+    padding: 14px 17px;
+    background: #fff;
+    box-shadow: 0 3px 11px 0 rgb(0 0 0 / 10%);
+    -webkit-transform: perspective(600px) rotateX(-90deg);
+    transform: perspective(600px) rotateX(-90deg);
+    -webkit-transform-origin: 0 0 0;
+    transform-origin: 0 0 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: .5s;
+    top: 33px;
+    text-align: left;
+    right: 0;
+    width: -webkit-max-content;
+    width: max-content;
+}
+
+.account:hover .dropDown {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: perspective(600px) rotateX(0deg);
+    transform: perspective(600px) rotateX(0deg);
+}
+
+.dropDown li:first-child {
+    padding-left: 0;
+    padding-top: 0;
+}
+
+.dropDown li {
+    padding-left: 0;
+    padding-top: 7px;
+}
+
+.dropDown li button {
+    border: none;
+    background-color: #fff;
     padding: 0;
-    box-sizing: border-box;
 }

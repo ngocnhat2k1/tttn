@@ -1,22 +1,17 @@
-.col {
-    max-width: 33.333333%;
-    padding-left: 20px;
-}
-
-.row {
-}
-
 .imageProduct {
-    width: 100%;
     margin-bottom: 30px;
     background-color: #EBEBEB;
     position: relative;
     overflow: hidden;
 }
 
+.imageProduct:last-child {
+    margin-bottom: 0;
+}
+
 .imageProductCenter {
     width: 100%;
-    height: 95% ;
+    height: 100%;
     background-color: #EBEBEB;
     position: relative;
     overflow: hidden;
@@ -28,7 +23,7 @@
     padding: 0px 15px;
     transition: 0.3s;
 
-    &:hover{
+    &:hover {
         transform: scale(1.1);
         transition: 1 s;
     }
@@ -36,77 +31,58 @@
 
 .imageProduct img {
     width: 100%;
-    height: 100%;
+    max-width: 100%;
+    height: auto;
     padding: 15px 15px;
-    transition: 0.3s;
+    transition: transform 1s, filter .5s ease-out, -webkit-transform 1s, -webkit-filter .5s ease-out;
 
-    &:hover{
+    &:hover {
         transform: scale(1.1);
         transition: 1 s;
     }
 }
 
-.btnShopNow {
-    background-color: black;
-    color: white;
-    text-decoration: none;
-    padding: 12px 22px;
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 50px;
-    letter-spacing: 2px;
-}
 
 .textProduct {
-    text-align: left;
+    top: 50%;
     position: absolute;
-    top: auto;
-    bottom: 15%;
+    left: 40px;
+    text-align: left;
+    transform: translateY(-50%);
     padding: 20px;
-    margin: auto;
-    left: auto;
-    right: 55%;
+    width: 50%;
+}
+
+.textProduct a, .textProductCenter a {
+    margin-top: 20px;
+}
+
+@media (max-width: 992px) { 
+    .imageProductLastChild {
+        display: none;
+    }
 }
 
 .textProductCenter {
-    text-align: left;
+    width: 50%;
     position: absolute;
-    top: auto;
-    bottom: 20%;
+    left: 40px;
     padding: 20px;
-    margin: auto;
-    left: auto;
-    right: 40%;
+    text-align: left;
+    transform: translateY(-30%);
+    bottom: 0;
 }
 
-.h4Orange {
-    color: #f79837;
+.textProduct h4, .textProductCenter h4{
+    margin: 0;
     font-size: 22px;
     font-weight: 600;
-    margin-bottom: 0;
 }
 
-.h4Black {
-    font-size: 22px;
-    font-weight: bolder;
-    margin-bottom: 0;
-}
-
-.h2Content {
-    font-size: 40px ;
-    font-weight: 900;
-    margin-bottom: 0px;
-    padding-bottom: 5px;
-}
-
-.fontSize40 {
-    font-size: 40px;
-}
-
-.pd20{
-    padding-bottom: 25px;
-}
-
-.pd5{
-    padding-bottom: 5px;
+.textProduct h2, .textProductCenter h2{
+    padding: 5px 0;
+    font-weight: 700;
+    margin: 0;
+    font-size: 36px;
+    line-height: 40px;
 }

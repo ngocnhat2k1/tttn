@@ -1,0 +1,42 @@
+#trendingIntroduction {
+    background-image: url(../../images/background_trendingintroduction.png);
+    background-size: cover;
+    background-position: 50%;
+    padding: 115px 0;
+}
+
+.trendingText h5 {
+    color: #f79837;
+    margin: 0px;
+}
+
+.trendingText h2 {
+    font-size: 36px;
+    color: #fff;
+    padding: 10px 0;
+    margin-bottom: 0;
+}
+
+.trendingText p {
+    color: #fff;
+    padding-bottom: 30px;
+    margin-bottom: 0;
+}
+
+.trendingText a {
+    transition: all .3s ease-in-out .1s;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-block;
+    border-radius: 0;
+    padding: 16px 35px;
+    background-color: #fff;
+    color: #000;
+
+    &:hover {
+        background-color: black;
+        color: white;
+    }
+}

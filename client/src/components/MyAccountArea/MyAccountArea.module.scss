@@ -1,0 +1,187 @@
+.tabButton {
+    margin-bottom: 50px;
+    text-align: left;
+}
+
+.tabButton ul li {
+    list-style: none;
+    padding: 0;
+}
+
+.tabButton li a.active,
+.tabButton li a:hover {
+    background-color: #f79837;
+    border-color: #f79837;
+    color: #fff;
+}
+
+.tabButton li a:last-child {
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.tabButton li a {
+    border: 1px solid #e8e8e8;
+    border-bottom: none;
+    color: #212121;
+    font-weight: 500;
+    font-size: 15px;
+    display: block;
+    padding: 18px 15px;
+    text-transform: uppercase;
+}
+
+.tabButton a {
+    transition: all .3s ease-in-out .1s;
+    outline: 0 !important;
+    cursor: pointer;
+}
+
+.dashboardTopBox {
+    text-align: center;
+    border: 1px solid #f79837;
+    padding: 20px 0;
+    box-shadow: 3px 5px 7px 1px rgb(0 0 0 / 8%);
+    transition: all .4s ease-in-out
+}
+
+.dashboardTopBox h2 {
+    font-weight: 600;
+    color: #f79837;
+    margin-bottom: 0;
+}
+
+.dashboardTopBox h4 {
+    margin-bottom: 0;
+    font-weight: 400;
+    padding-top: 5px;
+    font-size: 24px;
+    font-family: "Montserrat",sans-serif;
+    color: #212121;
+    border-bottom: 1px dashed silver;
+    padding-bottom: 10px;
+}
+
+.myaccountContent {
+    border: 1px solid #e8e8e8;
+    padding: 30px;
+}
+
+.myaccountContent .title {
+    font-size: 24px;
+    font-family: "Montserrat", sans-serif;
+    color: #212121;
+    border-bottom: 1px dashed #e8e8e8;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.tableResponsive {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.myaccountContent table {
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+}
+
+.tableResponsive table thead {
+    background: #f79837;
+}
+
+.tableDesc table tbody tr td:last-child,
+.tablePage table thead tr:last-child th {
+    border-right: 0;
+}
+
+.tablePage table tbody tr td,
+.tablePage table thead tr th {
+    padding: 10px;
+    text-align: center;
+}
+
+.tablePage table thead tr th {
+    color: #fff;
+    border-bottom: 3px solid #f79837;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.tableResponsive table tbody tr td:first-child {
+    min-width: 60px;
+}
+
+.tableResponsive table tbody tr td {
+    border-right: 1px solid #ededed;
+    font-weight: 500;
+    text-transform: capitalize;
+    text-align: center;
+    min-width: 150px;
+}
+
+.tablePage table tbody tr td {
+    border-bottom: 1px solid #ededed;
+}
+
+.view {
+    color: #b19361;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.badgeCompleted {
+    background-color: #28a745;
+    color: white;
+}
+
+.badgePending {
+    color: #212529;
+    background-color: #ffc107;
+}
+
+.badgeCanceled {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.shippingAddress {
+    text-align: left;
+}
+
+.shippingAddress h5 {
+    font-size: 18px !important;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.shippingAddress p {
+    margin-bottom: 0;
+    padding-top: 10px;
+    font-size: 16px;
+    line-height: 24px;
+    color: #777c87;
+    font-weight: 400;
+    font-family: "Poppins", sans-serif;
+}

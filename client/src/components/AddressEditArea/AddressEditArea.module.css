@@ -1,0 +1,64 @@
+#addressEdit {
+    text-align: left;
+}
+
+.backBtn {
+    text-align: left;
+    margin-bottom: 60px;
+}
+
+.backBtn a {
+    font-size: 16px;
+    color: #f79837;
+    font-weight: 500;
+}
+
+.back_btn a svg {
+    margin-right: 10px;
+}
+
+.addressForm {
+    box-shadow: 0 0 7px 5px rgb(0 0 0 / 4%);
+    padding: 30px 40px;
+    background: #fff;
+}
+
+.addressForm h2 {
+    text-align: center;
+    font-size: 32px;
+}
+
+.addressForm button {
+    margin-top: 20px;
+}
+
+.addressForm form {
+    padding-top: 30px;
+}
+
+.addressForm .formGroup {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.formGroup label {
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: left;
+}
+
+.formGroup p {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.formGroup input {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.formGroup {
+    border-bottom: 2px solid rgba(119, 124, 135, 0.2196078431);
+}

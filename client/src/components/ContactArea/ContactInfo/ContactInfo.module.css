@@ -1,0 +1,41 @@
+.leftSideContact ul{
+    padding: 0;
+}
+
+.leftSideContact li{
+    background: #f7f7f7;
+    margin-bottom: 30px;
+    padding: 24px 20px;
+    box-shadow: -3px 0 0 0;
+}
+
+.leftSideContact p {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.addressLocation {
+    padding-bottom: 30px;
+}
+
+.contactWidget {
+    display: flex;
+}
+
+
+.leftSideContact a {
+    display: block;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    color: black;
+}
+
+.icons{
+    margin-top: 3px;
+    font-size: 18px;
+}
+
+.fixIcon {
+    margin-top: 3px;
+    font-size: 30px;
+}
