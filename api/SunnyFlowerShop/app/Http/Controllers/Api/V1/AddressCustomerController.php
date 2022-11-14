@@ -28,7 +28,7 @@ class AddressCustomerController extends Controller
             ]);
         }
 
-        return new AddressListCollection($addresses->paginate());
+        return new AddressListCollection($addresses->paginate(10));
     }
 
     public function index(Customer $customer)
