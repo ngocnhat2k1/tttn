@@ -258,34 +258,28 @@ class OrderController extends Controller
         return response()->json([
             "success" => true,
             "data" => [
-                "customer" => [
-                    "customerId" => $request->user()->id,
-                    "firstName" => $request->user()->first_name,
-                    "lastName" => $request->user()->last_name,
-                    "email" => $request->user()->email,
-                    "avatar" => $request->user()->avatar,
-                    "defaultAvatar" => $request->user()->default_avatar,
-                ],
-                "voucher" => [
-                    "voucherId" => $data->voucher_id,
-                    "name" => $data->name,
-                    "expiredDate" => $data->expired_date,
-                    "deleted" => $data->deleted,
-                ],
-                "order" => [
-                    "id" => $data->id,
-                    "idDelivery" => $data->id_delivery,
-                    "dateOrder" => $data->date_order,
-                    "address" => $data->address,
-                    "nameReceiver" => $data->name_receiver,
-                    "phoneReceiver" => $data->phone_receiver,
-                    "totalPrice" => $data->total_price,
-                    "status" => $data->status,
-                    "paidType" => $data->paid_type,
-                    "deleted_by" => $data->deleted_by,
-                    "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
-                    "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
-                ]                
+                "customerId" => $request->user()->id,
+                "firstName" => $request->user()->first_name,
+                "lastName" => $request->user()->last_name,
+                "email" => $request->user()->email,
+                "avatar" => $request->user()->avatar,
+                "defaultAvatar" => $request->user()->default_avatar,
+                "voucherId" => $data->voucher_id,
+                "name" => $data->name,
+                "expiredDate" => $data->expired_date,
+                "deleted" => $data->deleted,
+                "orderId" => $data->id,
+                "idDelivery" => $data->id_delivery,
+                "dateOrder" => $data->date_order,
+                "address" => $data->address,
+                "nameReceiver" => $data->name_receiver,
+                "phoneReceiver" => $data->phone_receiver,
+                "totalPrice" => $data->total_price,
+                "status" => $data->status,
+                "paidType" => $data->paid_type,
+                "deleted_by" => $data->deleted_by,
+                "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
+                "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
             ]
         ]);
     }
