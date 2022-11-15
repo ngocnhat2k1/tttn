@@ -220,7 +220,7 @@ class OrderAdminController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
                 ]
             );
 
@@ -256,7 +256,7 @@ class OrderAdminController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully reversed cancel Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully reversed cancel Order ID = " . $order->id . " for Customer ID = " . $customer->id
                 ]
             );
         }
