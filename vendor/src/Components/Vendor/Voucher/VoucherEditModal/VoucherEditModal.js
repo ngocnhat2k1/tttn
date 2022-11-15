@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
 import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import formatDate from "../../../../until/formatDateTime";
 
 const VoucherEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
@@ -58,9 +59,13 @@ const VoucherEditModal = ({ idDetail }) => {
         setModal(!modal)
     }
     const onSubmit = (data) => {
-        console.log(data)
+        const payload = {
+            ...data,
+            expiredDate: formatDate(data.expiredDate)
+        }
+        console.log(payload)
         axios
-            .put(`http://127.0.0.1:8000/api/v1/voucher/${idDetail}/update`, data, {
+            .put(`http://127.0.0.1:8000/api/v1/vouchers/${idDetail}/update`, payload, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`
                 },
@@ -69,7 +74,7 @@ const VoucherEditModal = ({ idDetail }) => {
                 alert(response.data.success);
                 console.log(response.data.error);
                 if (response.data.success === true) {
-                    window.location.reload = (false);
+                    window.location.reload();
                 }
             })
             .catch(function (error) {
@@ -109,7 +114,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="name"
                                             value={voucherName}
-                                            {...register('name', { required: true, onChange: onChangeName })} />
+                                            {...register('name', { onChange: onChangeName })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -119,7 +124,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="percent"
                                             value={voucherPercent}
-                                            {...register('percent', { required: true, onChange: onChangePercent })} />
+                                            {...register('percent', { onChange: onChangePercent })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -129,7 +134,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="usage"
                                             value={voucherUsage}
-                                            {...register('usage', { required: true, onChange: onChangeUsage })} />
+                                            {...register('usage', { onChange: onChangeUsage })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -139,7 +144,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="VoucherExpiredDate"
                                             value={VoucherExpiredDate}
-                                            {...register('expiredDate', { required: true, onChange: onChangeDate })} />
+                                            {...register('expiredDate', { onChange: onChangeDate })} />
                                     </div>
                                 </Col>
 

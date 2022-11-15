@@ -13,12 +13,13 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
     const [createdAt, setCreatedAt] = useState('')
     const [email, setEmail] = useState('')
     const [totalPrice, settotalPrice] = useState('')
+    const [listProducts, setListProducts] = useState([])
+    const [address, setAddress] = useState('')
+    const [deletedBy, setDeletedBy] = useState()
+    const [imgProduct, setImgProduct] = useState()
     const [firstName, setFirstName] = useState('')
     const [lastName, setlastName] = useState('')
-
-    const [avatar, setAvatar] = useState('')
-    const [subscribed, setSubscribed] = useState('')
-    const [address, setAddress] = useState('')
+    const [state, setState] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
@@ -30,50 +31,46 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
 
             .then((response) => {
-                setIdDelivery(response.data.data.idDelivery)
-                setCreatedAt(response.data.data.createdAt)
-                settotalPrice(response.data.data.totalPrice)
-                setFirstName(response.data.data.firstName);
-                setlastName(response.data.data.lastName)
-                setEmail(response.data.data.email)
-                if (response.data.data.avatar) {
-                    setAvatar(response.data.data.avatar)
-                } else {
-                    setAvatar(response.data.data.defaultAvatar)
-                }
-                if (response.data.data.subscribed == 1) {
-                    setSubscribed('Yes')
-                } else {
-                    setSubscribed('No')
-                }
+                setIdDelivery(response.data.data.order.idDelivery)
+                setCreatedAt(response.data.data.order.createdAt)
+                settotalPrice(response.data.data.order.totalPrice)
+                setListProducts(response.data.data.products)
+                setEmail(response.data.data.customer.email)
+                setState(response.data.data.order.status)
+                setAddress(response.data.data.order.address)
+                setDeletedBy(response.data.data.order.deletedBy)
+                setImgProduct(response.data.data.product.img)
             });
     };
-
-    const onSubmit = (data) => {
-        console.log(data)
-        axios
-            .put(`http://127.0.0.1:8000/api/v1/voucher/${idOrder}/update`, data, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('adminToken')}`
-                },
-            })
-            .then((response) => {
-                alert(response.data.success);
-                console.log(response.data.error);
-                if (response.data.success === true) {
-                    window.location.reload = (false);
-                }
-            })
-            .catch(function (error) {
-                alert(error);
-                console.log(error);
-            });
-    }
 
     const closeModal = () => {
         setModal(!modal);
     }
+    const handleState = () => {
+        console.log(Cookies.get('adminToken'))
+        axios
+            .put(`http://127.0.0.1:8000/api/v1/users/${idCustomer}/orders/${idOrder}/update/status=${state + 1}`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
+                },
+            })
+            .then((response) => {
+                alert(response.data.message)
+            })
+    }
+    const handleCancel = () => {
+        axios
+            .delete(`http://127.0.0.1:8000/api/v1/users/${idCustomer}/orders/${idOrder}/destroy=1`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
+                },
+            })
+            .then((response) => {
+                alert(response.data.message)
+            })
+            .catch((err) => { console.log(err) })
 
+    }
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -84,33 +81,6 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             {modal && (
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
-                    {/* <div className="modal-content">
-                        <h2 className="title_modal">Detail Order {idOrder}</h2>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row>
-                                <Col lg={6}>
-                                    <div className="fotm-group">
-                                        <label htmlFor="firstName">First Name</label>
-                                        <input type="text"
-                                            className="form-control"
-                                            id="firstName"
-                                            value={firstName}
-                                            {...register('firstName', { required: true, disabled: true })} />
-                                    </div>
-                                </Col>
-
-                            </Row>
-                            {<div className="btn_left_table">
-                                <button onClick={closeModal} className="theme-btn-one bg-black btn_sm">Close</button>
-                            </div>}
-                            <div className="btn_right_table">
-                                <button onClick={closeModal} className="theme-btn-one bg-black btn_sm">Close</button>
-                            </div>
-                        </form>
-
-                        <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
-
-                    </div> */}
                     <div className="modal-content-order">
                         <Row>
                             <div className='detail-wrapper'>
@@ -120,20 +90,41 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                             Detail Order {idDelivery}
                                         </h4>
                                     </Row>
-                                    <div className='detail-bottom'>
-                                        <ul>
-                                            <li>
-                                                <span>Issue Date: </span>
-                                                <h6>{createdAt}</h6>
-                                            </li>
-                                        </ul>
-                                        <ul>
-                                            <li>
-                                                <span>Email: </span>
-                                                <h6>{email}</h6>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <Row>
+                                        <Col lg={6}>
+                                            <div className='detail-bottom'>
+                                                <ul>
+                                                    <li>
+                                                        <span>Issue Date: </span>
+                                                        <h6>{createdAt}</h6>
+                                                    </li>
+                                                </ul>
+
+                                                <ul>
+                                                    <li>
+                                                        <span>Address: </span>
+                                                        <h6>{address}</h6>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </Col>
+                                        <Col lg={6}>
+                                            <div className='detail-bottom'>
+                                                <ul>
+                                                    <li>
+                                                        <span>Email: </span>
+                                                        <h6>{email}</h6>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <span>Status: </span>
+                                                        {deletedBy ? <h6 className='Cancelled'>Cancelled</h6> : state === 0 ? <h6 className='Pending'>Pending</h6> : state === 1 ? <h6 className='Confirmed'>Confirm</h6> : <h6 className='Completed'>Completed</h6>}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </div>
                                 <div className='detail-body'>
                                     <table className='table table-borderless mb-0'>
@@ -147,14 +138,17 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <th scope='col'>#</th>
-                                                <th scope='col'>Productsssssssssssssssssssssssssssssss</th>
-                                                <th scope='col'>PRICE</th>
-                                                <th scope='col'>Quantity</th>
-                                                <th scope='col'>TOTAL</th>
-                                                {/* chạy vòng lặp ở đây  */}
-                                            </tr>
+                                            {listProducts.map((product) => {
+                                                return (
+                                                    <tr key={product.id} >
+                                                        <th scope='col'><img src="{product.id}" alt="img" /></th>
+                                                        <th scope='col'>{product.name}</th>
+                                                        <th scope='col'>{product.price}</th>
+                                                        <th scope='col'>{product.quantity}</th>
+                                                        <th scope='col'>{product.price * product.quantity}</th>
+                                                    </tr>
+                                                )
+                                            })}
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -166,14 +160,17 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                     </table>
                                     <div className='detail-footer text-right'>
                                         <div className='buttons'>
-                                            <button className='theme-btn-one btn-black-overlay btn_sm'>Confirm</button>
-                                            <button className='theme-btn-one btn-red-overlay btn_sm ml-2'>Cancel</button>
+                                            {state === 0 ? <button className='theme-btn-one btn-black-overlay btn_sm' onClick={handleState}>Confirm</button> : state === 1 ? <button className='theme-btn-one btn-black-overlay btn_sm' onClick={handleState}>Complete</button> : ""}
+
+                                            <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Cancel</button>
                                         </div>
                                     </div>
+                                    <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
+
                                 </div>
                             </div>
                         </Row>
-                    </div>
+                    </div >
                 </div >)}
         </div >
     )
