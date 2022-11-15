@@ -339,7 +339,7 @@ class OrderController extends Controller
         return response()->json(
             [
                 'success' => true,
-                'errors' => "Sucessfully canceled Order ID = " . $request->id
+                'message' => "Sucessfully canceled Order ID = " . $request->id
             ]
         );
     }
