@@ -24,8 +24,8 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $data = Order::where("customer_id", "=", $request->user()->id)->get();
-        $count = $data->count();
+        $data = Order::where("customer_id", "=", $request->user()->id);
+        $count = $data->get()->count();
 
         if (empty($count)) {
             return response()->json([
@@ -34,10 +34,12 @@ class OrderController extends Controller
             ]);
         }
 
-        return response()->json([
-            "success" => true,
-            "data" => new OrderListCollection($data)
-        ]);
+        return new OrderListCollection($data->paginate(12));
+
+        // return response()->json([
+        //     "success" => true,
+        //     "data" => new OrderListCollection($data->paginate(10))
+        // ]);
     }
 
     /**

@@ -65,7 +65,7 @@ class ProductController extends Controller
         //     "data" => new ProductListCollection($data)
         // ]);
 
-        return new ProductListCollection($data->paginate(9)->appends($request->query()));
+        return new ProductListCollection($data->paginate(12)->appends($request->query()));
     }
 
     /**

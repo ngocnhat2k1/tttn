@@ -15,13 +15,14 @@ class VoucherDetailResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
+            "voucherId" => $this->id,
             "name" => $this->name,
             "percent" => $this->percent,
             "usage" => $this->usage,
             "deleted" => $this->deleted,
             "expiredDate" => $this->expired_date,
-            "createdAt" => $this->created_at
+            "createdAt" => date_format($this->created_at, "Y-m-d H:i:s"),
+            "updatedAt" => date_format($this->updated_at, "Y-m-d H:i:s")
         ];
     }
 }
