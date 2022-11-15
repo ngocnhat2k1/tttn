@@ -20,10 +20,12 @@ class CustomerOverviewResource extends JsonResource
             "firstName" => $this->first_name,
             "lastName" => $this->last_name,
             "avatar" => $this->avatar,
-            "default_avatar" => $this->default_avatar,
+            "defaultAvatar" => $this->default_avatar,
             "email" => $this->email,
             "subscribed" => $this->subscribed,
-            "disabled" => $this->disabled
+            "disabled" => $this->disabled,
+            "createdAt" => date_format($this->created_at, "Y-m-d H:i:s"),
+            "updatedAt" => date_format($this->updated_at, "Y-m-d H:i:s"),
         ];
     }
 }

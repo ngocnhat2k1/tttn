@@ -21,7 +21,7 @@ class ProductListResource extends JsonResource
             "price" => $this->price,
             "precentSale" => $this->percent_sale,
             "img" => $this->img,
-            // "quantity" => $this->quantity,
+            "quantity" => $this->quantity,
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
             "categories" => CategoryListResource::collection($this->categories)

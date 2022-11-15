@@ -15,8 +15,10 @@ class FeedBackDetailResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->pivot->id,
+            "id" => $this->id,
             "customerId" => $this->pivot->customer_id,
+            "firstName" => $this->first_name,
+            "lastName" => $this->last_name,
             "productId" => $this->pivot->product_id,
             "quality" => $this->pivot->quality,
             "comment" => $this->pivot->comment
