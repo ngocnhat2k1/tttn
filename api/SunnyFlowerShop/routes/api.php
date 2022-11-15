@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\AdminAuthController;
+use App\Http\Controllers\Api\V1\AddressAdminController;
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AddressCustomerController;
 use App\Http\Controllers\Api\V1\CartController;
@@ -46,7 +47,7 @@ Route::get("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]
 Route::middleware("auth:sanctum")->group(function () {
 
     // Route for admin
-    Route::group(["prefix" => "admin"], function() {
+    Route::group(["prefix" => "admin"], function () {
         Route::get("/dashboard", [AdminAuthController::class, "dashboard"]);
         Route::get("/profile", [AdminAuthController::class, "profile"]);
         Route::put("/update", [AdminAuthController::class, "update"]);
@@ -80,7 +81,7 @@ Route::middleware("auth:sanctum")->group(function () {
          * Update (low level) admin information
          * Delete (or Soft ?) (low level) admin account
          */
-    
+
         // Route for User
         Route::group(['prefix' => "users"], function () {
             // User info
@@ -122,39 +123,42 @@ Route::middleware("auth:sanctum")->group(function () {
          * Create-Update-(Soft)Delete function for each orders from admin site
          * Update state for orders
          */
-        Route::group(['prefix' => 'orders'], function() {
-            Route::get("/", [OrderAdminController::class, "all"]);
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get("/", [OrderAdminController::class, "index"]);
+            Route::get("/{order}", [OrderAdminController::class, "show"]);
+            Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
         });
-    
+
         /** Address
          * Overview addresses
          * Detail address from which customer
          * Create-Update-Delete Address from admin site
          */
-        Route::group(['prefix' => 'addresses'], function() {
-            Route::get("/", [AddressCustomerController::class, "all"]);
+        Route::group(['prefix' => 'addresses'], function () {
+            Route::get("/", [AddressAdminController::class, "index"]);
+            Route::get("/{address}", [AddressAdminController::class, "show"]);
         });
-    
+
         /** Category
          * Overview category
          * Detail category and its appearance in which products
          * Create-Update-(Soft)Delete fucntion for each categories from admin site
          */
-        Route::group(['prefix' => 'categories'], function() {
+        Route::group(['prefix' => 'categories'], function () {
             Route::get("/", [CategoryController::class, "index"]);
             Route::get("/{id}", [CategoryController::class, "show"]);
             Route::post("/create", [CategoryController::class, "store"]);
             Route::put("/{id}/update", [CategoryController::class, "update"]);
             Route::delete("/{id}/destroy", [CategoryController::class, "destroy"]);
         });
-    
+
         /** Voucher
          * Overview all vouchers has been created so far
          * Filter for vouhcer_expired_date (Maybe for front-end side)
          * Detail for its vouhcer and its appearance in which orders
          * Create-Update-(Soft)Delete function for each vouchers
          */
-        Route::group(['prefix' => 'vouchers'], function() {
+        Route::group(['prefix' => 'vouchers'], function () {
             Route::get("/", [VoucherController::class, "index"]);
             Route::get("/{id}", [VoucherController::class, "show"]);
             Route::post("/create", [VoucherController::class, "store"]);
@@ -163,11 +167,11 @@ Route::middleware("auth:sanctum")->group(function () {
         });
 
         /** Feedback
-         * Overview feedback
          * Create-Update-Delete feedback from admin site (?)
          */
-        Route::group(['prefix' => 'feedbacks'], function() {
+        Route::group(['prefix' => 'feedbacks'], function () {
             Route::get("/", [FeedBackAdminController::class, "all"]);
+            Route::get("/{id}", [FeedBackAdminController::class, "show"]);
         });
 
         /** Cart
@@ -175,27 +179,19 @@ Route::middleware("auth:sanctum")->group(function () {
          * Detail cart from a specific customers
          * Update-Delete Cart (?)
          */
-        Route::group(['prefix' => 'carts'], function() {
+        Route::group(['prefix' => 'carts'], function () {
             Route::get("/", [CartAdminController::class, "all"]);
             // Check state before show (to determine whether it was viewed from admin POV or Customer POV)
             Route::get("/{id}", [CartAdminController::class, "index"]);
             Route::delete("/{id}/remove/{productId}", [CartAdminController::class, "removedProduct"]);
             Route::delete("/{id}/empty", [CartAdminController::class, "emptyCart"]);
             Route::put("/{id}/update", [CartAdminController::class, "update"]);
-        });     
-    
+        });
+
         /** Email
          * Manage Send Email function
          * Manage email template
          * Create forgot password function
-         */
-    
-        /** Query for products appearance in front page
-         * Trending product
-         * New products
-         * Best Seller
-         * Sale products
-         * All of them are top 10
          */
     });
 });
@@ -203,6 +199,13 @@ Route::middleware("auth:sanctum")->group(function () {
 
 // ***** CUSTOMER ***** \\
 Route::get('/products', [ProductController::class, "index"]); // Show all products
+/** Query for products appearance in front page
+ * Trending product
+ * New products
+ * Best Seller
+ * Sale products
+ * All of them are top 10
+ */
 Route::get('/products/newArrival', [ProductQueryController::class, "arrival"]); // Show all products
 Route::get('/products/saleProduct', [ProductQueryController::class, "sale"]); // Show all products
 Route::get('/products/bestSeller', [ProductQueryController::class, "best"]); // Show all products

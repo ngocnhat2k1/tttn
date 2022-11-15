@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\V1\CustomerOverviewResource;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderListCollection;
+use App\Http\Resources\V1\ProductDetailResource;
+use App\Http\Resources\V1\VoucherDetailResource;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -33,7 +36,7 @@ class OrderAdminController extends Controller
         return $arr;
     }
 
-    public function all(Request $request)
+    public function index(Request $request)
     {
         $check = Order::get()->count();
 
@@ -81,137 +84,54 @@ class OrderAdminController extends Controller
         // return new OrderCustomerListCollection($customers_orders);
     }
 
-    /** END OF ADMIN FUNCTIONs */
-
-    public function index(Customer $customer)
-    {
-        $order = $customer->orders;
-
-        if (empty($order)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "This user currently hasn't placed any order"
-            ]);
-        }
-
-        return response()->json([
-            "success" => true,
-            "data" => new OrderListCollection($order)
-        ]);
-    }
-
-    public function show(Customer $customer, Order $order)
+    public function show(Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
-        $query = Order::where("orders.id", "=", $order->id)
-            ->addSelect(
-                "orders.*",
-                "vouchers.id as voucher_id",
-                "vouchers.name",
-                "vouchers.percent",
-                "vouchers.expired_date",
-                "vouchers.deleted"
-            )
-            ->where("customer_id", "=", $customer->id)
-            ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
+        $order["products"] = $order->products;
 
-        if (!$query->exists()) {
+        $voucher_query = Voucher::where("id", "=", $order->voucher_id);
+        $customer_query = Customer::where("id", "=", $order->customer_id);
+        
+        if (!$voucher_query->exists() || !$customer_query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck your Customer ID and Order ID"
+                "errors" => "Order has some invalid information, please double check database before displaying"
             ]);
         }
 
-        $data = $query->first();
-
-        // Create product array
-        $pivot_table = Order::find($order->id);
-
-        $data["products"] = $pivot_table->products;
+        $order['voucher'] = $voucher_query->first();
+        $order['customer'] = $customer_query->first();
 
         return response()->json([
             "success" => true,
-            "data" => new OrderDetailResource($data)
+            "data" => [
+                "order" => [
+                    "customer" => new CustomerOverviewResource($order->customer),
+                    "voucher" => new VoucherDetailResource($order->voucher), 
+                    "orderId" => $order->id,
+                    "idDelivery" => $order->id_delivery,
+                    "dateOrder" => $order->date_order,
+                    "address" => $order->address,
+                    "nameReceiver" => $order->name_receiver,
+                    "phoneReceiver" => $order->phone_receiver,
+                    "totalPrice" => $order->total_price,
+                    "status" => $order->status,
+                    "paidType" => $order->paid_type,
+                    "deletedBy" => $order->deleted_by,
+                    "products" => ProductDetailResource::collection($order->products)
+                ]
+            ]
         ]);
+
+        // "products" => ProductDetailResource::collection($this->products)
+
+        // return response()->json([
+        //     "success" => true,
+            // "data" => new OrderDetailResource($order)
+        // ]);
     }
 
-    public function update(UpdateOrderRequest $request, Customer $customer, Order $order)
-    {
-        $query = Order::where("id", "=", $order->id)
-            ->where("customer_id", "=", $customer->id);
-
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer don't have this Order with ID = " . $order->id
-            ]);
-        }
-
-        $order_data = $query->first();
-
-        // Checking Order_status or Deleted_by column isNull
-        // 0 fresh new and null is order doesn't get cancelled
-        if ($order_data->status === 0 && $order_data->deleted_by === null) {
-            // Create products array
-            $products = $request->products;
-
-            // Get voucher & create total_price variable
-            if ($request->voucher_id !== null) {
-                $voucher = Voucher::find($request->voucher_id);
-                $voucher_value = $voucher->percent;
-            } else {
-                $voucher_value = 0;
-            }
-
-            $total_price = 0;
-
-            // Delete all previous products in pivot "order_product" table
-            $order_data->products()->detach();
-
-            // ReAdd all new products to pivot "order_product" table
-            for ($i = 0; $i < sizeof($products); $i++) {
-
-                // Check product ID
-                $product = Product::find($products[$i]['id']);
-                $order_data->products()->attach($product, [
-                    "quantity" => $products[$i]["quantity"],
-                    "price" => $product->price,
-                    "percent_sale" => $product->percent_sale
-                ]);
-
-                // Create variable to store sale price of product
-                $sale_price = ($product->price * $product->percent_sale) / 100;
-                $total_price = $total_price + (($product->price - $sale_price) * $products[$i]["quantity"]);
-            }
-
-            // Calculate total price with voucher
-            $filtered = $request->except("voucherId", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
-            $filtered["customer_id"] = $customer->id;
-            $filtered["total_price"] = $total_price - (($total_price * $voucher_value) / 100);
-
-            $check = $order_data->update($filtered);
-
-            // Check if data insert to database isSuccess
-            if (empty($check)) {
-                return response()->json([
-                    "success" => false,
-                    "errors" => "Something went wrong"
-                ]);
-            }
-
-            return response()->json([
-                "success" => true,
-                "message" => "Updated Order ID = " . $order->id . " successfully"
-            ]);
-        }
-
-        return response()->json([
-            "success" => false,
-            "errors" => "Please recheck Order status and Order deleted_by"
-        ]);
-    }
-
-    public function updateStatus(Request $request, Customer $customer, Order $order)
+    public function updateStatus(Request $request, Order $order)
     {
         /** Update current status of order 
          * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
@@ -227,22 +147,9 @@ class OrderAdminController extends Controller
             ]);
         }
 
-        $query = Order::where("id", "=", $order->id)
-            ->where("customer_id", "=", $customer->id);
-
-        // Check Connection between Customer and Order
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Customer don't have this Order with ID = " . $order->id
-            ]);
-        }
-
-        $order_data = $query->first();
-
         $state = (int) $request->state;
-        $order_data->status = $state;
-        $result = $order_data->save();
+        $order->status = $state;
+        $result = $order->save();
 
         if (empty($result)) {
             return response()->json([

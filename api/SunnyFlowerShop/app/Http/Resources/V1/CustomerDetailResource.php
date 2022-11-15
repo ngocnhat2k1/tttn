@@ -24,6 +24,7 @@ class CustomerDetailResource extends JsonResource
             "subscribed" => $this->subscribed,
             "disabled" => $this->disabled,
             "createdAt" => date_format($this->created_at, "Y-m-d H:i:s"),
+            "updatedAt" => date_format($this->updated_at, "Y-m-d H:i:s"),
         ];
     }
 }
