@@ -105,7 +105,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{customer}/orders", [OrderCustomerController::class, "index"]);
             Route::get("/{customer}/orders/{order}", [OrderCustomerController::class, "show"]);
             Route::put("/{customer}/orders/{order}/update", [OrderCustomerController::class, "update"]);
-            Route::put("/{customer}/orders/{order}/update/status={state}", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
+            Route::patch("/{customer}/orders/{order}/update/status={state}", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
             Route::delete("/{customer}/orders/{order}/destroy={state}", [OrderCustomerController::class, "destroy"]);
 
             // Voucher from User info
