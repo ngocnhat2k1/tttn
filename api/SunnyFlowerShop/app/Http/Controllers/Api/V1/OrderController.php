@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Order;
-use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\Customer\Store\StoreOrderRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
 use App\Http\Resources\V1\OrderListCollection;
-use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Models\Customer;
 use App\Models\Product;
@@ -22,7 +23,7 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index(Request $request)
+    public function index(GetCustomerBasicRequest $request)
     {
         $data = Order::where("customer_id", "=", $request->user()->id);
         $count = $data->get()->count();
@@ -30,7 +31,7 @@ class OrderController extends Controller
         if (empty($count)) {
             return response()->json([
                 'success' => false,
-                "errors" => "There is no orders"
+                "errors" => "This user hasn't made any order yet"
             ]);
         }
 
@@ -48,6 +49,41 @@ class OrderController extends Controller
      * @param  \App\Http\Requests\StoreOrderRequest  $request
      * @return \Illuminate\Http\Response
      */
+
+    // Function to generate id_delivery code
+    public function loopIdToCreateCertainCode($item, $limit_number)
+    {
+        $value = "";
+        $multiply_count = 0;
+
+        for ($i = $item; $i < $limit_number; $i = $i * 10) {
+            if ($i >= $limit_number / 10) {
+                for ($j = 0; $j < $multiply_count; $j++) {
+                    $value = "0" . $value;
+                }
+                $value = $value . $item;
+                break;
+            }
+            $multiply_count++;
+        }
+
+        return $value;
+    }
+
+    public function generateDeliveryCode($user, $order)
+    {
+        $current_date = date("Ymd");
+
+        // Create UserID
+        $userID = $this->loopIdToCreateCertainCode($user, 1000000);
+
+        // Create OrderID
+        $orderID = $this->loopIdToCreateCertainCode($order, 10000);
+
+        $idDelivery = "NPON" . $userID . $orderID . "DO" . $current_date;
+
+        return $idDelivery;
+    }
 
     public function store(StoreOrderRequest $request)
     {
@@ -163,10 +199,14 @@ class OrderController extends Controller
             $total_price = $total_price + (($value->price - $sale_price) * $data[$i]->quantity);
         }
 
+        $order = Order::where("customer_id", "=", $customer->id)->get()->count();
+        $id_delivery = $this->generateDeliveryCode($customer->id, $order + 1); // "$order + 1" for new order
+
         $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
         $filtered['voucher_id'] = $voucher_data->id ?? null;
         $filtered["customer_id"] = $request->user()->id;
         $filtered["total_price"] = $total_price - (($total_price * $voucher_sale_value) / 100);
+        $filtered['id_delivery'] = $id_delivery;
 
         // Change usage value of voucher, But first need to check VoucherCode field
         if (!empty($request->voucher_code)) {
@@ -192,6 +232,8 @@ class OrderController extends Controller
         }
 
         $order = Order::find($check->id);
+
+        /** ==> Use Generate Delivery Code HERE */
 
         // Insert data into intermediate table (order_product)
         for ($i = 0; $i < sizeof($arr); $i++) {
@@ -227,7 +269,7 @@ class OrderController extends Controller
      */
 
     // Can't check order id is existed in database for some
-    public function show(Request $request)
+    public function show(GetCustomerBasicRequest $request)
     {
         // $check = Customer::find($request->user()->id);
 
@@ -301,7 +343,7 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(DeleteCustomerRequest $request)
     {
         // $customer = Customer::find($request->user()->id);
 

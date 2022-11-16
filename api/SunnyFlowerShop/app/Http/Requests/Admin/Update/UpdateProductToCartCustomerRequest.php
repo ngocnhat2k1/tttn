@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Update;
 
-use App\Enums\QualityStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateFeedBackRequest extends FormRequest
+class UpdateProductToCartCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +13,11 @@ class UpdateFeedBackRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -26,19 +28,14 @@ class UpdateFeedBackRequest extends FormRequest
     public function rules()
     {
         return [
-            // "customer_id" => [
-            //     "required",
-            //     "integer",
-            // ],
             "productId" => [
                 "required",
-                "integer",
+                "integer"
             ],
-            "comment" => [
+            "quantity" => [
                 "required",
-                "string",
-                "nullable"
-            ],
+                "integer"
+            ]
         ];
     }
 
@@ -46,6 +43,7 @@ class UpdateFeedBackRequest extends FormRequest
     {
         $this->merge([
             'product_id' => $this->productId,
+            'quantity_sale' => $this->quantity,
         ]);
     }
 }

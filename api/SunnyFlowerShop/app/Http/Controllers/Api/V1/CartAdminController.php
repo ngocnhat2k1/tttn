@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProductToCartRequest;
-use App\Http\Requests\UpdateProductToCartRequest;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Update\UpdateProductToCartCustomerRequest;
 use App\Http\Resources\V1\CartViewResource;
 use App\Http\Resources\V1\CustomerOverviewCollection;
 use App\Models\Customer;
@@ -37,7 +38,7 @@ class CartAdminController extends Controller
     }
 
     /** Admin FUNCTION */
-    public function all()
+    public function all(GetAdminBasicRequest $request)
     {
         // Because we use customer ID as Cart ID so it makes sense that we reuse the other resource api view from other controller
         $check = Customer::get()->count();
@@ -55,7 +56,7 @@ class CartAdminController extends Controller
     }
 
     /** Admin & CUSTOMER FUNCTION */
-    public function index(Request $request)
+    public function index(GetAdminBasicRequest $request)
     {
         $check = DB::table("customer_product_cart")
             ->where("customer_id", "=", $request->id)->exists();
@@ -94,7 +95,7 @@ class CartAdminController extends Controller
         ]);
     }
 
-    public function removedProduct(Request $request) {
+    public function removedProduct(DeleteAdminBasicRequest $request) {
         $customer = Customer::where("id", "=", $request->id);
         $product = Product::where("id", "=", $request->productId);
 
@@ -128,12 +129,12 @@ class CartAdminController extends Controller
         }
 
         return response()->json([
-            "success" => false,
+            "success" => true,
             "messagee" => "Removed Product with ID = " . $product->first()->id ." from Customer Cart with ID = " . $customer->first()->id . " successfully"
         ]);
     }
 
-    public function emptyCart(Request $request)
+    public function emptyCart(DeleteAdminBasicRequest $request)
     {
         $customer = Customer::where("id", "=", $request->id);
 
@@ -166,13 +167,13 @@ class CartAdminController extends Controller
         }
 
         return response()->json([
-            "success" => false,
+            "success" => true,
             "messagee" => "Emptied Customer Cart with ID = " . $customer->first()->id . " successfully"
         ]);
     }
     /** END OF ADMIN FUNCTION */
 
-    public function update(UpdateProductToCartRequest $request)
+    public function update(UpdateProductToCartCustomerRequest $request)
     {
         $customer = Customer::find($request->id);
 

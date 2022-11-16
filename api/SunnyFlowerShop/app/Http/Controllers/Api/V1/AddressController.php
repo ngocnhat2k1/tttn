@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Address;
-use App\Http\Requests\StoreAddressRequest;
-use App\Http\Requests\UpdateAddressRequest;
+use App\Http\Requests\Customer\Update\UpdateAddressRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
+use App\Http\Requests\Customer\Store\StoreAddressRequest;
 use App\Http\Resources\V1\AddressDetailResource;
 use App\Http\Resources\V1\AddressOverviewCollection;
 use App\Http\Resources\V1\AddressOverviewResource;
@@ -20,7 +22,7 @@ class AddressController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(GetCustomerBasicRequest $request)
     {
         $address = Address::where("customer_id", "=", $request->user()->id);
 
@@ -89,7 +91,7 @@ class AddressController extends Controller
      * @param  \App\Models\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(GetCustomerBasicRequest $request)
     {
         // $customer = Customer::find($request->user()->id);
 
@@ -194,7 +196,7 @@ class AddressController extends Controller
      * @param  \App\Models\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(DeleteCustomerRequest $request)
     {
         // $customer = Customer::find($request->user()->id);
 

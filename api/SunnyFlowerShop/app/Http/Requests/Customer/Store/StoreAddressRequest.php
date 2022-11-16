@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Customer\Store;
 
-use App\Enums\OrderStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreOrderRequest extends FormRequest
+class StoreAddressRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +13,11 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('none');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -26,51 +28,50 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            "voucherCode" => [
-                "string",
-                "nullable"
-            ],
-            "idDelivery" => [
-                "required",
-                "string"
-            ],
-            "dateOrder" => [
-                "required",
-                "date_format:Y-m-d H:i:s",
-            ],
-            "address" => [
+            "firstNameReceiver" => [
                 "required",
                 "string",
+                "min:2",
+                "max:100",
             ],
-            "nameReceiver" => [
+            "lastNameReceiver" => [
                 "required",
                 "string",
+                "min:2",
+                "max:100",
             ],
             "phoneReceiver" => [
                 "required",
                 "string",
+                "min:8",
             ],
-            "paidType" => [
+            "streetName" => [
                 "required",
-                "boolean",
+                "string",
+                "min:2",
+            ],
+            "district" => [
+                "required",
+                "string",
+            ],
+            "ward" => [
+                "required",
+                "string",
+            ],
+            "city" => [
+                "required",
+                "string",
             ],
         ];
     }
 
     protected function prepareForValidation()
     {
-        if ($this->voucherCode) {
-            $this->merge([
-                'voucher_code' => $this->voucherCode,
-            ]);
-        }
         $this->merge([
-            "id_delivery" => $this->idDelivery,
-            'date_order' => $this->dateOrder,
-            'name_receiver' => $this->nameReceiver,
+            'first_name_receiver' => $this->firstNameReceiver,
+            'last_name_receiver' => $this->lastNameReceiver,
             'phone_receiver' => $this->phoneReceiver,
-            'paid_type' => $this->paidType,
-            // "product" => $data,
+            'street_name' => $this->streetName,
         ]);
     }
 }

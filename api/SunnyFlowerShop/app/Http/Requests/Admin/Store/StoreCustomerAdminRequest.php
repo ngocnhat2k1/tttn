@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Store;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerRequest extends FormRequest
+class StoreCustomerAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,11 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -41,13 +45,15 @@ class UpdateCustomerRequest extends FormRequest
                 "email",
             ],
             "password" => [
+                "required",
                 "string",
                 "min:6",
                 "max:24",
             ],
             "subscribed" => [
+                "required",
                 "boolean",
-            ],
+            ]
             // "phoneNumber" => [
             //     "required",
             //     "string",

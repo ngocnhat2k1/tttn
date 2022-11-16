@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProductRequest extends FormRequest
+class UpdateAddressCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,11 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -24,44 +28,39 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => [
+            "firstNameReceiver" => [
                 "required",
                 "string",
                 "min:2",
                 "max:100",
             ],
-            "description" => [
+            "lastNameReceiver" => [
                 "required",
                 "string",
-                "min:10",
-            ],
-            "price" => [
-                "required",
-                "integer",
-            ],
-            "percentSale" => [
-                "required",
-                "integer",
-                "min:1",
+                "min:2",
                 "max:100",
             ],
-            "img" => [
+            "phoneReceiver" => [
+                "required",
+                "string",
+                "min:8",
+            ],
+            "streetName" => [
+                "required",
+                "string",
+                "min:2",
+            ],
+            "district" => [
                 "required",
                 "string",
             ],
-            "quantity" => [
+            "ward" => [
                 "required",
-                "integer"
+                "string",
             ],
-            "status" => [
+            "city" => [
                 "required",
-                "boolean",
-            ],
-            "category" => [
-                "*.id" => [
-                    "required",
-                    "integer",
-                ]
+                "string",
             ],
         ];
     }
@@ -69,8 +68,10 @@ class UpdateProductRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            // 'category_id' => $this->categoryId,
-            'percent_sale' => $this->percentSale,
+            'first_name_receiver' => $this->firstNameReceiver,
+            'last_name_receiver' => $this->lastNameReceiver,
+            'phone_receiver' => $this->phoneReceiver,
+            'street_name' => $this->streetName,
         ]);
     }
 }

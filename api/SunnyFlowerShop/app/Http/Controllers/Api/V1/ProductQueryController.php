@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
 use App\Models\Order;
 use App\Models\Product;
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +35,7 @@ class ProductQueryController extends Controller
             ->groupBy('product_id')
             ->orderBy('count', 'DESC')
             ->get()
-            ->take(20);
+            ->take(8);
 
         $products_best_seller = [];
 
@@ -159,5 +159,107 @@ class ProductQueryController extends Controller
 
         // If everything went well then return result
         return $arr_products_filter;
+    }
+
+    // Display on main page (when login into website)
+    public function index(Request $request)
+    {
+        // $data = Product::with("categories")->paginate();
+        $data = Product::with("categories");
+        $count = $data->get()->count();
+
+        if (empty($count)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Product list is empty"
+            ]);
+        }
+
+        // Will change later, this is just temporary
+        if (!empty($request->get("q"))) {
+            $check = (int)$request->get("q");
+            $column = "";
+            $operator = "";
+            $value = "";
+
+            if ($check == 0) {
+                $column = "name";
+                $operator = "like";
+                $value = "%" . $request->get("q") . "%";
+            } else {
+                $column = "id";
+                $operator = "=";
+                $value = $request->get("q");
+            }
+
+            $search = Product::where("$column", "$operator", "$value")->get();
+        }
+
+        $count = DB::table("products")->count();
+
+        // return response()->json([
+        //     "success" => true,
+        //     "total" => $count,
+        //     "data" => new ProductListCollection($data)
+        // ]);
+
+        return new ProductListCollection($data->paginate(8)->appends($request->query()));
+    }
+
+    public function show(Request $request)
+    {
+        $data = Product::find($request->id);
+
+        if (empty($data)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Product doesn't not exist"
+            ]);
+        }
+
+        $average_quality = DB::table("customer_product_feedback")
+            ->where("product_id", "=", $data->id);
+
+        // calculate average of total quality that product has
+        $quality = 0;
+
+        /** Checking if quality of feedback has been made */
+        // If not then average of total quality is 0
+        if (!$average_quality->exists()) {
+            $quality = 0;
+        }
+        // If so then calculate it
+        else {
+            $total = $average_quality->get(); // Get all quality feedback
+
+            for ($i = 0; $i < sizeof($total); $i++) { // Sum all quality to make an average calculation
+                $quality += $total[$i]->quality;
+            }
+
+            $quality = $quality / sizeof($total);
+
+            $float_point = explode(".", $quality);
+
+            if (sizeof($float_point) >= 2) {
+                $decimal_number = (int)$float_point[1];
+
+                while ($decimal_number > 10) {
+                    $decimal_number = $decimal_number / 10;
+                }
+
+                if ($decimal_number >= 5) {
+                    $quality = ceil($quality);
+                } else {
+                    $quality = floor($quality);
+                }
+            }
+        }
+
+        $data['quality'] = $quality;
+
+        return response()->json([
+            "success" => true,
+            "data" => new ProductDetailResource($data)
+        ]);
     }
 }

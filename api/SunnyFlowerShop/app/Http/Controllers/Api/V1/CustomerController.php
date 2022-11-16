@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Delete\DeleteAdminRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Store\StoreAvatarAdminRequest;
+use App\Http\Requests\Admin\Store\StoreCustomerAdminRequest;
+use App\Http\Requests\Admin\Update\UpdateCustomerAdminRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
 use App\Http\Resources\V1\CustomerOverviewCollection;
 use App\Models\Customer;
@@ -18,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(GetAdminBasicRequest $request)
     {
         $check = Customer::get()->count();
 
@@ -34,7 +38,7 @@ class CustomerController extends Controller
         return new CustomerOverviewCollection($customers);
     }
 
-    public function show(Customer $customer)
+    public function show(GetAdminBasicRequest $request, Customer $customer)
     {
         return response()->json([
             "success" => true,
@@ -42,7 +46,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function store(StoreCustomerRequest $request)
+    public function store(StoreCustomerAdminRequest $request)
     {
         $filtered = $request->except(["firstName", "lastName"]);
 
@@ -72,7 +76,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function disable(Customer $customer, Request $request)
+    public function disable(Customer $customer, DeleteAdminRequest $request)
     {
         $customer = Customer::find($customer->id);
 
@@ -150,7 +154,7 @@ class CustomerController extends Controller
         }
     }
 
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function update(UpdateCustomerAdminRequest $request, Customer $customer)
     {
         // Check email belong to customer that being check
         $customer_email = Customer::where("email", "=", $request->email)
@@ -263,21 +267,8 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function upload(Request $request, Customer $customer)
+    public function upload(StoreAvatarAdminRequest $request, Customer $customer)
     {
-        $data = Validator::make($request->all(), [
-            "avatar" => "required|string"
-        ]);
-
-        if ($data->fails()) {
-            $errors = $data->errors();
-
-            return response()->json([
-                "success" => false,
-                "errors" => $errors,
-            ]);
-        }
-
         $customer->avatar = $request->avatar;
 
         $result = $customer->save();
@@ -296,7 +287,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function destroyAvatar(Customer $customer)
+    public function destroyAvatar(DeleteAdminBasicRequest $request, Customer $customer)
     {
         $customer->avatar = null;
         $result = $customer->save();

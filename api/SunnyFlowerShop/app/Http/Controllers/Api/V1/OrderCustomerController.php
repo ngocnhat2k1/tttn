@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateOrderRequest;
-use App\Http\Resources\V1\OrderDetailResource;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Update\UpdateOrderCustomerRequest;
 use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Models\Customer;
@@ -12,11 +13,10 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrderCustomerController extends Controller
 {
-    public function index(Customer $customer)
+    public function index(GetAdminBasicRequest $request, Customer $customer)
     {
         $order = $customer->orders;
 
@@ -33,7 +33,7 @@ class OrderCustomerController extends Controller
         ]);
     }
 
-    public function show(Customer $customer, Order $order)
+    public function show(GetAdminBasicRequest $request, Customer $customer, Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
         $query = Order::where("orders.id", "=", $order->id)
@@ -99,7 +99,7 @@ class OrderCustomerController extends Controller
         ]);
     }
 
-    public function update(UpdateOrderRequest $request, Customer $customer, Order $order)
+    public function update(UpdateOrderCustomerRequest $request, Customer $customer, Order $order)
     {
         $query = Order::where("id", "=", $order->id)
             ->where("customer_id", "=", $customer->id);
@@ -229,7 +229,7 @@ class OrderCustomerController extends Controller
         ]);
     }
 
-    public function destroy(Customer $customer, Order $order, Request $request)
+    public function destroy(Customer $customer, Order $order, DeleteAdminBasicRequest $request)
     {
         // Checking The connection between Order and Customer
         $order_data = Order::where("id", "=", $order->id)

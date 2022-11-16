@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Category;
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\Admin\Store\StoreCategoryRequest;
+use App\Http\Requests\Admin\Update\UpdateCategoryRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Resources\V1\CategoryDetailCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,7 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(GetAdminBasicRequest $request)
     {
         // Check amount of categories before paginating
         $categories = Category::get()->count();
@@ -72,7 +74,7 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(GetAdminBasicRequest $request)
     {
         $query = Category::where("id", "=", $request->id);
 
@@ -86,10 +88,13 @@ class CategoryController extends Controller
         $data = $query->first();
 
         return [
-            "categoryId" => $data->id,
-            "name" => $data->name,
-            "createdAt" => date_format($data->created_at,"Y-m-d H:i:s"),
-            "updatedAt" => date_format($data->updated_at,"Y-m-d H:i:s"),
+            "success" => true,
+            "data" => [
+                "categoryId" => $data->id,
+                "name" => $data->name,
+                "createdAt" => date_format($data->created_at,"Y-m-d H:i:s"),
+                "updatedAt" => date_format($data->updated_at,"Y-m-d H:i:s"),
+            ]
         ];
     }
 
@@ -142,7 +147,7 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(DeleteAdminBasicRequest $request)
     {
         $category = Category::where("id", "=", $request->id);
 

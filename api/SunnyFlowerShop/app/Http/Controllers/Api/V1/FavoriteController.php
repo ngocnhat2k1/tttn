@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\ProductListCollection;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
+use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -30,47 +32,48 @@ class FavoriteController extends Controller
         return $arr;
     }
 
-    public function viewFavorite(Request $request)
+    public function viewFavorite(GetCustomerBasicRequest $request)
     {
-        $check = DB::table("customer_product_favorite")
-            ->where("customer_id", "=", $request->user()->id)
-            ->get()->count();
-            
-        if ($check === 0) {
+        $favorite_products = DB::table("customer_product_favorite")
+            ->where("customer_id", "=", $request->user()->id)->get();
+
+        if ($favorite_products->count() === 0) {
             return response()->json([
                 "success" => false,
                 "message" => "This user hasn't added any product to favorite yet"
             ]);
         }
 
-        $customer_product_favorite = Customer::with("customer_product_favorite")->where("id", "=", $request->user()->id)->get();
-
         $data = [];
+        // First loop for get all favorite product from pivot table
+        for ($i = 0; $i < sizeof($favorite_products); $i++) {
+            $product = Product::where("id", "=", $favorite_products[$i]->product_id)->first();
 
-        // Second loop for Products
-        for ($j = 0; $j < sizeof($customer_product_favorite[0]['customer_product_favorite']); $j++) {
-            $data[$j]['productId'] = $customer_product_favorite[0]['customer_product_favorite'][$j]->id;
-            $data[$j]['productName'] = $customer_product_favorite[0]['customer_product_favorite'][$j]->name;
-            $data[$j]['img'] = $customer_product_favorite[0]['customer_product_favorite'][$j]->img;
+            // Get all category connect to product
+            $categories = DB::table("category_product")
+                ->where("product_id", "=", $product->id)
+                ->get();
 
-            // $categories = DB::table("category_product")
-            //     ->where("product_id", "=", $customer_product_favorite[0]['customer_product_favorite'][$j]->id)
-            //     ->get();
+            $data[$i]['id'] = $product->id;
+            $data[$i]['name'] = $product->name;
+            $data[$i]['price'] = $product->price;
+            $data[$i]['percentSale'] = $product->percent_sale;
+            $data[$i]['quantity'] = $product->quantity;
+            $data[$i]['status'] = $product->status;
+            $data[$i]['deletedAt'] = $product->deleted_at;
 
-            // for ($k = 0; $k < sizeof($categories); $k++) {
-            //     $category = Category::where("id", "=", $categories[$k]->id)->first();
-            //     $data[0]['products'][$j]['categories'][$k]['id']= $category->id;
-            //     $data[0]['products'][$j]['categories'][$k]['name']= $category->name;
-            // }
-
-            $data[$j]['quality'] = $customer_product_favorite[0]['customer_product_favorite'][$j]['pivot']->quality;
-            $data[$j]['comment'] = $customer_product_favorite[0]['customer_product_favorite'][$j]['pivot']->comment;
+            for ($j = 0; $j < sizeof($categories); $j++) { // Second loop for category
+                $category = Category::where("id", "=", $categories[$j]->category_id)->first();
+                
+                $data[$i]['categories'][$j]['id'] = $category->id;
+                $data[$i]['categories'][$j]['name'] = $category->name;
+            }
         }
 
         return $this->paginator($data, $request);
     }
 
-    public function storeFavorite(Request $request)
+    public function storeFavorite(GetCustomerBasicRequest $request)
     {
         $customer = Customer::find($request->user()->id);
 
@@ -96,7 +99,7 @@ class FavoriteController extends Controller
         ]);
     }
 
-    public function destroyFavorite(Request $request)
+    public function destroyFavorite(DeleteCustomerRequest $request)
     {
         // $request->id is Product ID
         $customer = Customer::find($request->user()->id);

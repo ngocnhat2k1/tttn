@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProductToCartRequest;
-use App\Http\Requests\UpdateProductToCartRequest;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
+use App\Http\Requests\Customer\Store\StoreProductToCartRequest;
+use App\Http\Requests\Customer\Update\UpdateProductToCartRequest;
 use App\Http\Resources\V1\CartViewResource;
 use App\Http\Resources\V1\CustomerOverviewCollection;
 use App\Models\Customer;
@@ -37,7 +39,7 @@ class CartController extends Controller
     }
 
     /** Admin & CUSTOMER FUNCTION */
-    public function index(Request $request)
+    public function index(GetCustomerBasicRequest $request)
     {
         $check = DB::table("customer_product_cart")
             ->where("customer_id", "=", $request->user()->id)->exists();
@@ -144,7 +146,7 @@ class CartController extends Controller
         }
     }
 
-    public function reduce(Request $request)
+    public function reduce(GetCustomerBasicRequest $request)
     {
         // request->id is Product ID
         $customer = Customer::find($request->user()->id);
@@ -154,7 +156,7 @@ class CartController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Product ID is invalid"
             ]);
         }
 
@@ -275,7 +277,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function destroy(Request $request)
+    public function destroy(DeleteCustomerRequest $request)
     {
         // request->id is Product ID
         $customer = Customer::find($request->user()->id);

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Delete;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAdminRequest extends FormRequest
+class DeleteAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,9 @@ class StoreAdminRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        $user = $this->user();
+
+        return $user != null && $user->tokenCan('super_admin');
     }
 
     /**
