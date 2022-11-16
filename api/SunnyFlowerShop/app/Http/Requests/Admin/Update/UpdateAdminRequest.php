@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVoucherRequest extends FormRequest
+class UpdateAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,9 @@ class StoreVoucherRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        return $user != null && $user->tokenCan('super_admin');
     }
 
     /**
@@ -24,34 +26,27 @@ class StoreVoucherRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => [
+            "userName" => [
                 "required",
                 "string",
-                "min:2"
+                "min:2",
+                'alpha_num'
             ],
-            "percent" => [
+            "email" => [
                 "required",
-                "integer",
-                "max:100",
-                "min:0"
+                "email",
             ],
-            "usage" => [
-                "required",
-                "integer",
-                "min:5"
+            "password" => [
+                "string",
+                "min:6",
             ],
-            "expiredDate" => [
-                "required",
-                "date_format:Y-m-d H:i:s"
-            ]
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            // 'category_id' => $this->categoryId,
-            'expired_date' => $this->expiredDate,
+            'user_name' => $this->userName,
         ]);
     }
 }

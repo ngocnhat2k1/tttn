@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAddressRequest;
-use App\Http\Requests\UpdateAddressRequest;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Store\StoreAddressCustomerRequest;
+use App\Http\Requests\Admin\Update\UpdateAddressCustomerRequest;
 use App\Http\Resources\V1\AddressListCollection;
 use App\Http\Resources\V1\AddressOverviewCollection;
 use App\Http\Resources\V1\AddressOverviewResource;
@@ -13,13 +15,13 @@ use App\Models\Customer;
 
 class AddressCustomerController extends Controller
 {
-    public function index(Customer $customer)
+    public function index(GetAdminBasicRequest $request, Customer $customer)
     {
         $customer_data = Customer::find($customer->id);
 
         $addresses = $customer_data->addresses;
 
-        if (empty($addresses)) {
+        if ($addresses->count() === 0) {
             return response()->json([
                 "success" => false,
                 "errors" => "This user has created any address yet"
@@ -29,7 +31,7 @@ class AddressCustomerController extends Controller
         return new AddressOverviewCollection($addresses);
     }
 
-    public function show(Customer $customer, Address $address)
+    public function show(GetAdminBasicRequest $request, Customer $customer, Address $address)
     {
         // $request->id is for customer
         // $customer_data = Customer::where("id", "=", $customer->id);
@@ -50,7 +52,7 @@ class AddressCustomerController extends Controller
         ]);
     }
 
-    public function store(StoreAddressRequest $request, Customer $customer)
+    public function store(StoreAddressCustomerRequest $request, Customer $customer)
     {
         $check = Address::where("customer_id", "=", $customer->id)
             ->where("first_name_receiver", "=", $request->firstNameReceiver)
@@ -87,7 +89,7 @@ class AddressCustomerController extends Controller
         ]);
     }
 
-    public function update(UpdateAddressRequest $request, Customer $customer, Address $address)
+    public function update(UpdateAddressCustomerRequest $request, Customer $customer, Address $address)
     {
         $query = Address::where("id", "=", $address->id)
             ->where("customer_id", "=", $customer->id);
@@ -136,7 +138,7 @@ class AddressCustomerController extends Controller
         ]);
     }
 
-    public function destroy(Customer $customer, Address $address)
+    public function destroy(DeleteAdminBasicRequest $request, Customer $customer, Address $address)
     {
         $query_address = Address::where("id", "=", $address->id)
             ->where("customer_id", "=", $customer->id);

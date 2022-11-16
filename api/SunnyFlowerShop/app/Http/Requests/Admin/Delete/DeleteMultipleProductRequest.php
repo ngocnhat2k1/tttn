@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Delete;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProductToCartRequest extends FormRequest
+class DeleteMultipleProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,11 @@ class StoreProductToCartRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -24,22 +28,10 @@ class StoreProductToCartRequest extends FormRequest
     public function rules()
     {
         return [
-            "productId" => [
-                "required",
-                "integer"
-            ],
-            "quantity" => [
+            "*.id" => [
                 "required",
                 "integer"
             ]
         ];
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'product_id' => $this->productId,
-            'quantity_sale' => $this->quantity,
-        ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Customer\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,7 +13,11 @@ class UpdateProductToCartRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('none');
+
+        return $user != null && $tokenCan;
     }
 
     /**

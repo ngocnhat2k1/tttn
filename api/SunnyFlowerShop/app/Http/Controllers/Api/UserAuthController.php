@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Requests\Customer\Store\StoreAvatarCustomerRequest;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
+use App\Http\Requests\Customer\Update\UpdateCustomerRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
 use App\Models\Customer;
 use App\Models\CustomerAuth;
@@ -150,7 +153,7 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout(GetCustomerBasicRequest $request)
     {
         Token::where('token', "=", $request->bearerToken())->delete();
 
@@ -164,9 +167,22 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function profile(Request $request)
+    public function profile(GetCustomerBasicRequest $request)
     {
         return new CustomerDetailResource($request->user());
+    }
+
+    public function userInfo(GetCustomerBasicRequest $request) {
+        return response()->json([
+            "success" => true,
+            "data" => [
+                "firstName" => $request->user()->first_name,
+                "lastName" => $request->user()->last_name,
+                "email" => $request->user()->email,
+                "avatar" => $request->user()->avatar,
+                "defaultAvatar" => $request->user()->default_avatar,
+            ]
+        ]);
     }
 
     public function update(UpdateCustomerRequest $request)
@@ -214,7 +230,7 @@ class UserAuthController extends Controller
     }
 
     // Use this api to update any value
-    public function updateValue(Request $request)
+    public function updateValue(GetCustomerBasicRequest $request)
     {
         if (empty($request->all())) {
             return response()->json([
@@ -319,21 +335,8 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function upload(Request $request)
+    public function upload(StoreAvatarCustomerRequest $request)
     {
-        $data = Validator::make($request->all(), [
-            "avatar" => "required|string"
-        ]);
-
-        if ($data->fails()) {
-            $errors = $data->errors();
-
-            return response()->json([
-                "success" => false,
-                "errors" => $errors,
-            ]);
-        }
-
         $customer = Customer::where("id", "=", $request->user()->id)->first();
         $customer->avatar = $request->avatar;
 
@@ -353,7 +356,7 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function destroyAvatar(Request $request)
+    public function destroyAvatar(DeleteCustomerRequest $request)
     {
         $customer = Customer::find($request->user()->id);
 

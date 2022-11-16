@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Update\UpdateOrderCustomerStatus;
 use App\Http\Resources\V1\CustomerOverviewResource;
-use App\Http\Resources\V1\OrderDetailResource;
-use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\VoucherDetailResource;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -36,7 +35,7 @@ class OrderAdminController extends Controller
         return $arr;
     }
 
-    public function index(Request $request)
+    public function index(GetAdminBasicRequest $request)
     {
         $check = Order::get()->count();
 
@@ -84,7 +83,7 @@ class OrderAdminController extends Controller
         // return new OrderCustomerListCollection($customers_orders);
     }
 
-    public function show(Order $order)
+    public function show(GetAdminBasicRequest $request, Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
         $order["products"] = $order->products;
@@ -131,7 +130,7 @@ class OrderAdminController extends Controller
         // ]);
     }
 
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(UpdateOrderCustomerStatus $request, Order $order)
     {
         /** Update current status of order 
          * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
@@ -172,20 +171,8 @@ class OrderAdminController extends Controller
         ]);
     }
 
-    public function destroy(Customer $customer, Order $order, Request $request)
+    public function destroy(Order $order, DeleteAdminBasicRequest $request)
     {
-        // Checking The connection between Order and Customer
-        $order_data = Order::where("id", "=", $order->id)
-            ->where("customer_id", "=", $customer->id)
-            ->exists();
-
-        if (!$order_data) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Please recheck Order ID and Customer ID"
-            ]);
-        }
-
         // If Order state is 2 (Completed state), then return
         if ($order->status === 2) {
             return response()->json([
@@ -220,19 +207,12 @@ class OrderAdminController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'message' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully cancelled Order ID = " . $order->id
                 ]
             );
 
             // If value state is not 1, it will be Reverse Delete
         } else {
-            // Checking The connection between Order and Customer
-            if (!$order_data) {
-                return response()->json([
-                    "success" => false,
-                    "errors" => "Please recheck Order ID and Customer ID"
-                ]);
-            }
 
             // Checking whether Deleted_by column is null or not
             if ($order->deleted_by === null) {
@@ -256,7 +236,7 @@ class OrderAdminController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'message' => "Sucessfully reversed cancel Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully reversed cancel Order ID = " . $order->id
                 ]
             );
         }

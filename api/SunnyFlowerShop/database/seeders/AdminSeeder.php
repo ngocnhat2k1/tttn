@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
   public function run()
   {
     $data = [
-      'user_name' => 'admin',
+      'user_name' => 'Admin',
       'email' => 'admin@email.com',
       'password' => Hash::make('123'),
       'level' => '0',

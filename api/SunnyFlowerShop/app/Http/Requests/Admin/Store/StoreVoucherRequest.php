@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Store;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateVoucherRequest extends FormRequest
+class StoreVoucherRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,11 @@ class UpdateVoucherRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**

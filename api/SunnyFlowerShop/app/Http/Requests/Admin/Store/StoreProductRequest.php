@@ -1,56 +1,63 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Store;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BulkInsertProductRequest extends FormRequest
+class StoreProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-
-    public function authorize() {
+    public function authorize()
+    {
+        // Will fix later
         $user = $this->user();
 
-        return $user != null && $user->tokenCan('create');
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, mixed>
+     */
     public function rules()
     {
         return [
-            "*.name" => [
+            "name" => [
                 "required",
                 "string",
                 "min:2",
                 "max:100",
             ],
-            "*.description" => [
+            "description" => [
                 "required",
                 "string",
                 "min:10",
             ],
-            "*.price" => [
+            "price" => [
                 "required",
                 "integer",
             ],
-            "*.percentSale" => [
-                "required",
+            "percentSale" => [
                 "integer",
-                "min:1",
+                "min:0",
                 "max:100",
             ],
-            "*.quantity" => [
-                "required",
-                "integer"
-            ],
-            "*.img" => [
+            "img" => [
                 "required",
                 "string",
             ],
-            "*.category" => [
+            "quantity" => [
+                "required",
+                "integer"
+            ],
+            "category" => [
                 "*.id" => [
                     "required",
                     "integer",
@@ -61,14 +68,9 @@ class BulkInsertProductRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $data = [];
-
-        foreach ($this->toArray() as $obj) {
-            // $obj['category_id'] = $obj['categoryId'] ?? null;
-            $obj['percent_sale'] = $obj['percentSale'] ?? null;
-            $data[] = $obj;
-        }
-
-        $this->merge($data);
+        $this->merge([
+            // 'category_id' => $this->categoryId,
+            'percent_sale' => $this->percentSale,
+        ]);
     }
 }

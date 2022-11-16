@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Customer\Store;
 
 use App\Enums\OrderStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateOrderRequest extends FormRequest
+class StoreOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,11 @@ class UpdateOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('none');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -26,8 +30,9 @@ class UpdateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            "voucherId" => [
-                "integer"
+            "voucherCode" => [
+                "string",
+                "nullable"
             ],
             "dateOrder" => [
                 "required",
@@ -45,32 +50,22 @@ class UpdateOrderRequest extends FormRequest
                 "required",
                 "string",
             ],
-            "status" => [
-                "required",
-                "integer",
-                Rule::in(OrderStatusEnum::asArray()),
-            ],
             "paidType" => [
                 "required",
                 "boolean",
             ],
-            "products" => [
-                "*.id" => [
-                    "required",
-                    "integer"
-                ],
-                "*.quantity" => [
-                    "required",
-                    "integer"
-                ]
-            ]
         ];
     }
 
     protected function prepareForValidation()
     {
+        if ($this->voucherCode) {
+            $this->merge([
+                'voucher_code' => $this->voucherCode,
+            ]);
+        }
         $this->merge([
-            'voucher_id' => $this->voucherId,
+            "id_delivery" => $this->idDelivery,
             'date_order' => $this->dateOrder,
             'name_receiver' => $this->nameReceiver,
             'phone_receiver' => $this->phoneReceiver,

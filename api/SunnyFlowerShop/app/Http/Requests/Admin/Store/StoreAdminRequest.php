@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Store;
 
-use App\Enums\QualityStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreFeedBackRequest extends FormRequest
+class StoreAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +13,9 @@ class StoreFeedBackRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        return $user != null && $user->tokenCan('super_admin');
     }
 
     /**
@@ -26,23 +26,19 @@ class StoreFeedBackRequest extends FormRequest
     public function rules()
     {
         return [
-            // "customer_id" => [
-            //     "required",
-            //     "integer",
-            // ],
-            "productId" => [
-                "required",
-                "integer",
-            ],
-            "quality" => [
-                "required",
-                "integer",
-                Rule::in(QualityStatusEnum::asArray()),
-            ],
-            "comment" => [
+            "userName" => [
                 "required",
                 "string",
-                "nullable"
+                "min:2",
+            ],
+            "email" => [
+                "required",
+                "email",
+            ],
+            "password" => [
+                "required",
+                "string",
+                "min:6",
             ],
         ];
     }
@@ -50,7 +46,7 @@ class StoreFeedBackRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'product_id' => $this->productId,
+            'user_name' => $this->userName,
         ]);
     }
 }

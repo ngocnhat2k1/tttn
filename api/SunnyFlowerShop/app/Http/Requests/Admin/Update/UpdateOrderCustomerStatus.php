@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCategoryRequest extends FormRequest
+class UpdateOrderCustomerStatus extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,11 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -24,11 +28,6 @@ class UpdateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => [
-                "required",
-                "string",
-                "min:2",
-            ]
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProductRequest extends FormRequest
+class UpdateVoucherRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,8 +13,11 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize()
     {
-        // Will fix later
-        return true;
+        $user = $this->user();
+
+        $tokenCan = $user->tokenCan('admin') || $user->tokenCan('super_admin');
+
+        return $user != null && $tokenCan;
     }
 
     /**
@@ -28,37 +31,23 @@ class StoreProductRequest extends FormRequest
             "name" => [
                 "required",
                 "string",
-                "min:2",
-                "max:100",
+                "min:2"
             ],
-            "description" => [
-                "required",
-                "string",
-                "min:10",
-            ],
-            "price" => [
+            "percent" => [
                 "required",
                 "integer",
-            ],
-            "percentSale" => [
-                "integer",
-                "min:0",
                 "max:100",
+                "min:0"
             ],
-            "img" => [
+            "usage" => [
                 "required",
-                "string",
+                "integer",
+                "min:5"
             ],
-            "quantity" => [
+            "expiredDate" => [
                 "required",
-                "integer"
-            ],
-            "category" => [
-                "*.id" => [
-                    "required",
-                    "integer",
-                ]
-            ],
+                "date_format:Y-m-d H:i:s"
+            ]
         ];
     }
 
@@ -66,7 +55,7 @@ class StoreProductRequest extends FormRequest
     {
         $this->merge([
             // 'category_id' => $this->categoryId,
-            'percent_sale' => $this->percentSale,
+            'expired_date' => $this->expiredDate,
         ]);
     }
 }
