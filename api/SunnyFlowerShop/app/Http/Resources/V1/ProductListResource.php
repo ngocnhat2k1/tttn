@@ -24,6 +24,7 @@ class ProductListResource extends JsonResource
             "quantity" => $this->quantity,
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
+            "createdAt" => date_format($this->created_at, "d/m/Y"),
             "categories" => CategoryListResource::collection($this->categories)
         ];
     }

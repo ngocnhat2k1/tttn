@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Requests\Admin\Store\StoreAvatarAdminRequest;
 use App\Http\Requests\Admin\Store\StoreCustomerAdminRequest;
 use App\Http\Requests\Admin\Update\UpdateCustomerAdminRequest;
+use App\Http\Requests\Admin\Update\UpdatePasswordCustomerRequest;
 use App\Http\Resources\V1\CustomerDetailResource;
 use App\Http\Resources\V1\CustomerOverviewCollection;
 use App\Models\Customer;
@@ -76,7 +77,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function disable(Customer $customer, DeleteAdminRequest $request)
+    public function disable(Customer $customer, DeleteAdminBasicRequest $request)
     {
         $customer = Customer::find($customer->id);
 
@@ -195,75 +196,29 @@ class CustomerController extends Controller
         ]);
     }
 
-    // Use this api to update any value
-    public function updateValue(Request $request, Customer $customer)
+    // Use this api to change password Admin
+    public function changePassword(UpdatePasswordCustomerRequest $request, Customer $customer)
     {
-        if (empty($request->all())) {
-            return response()->json([
-                "success" => true,
-                "message" => "No change was made"
-            ]);
-        }
-
-        $data = Validator::make($request->all(), [
-            "firstName" => "string|min:2|max:50",
-            "lastName" => "string|min:2|max:50",
-            "email" => "email",
-            "password" => "string|min:6|max:24",
-            "subscribed" => "boolean"
-        ]);
-
-        if ($data->fails()) {
-            $errors = $data->errors();
-
+        if (Hash::check($request->password, $customer->password)) {
             return response()->json([
                 "success" => false,
-                "errors" => $errors,
+                "errors" => "Can't replace password with the same old one"
             ]);
         }
 
-        // Check email belong to customer that being check (from request)
-        $check = Customer::where("email", "=", $request->email)
-            ->where("id", "=", $customer->id)->exists();
-
-        // Check If new email doesn't belong to current customer
-        if (!$check) {
-
-            // Check existence of email in database
-            $check = Customer::where("email", "=", $request->email)->exists();
-            if ($check) {
-                return response()->json([
-                    "success" => false,
-                    "errors" => "Email has already been used"
-                ]);
-            }
-        }
-
-        // Create check for password
-        if ($request->password !== null) {
-            $customer->password = Hash::make($request->password);
-        } else {
-            $customer->password = $customer->password;
-        }
-
-        $customer->first_name = $request->firstName ?? $customer->first_name;
-        $customer->last_name = $request->lastName ?? $customer->last_name;
-        $customer->email = $request->email ?? $customer->email;
-        $customer->subscribed = $request->subscribed ?? $customer->subscribed;
-
+        $customer->password = Hash::make($request->password);
         $result = $customer->save();
 
-        // If result is false, that means save process has occurred some issues
-        if (!$result) {
+        if (empty($result)) {
             return response()->json([
-                'success' => false,
+                "success" => false,
                 "errors" => "An unexpected error has occurred"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated name customer successfully"
+            "message" => "Successfully changed password"
         ]);
     }
 

@@ -23,7 +23,6 @@ class CustomerFactory extends Factory
             "last_name" => $this->faker->lastName(),
             "email" => $this->faker->email(),
             "password" => Hash::make("123"), // Temporary
-            "subscribed" => $this->faker->randomElement(SubscribeValueEnum::asArray()),
             // "phone_number" => $this->faker->tollFreePhoneNumber(),
         ];
     }

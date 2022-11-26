@@ -74,6 +74,8 @@ class FeedBackController extends Controller
             $data[$j]['quality'] = $customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->quality;
             $data[$j]['rating'] = QualityStatusEnum::getQualityAttribute($data[$j]['quality']);
             $data[$j]['comment'] = $customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->comment;
+            $data[$j]['createdAt'] = date_format($customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->created_at, "d/m/Y H:i:s");
+            $data[$j]['updatedAt'] = date_format($customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->updated_at, "d/m/Y H:i:s");
         }
 
         return $this->paginator($data, $request);
@@ -119,6 +121,8 @@ class FeedBackController extends Controller
             "quality" => $customer_product_feedback->pivot->quality,
             "rating" => QualityStatusEnum::getQualityAttribute($customer_product_feedback->pivot->quality),
             "comment" => $customer_product_feedback->pivot->comment,
+            "createdAt" => date_format($customer_product_feedback->pivot->created_at, "d/m/Y H:i:s"),
+            "updatedAt" => date_format($customer_product_feedback->pivot->updated_at, "d/m/Y H:i:s"),
         ];
 
         return response()->json([
@@ -137,19 +141,17 @@ class FeedBackController extends Controller
 
         for ($i = 0; $i < sizeof($orders_customers); $i++) {
             $product = Product::find($request->product_id);
-            $check = DB::table("order_product")
-                ->where("order_id", "=", $orders_customers[$i]->id)
-                ->where("product_id", "=", $product->id)
-                ->exists();
+            // $check = DB::table("order_product")
+            //     ->where("order_id", "=", $orders_customers[$i]->id)
+            //     ->where("product_id", "=", $product->id)
+            //     ->exists();
 
-            if (!$check) continue;
+            // if (!$check) continue;
             // Can't do a foreach loop to check value in pivot table for some reason. It can't check null value
 
             $customer->customer_product_feedback()->attach($product, [
                 "quality" => $request->quality,
                 "comment" => $request->comment,
-                "created_at" => date("Y-m-d H:i:s"),
-                "updated_at" => date("Y-m-d H:i:s"),
             ]);
 
             return response()->json([
@@ -179,7 +181,6 @@ class FeedBackController extends Controller
             ->updateExistingPivot($product, [
                 "quality" => $request->quality,
                 "comment" => $request->comment,
-                "updated_at" => date("Y-m-d H:i:s"),
             ]);
 
         if (!$result) {

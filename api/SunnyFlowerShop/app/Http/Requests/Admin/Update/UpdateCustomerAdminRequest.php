@@ -49,9 +49,6 @@ class UpdateCustomerAdminRequest extends FormRequest
                 "min:6",
                 "max:24",
             ],
-            "subscribed" => [
-                "boolean",
-            ],
             // "phoneNumber" => [
             //     "required",
             //     "string",
