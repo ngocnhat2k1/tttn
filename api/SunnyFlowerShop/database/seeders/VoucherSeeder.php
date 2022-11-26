@@ -16,11 +16,11 @@ class VoucherSeeder extends Seeder
     public function run()
     {
         Voucher::factory()
-        ->count(6)
-        ->hasOrders(3)
-        ->create();
-        // Voucher::factory()
-        // ->count(10)
-        // ->create();
+            ->count(6)
+            ->hasOrders(3)
+            ->create();
+        Voucher::factory()
+            ->count(10)
+            ->create();
     }
 }

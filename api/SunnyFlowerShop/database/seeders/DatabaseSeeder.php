@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             OrderSeeder::class,
             ProductSeeder::class,
+            CategorySeeder::class,
             VoucherSeeder::class,
         ]);
     }

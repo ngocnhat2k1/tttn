@@ -52,7 +52,7 @@ class StoreOrderRequest extends FormRequest
             ],
             "paidType" => [
                 "required",
-                "boolean",
+                Rule::in([0, 1, 2])
             ],
         ];
     }

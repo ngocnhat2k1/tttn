@@ -68,8 +68,8 @@ class OrderAdminController extends Controller
                 $arr[$index]['phoneReceiver'] = $customers_orders[$i]->orders[$j]->phone_receiver;
                 $arr[$index]['price'] = $customers_orders[$i]->orders[$j]->total_price;
                 $arr[$index]['status'] = $customers_orders[$i]->orders[$j]->status;
-                $arr[$index]['createdAt'] = date_format($customers_orders[$i]->orders[$j]->created_at, "Y-m-d H:i:s");
-                $arr[$index]['updatedAt'] = date_format($customers_orders[$i]->orders[$j]->updated_at, "Y-m-d H:i:s");
+                $arr[$index]['createdAt'] = date_format($customers_orders[$i]->orders[$j]->created_at, "d/m/Y H:i:s");
+                $arr[$index]['updatedAt'] = date_format($customers_orders[$i]->orders[$j]->updated_at, "d/m/Y H:i:s");
                 $arr[$index]['deletedBy'] = $customers_orders[$i]->orders[$j]->deleted_by;
 
                 $index++; // index for array we currently use

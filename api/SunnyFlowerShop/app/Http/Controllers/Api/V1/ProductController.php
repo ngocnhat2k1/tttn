@@ -14,6 +14,7 @@ use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -24,48 +25,84 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(GetAdminBasicRequest $request)
+    // public function indexOld(GetAdminBasicRequest $request)
+    // {
+    //     // $data = Product::with("categories")->paginate();
+    //     $data = Product::with("categories");
+    //     $count = $data->get()->count();
+
+    //     if (empty($count)) {
+    //         return response()->json([
+    //             "success" => false,
+    //             "errors" => "Product list is empty"
+    //         ]);
+    //     }
+
+    //     // Will change later, this is just temporary
+    //     if (!empty($request->get("q"))) {
+    //         $check = (int)$request->get("q");
+    //         $column = "";
+    //         $operator = "";
+    //         $value = "";
+
+    //         if ($check == 0) {
+    //             $column = "name";
+    //             $operator = "like";
+    //             $value = "%" . $request->get("q") . "%";
+    //         } else {
+    //             $column = "id";
+    //             $operator = "=";
+    //             $value = $request->get("q");
+    //         }
+
+    //         $search = Product::where("$column", "$operator", "$value")->get();
+    //     }
+
+    //     $count = DB::table("products")->count();
+
+    //     // return response()->json([
+    //     //     "success" => true,
+    //     //     "total" => $count,
+    //     //     "data" => new ProductListCollection($data)
+    //     // ]);
+
+    //     return new ProductListCollection($data->paginate(10)->appends($request->query()));
+    // }
+
+    public function indexAdmin(GetAdminBasicRequest $request)
     {
-        // $data = Product::with("categories")->paginate();
-        $data = Product::with("categories");
-        $count = $data->get()->count();
+        $data = Product::with("categories")->get();
 
-        if (empty($count)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Product list is empty"
-            ]);
+        if (!empty($request->get('orderBy'))) {
+            $order_type = $request->get('orderBy');
+
+            $data = Product::with("categories")->orderBy("price", $order_type)->get();
         }
 
-        // Will change later, this is just temporary
-        if (!empty($request->get("q"))) {
-            $check = (int)$request->get("q");
-            $column = "";
-            $operator = "";
-            $value = "";
+        $arr = [];
+        // $arr['customer_id'] = $customer->id;
 
-            if ($check == 0) {
-                $column = "name";
-                $operator = "like";
-                $value = "%" . $request->get("q") . "%";
-            } else {
-                $column = "id";
-                $operator = "=";
-                $value = $request->get("q");
+        for ($i = 0; $i < sizeof($data); $i++) {
+            if ($data[$i]->deleted_at !== null) {
+                continue;
             }
+            $arr[$i]['id'] = $data[$i]->id;
+            $arr[$i]['name'] = $data[$i]->name;
+            $arr[$i]['description'] = $data[$i]->description;
+            $arr[$i]['price'] = $data[$i]->price;
+            $arr[$i]['percentSale'] = $data[$i]->percent_sale;
+            $arr[$i]['img'] = $data[$i]->img;
+            $arr[$i]['quantity'] = $data[$i]->quantity;
+            $arr[$i]['status'] = $data[$i]->status;
+            $arr[$i]['createdAt'] = date_format($data[$i]->created_at, "d/m/Y");
 
-            $search = Product::where("$column", "$operator", "$value")->get();
+            for ($j = 0; $j < sizeof($data[$i]->categories); $j++) {
+                $arr[$i]['categories'][$j]['id'] = $data[$i]->categories[$j]->id;
+                $arr[$i]['categories'][$j]['name'] = $data[$i]->categories[$j]->name;
+            }
         }
 
-        $count = DB::table("products")->count();
-
-        // return response()->json([
-        //     "success" => true,
-        //     "total" => $count,
-        //     "data" => new ProductListCollection($data)
-        // ]);
-
-        return new ProductListCollection($data->paginate(10)->appends($request->query()));
+        return $arr;
     }
 
     /**
@@ -182,7 +219,7 @@ class ProductController extends Controller
     {
         $data = Product::find($request->id);
 
-        if (empty($data)) {
+        if (empty($data) || $data->deleted_at !== null) {
             return response()->json([
                 "success" => false,
                 "errors" => "Product doesn't not exist"

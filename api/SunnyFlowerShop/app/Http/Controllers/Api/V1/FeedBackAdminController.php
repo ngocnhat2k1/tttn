@@ -66,6 +66,8 @@ class FeedBackAdminController extends Controller
                 $data[$index]['quality'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->quality;
                 $data[$index]['rating'] = QualityStatusEnum::getQualityAttribute($data[$i]['quality']);
                 $data[$index]['comment'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->comment;
+                $data[$index]['createdAt'] = date_format($customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->created_at, "d/m/Y H:i:s");
+                $data[$index]['updatedAt'] = date_format($customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->updated_at, "d/m/Y H:i:s");
                 $index++;
             }
         }
@@ -87,17 +89,17 @@ class FeedBackAdminController extends Controller
         $customer_product_feedback = $query->first();
 
         // Query to get customer and product info
-        $customer = Customer::where("id", "=", $customer_product_feedback->customer_id);
+        $customer_query = Customer::find($customer_product_feedback->customer_id);
         $product = Product::where("id", "=", $customer_product_feedback->product_id);
 
-        if (!$customer->exists() || !$product->exists()) {
+        if (!$customer_query->exists() || !$product->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Feedback has some invalid information, please double check database before displaying"
             ]);
         }
 
-        $customer = $customer->first();
+        $customer = $customer_query->first();
         $product = $product->first();
 
         $data = [
@@ -110,6 +112,8 @@ class FeedBackAdminController extends Controller
             "quality" => $customer_product_feedback->quality,
             "rating" => QualityStatusEnum::getQualityAttribute($customer_product_feedback->quality),
             "comment" => $customer_product_feedback->comment,
+            "createdAt" => date_format($customer->customer_product_feedback[0]->pivot->created_at, "d/m/Y H:i:s"),
+            "updatedAt" => date_format($customer->customer_product_feedback[0]->pivot->updated_at, "d/m/Y H:i:s"),
         ];
 
         return response()->json([

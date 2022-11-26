@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Requests\Admin\Store\StoreAdminRequest;
 use App\Http\Requests\Admin\Store\StoreAvatarAdminRequest;
 use App\Http\Requests\Admin\Update\UpdateAdminIndividualRequest;
+use App\Http\Requests\Admin\Update\UpdatePasswordAdminRequest;
 use App\Http\Resources\V1\OrderListCollection;
 use App\Models\Admin;
 use App\Models\AdminAuth;
@@ -16,6 +17,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,7 +29,30 @@ class AdminAuthController extends Controller
         $this->middleware("auth:sanctum", ["except" => ["setup", "login", "retrieveToken"]]);
     }
 
+    // Thuc tap to nghiep
     public function dashboard(GetAdminBasicRequest $request)
+    {
+        $total_sales = Order::where("status", "=", 2)->get(); // Orders have status Completed considered as Sales
+
+        $sum_price = 0;
+        for ($i = 0; $i < sizeof($total_sales); $i++) {
+            $sum_price = $sum_price + $total_sales[$i]->total_price;
+        }
+        
+        $products = Product::where("deleted_at", "=", null)->get()->count(); // Total products has been created so far
+        $pending_orders = Order::where("status", "=", 0)->get()->count(); // Orders have status = 0 will be considered as Pending
+        $recent_orders = Order::orderBy('created_at', 'DESC')->get()->count();
+        
+        return response()->json([
+            "totalSales" => $sum_price,
+            "totalProducts" => $products,
+            "totalOrdersPending" => $pending_orders,
+            "recentOrders" => $recent_orders
+        ]);
+    }
+
+    // XD OOP
+    public function dashboardOop(GetAdminBasicRequest $request)
     {
         if (Order::get()->count() === 0) {
             $display_recent_orders = "There is no any Recent Orders";
@@ -101,8 +126,10 @@ class AdminAuthController extends Controller
         if ($admin->level == 0) {
             $token = $admin->createToken("Admin - " . $admin->id, ['admin'])->plainTextToken;
         } else {
-            $token = $admin->createToken("Super-admin", ['super_admin'])->plainTextToken;
+            $token = $admin->createToken("Super admin", ['super_admin'])->plainTextToken;
         }
+
+        $token_encrypt = Crypt::encryptString($token);
 
         // Update token in admin_token table
         $admin_token = Admin::where('email', "=", $request->email)->first();
@@ -126,15 +153,15 @@ class AdminAuthController extends Controller
         // Display level
         if ($admin->level === 0) {
             $display_level = "Admin";
-        }
-        else {
+        } else {
             $display_level = "Super Admin";
         }
 
         return response()->json([
             "success" => true,
-            "token_type" => "Bearer",
-            "token" => $token,
+            "token_type" => "Encrypted",
+            // "token" => $token,
+            "encryptedToken" => $token_encrypt,
             "data" => [
                 "id" => $admin->id,
                 "userName" => $admin->user_name,
@@ -227,6 +254,34 @@ class AdminAuthController extends Controller
         ]);
     }
 
+    // Use this api to change password Admin
+    public function changePassword(UpdatePasswordAdminRequest $request)
+    {
+        $admin = Admin::where("id", "=", $request->user()->id)->first();
+
+        if (Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't replace password with the same old one"
+            ]);
+        }
+
+        $admin->password = Hash::make($request->password);
+        $result = $admin->save();
+
+        if (empty($result)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Successfully changed password"
+        ]);
+    }
+
     public function profile(GetAdminBasicRequest $request)
     {
         return response()->json([
@@ -238,7 +293,8 @@ class AdminAuthController extends Controller
         ]);
     }
 
-    public function userInfo(GetAdminBasicRequest $request) {
+    public function userInfo(GetAdminBasicRequest $request)
+    {
         return response()->json([
             "success" => true,
             "data" => [
@@ -255,7 +311,8 @@ class AdminAuthController extends Controller
     public function retrieveToken(Request $request)
     {
         // Checking token existence
-        $token = AdminToken::where("token", "=", $request->bearerToken())->first();
+        $decrypt_token = Crypt::decryptString($request->token); // Decrypt first
+        $token = AdminToken::where("token", "=", $decrypt_token)->first();
 
         if ($token === null) {
             return response()->json([
@@ -266,7 +323,7 @@ class AdminAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "token" => $request->bearerToken() ?? null,
+            "token" => $token->token,
             "tokenType" => "Bearer Token"
         ]);
     }
