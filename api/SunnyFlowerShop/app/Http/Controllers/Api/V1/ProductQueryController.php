@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\CategoryListResource;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
 use App\Models\Category;
@@ -432,5 +433,11 @@ class ProductQueryController extends Controller
             "data" => new ProductListCollection($search->take(5)->get()),
             "moreProduct" => $display_more
         ];
+    }
+
+    public function allCategories() {
+        $categories = Category::all();
+
+        return CategoryListResource::collection($categories);
     }
 }

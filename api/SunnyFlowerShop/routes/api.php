@@ -219,6 +219,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
 
 // ***** CUSTOMER ***** \\
+Route::get("/categories", [ProductQueryController::class, "allCategories"]);
 Route::get('/products', [ProductQueryController::class, "indexCustomer"]); // Show all products
 Route::get('/products/{id}', [ProductQueryController::class, "show"]); // Show detail of a specific product
 Route::get('/products/categories/{filter}', [ProductQueryController::class, "filterProducts"]);// Show detail of a specific product
