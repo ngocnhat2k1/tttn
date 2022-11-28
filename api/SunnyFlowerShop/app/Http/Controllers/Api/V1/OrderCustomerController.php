@@ -3,20 +3,23 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateOrderRequest;
-use App\Http\Resources\V1\OrderDetailResource;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Requests\Admin\Update\UpdateOrderCustomerRequest;
 use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\ProductDetailResource;
+use App\Mail\OrderDeliveredNotify;
+use App\Mail\OrderDeliveredState;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Mail;
 
 class OrderCustomerController extends Controller
 {
-    public function index(Customer $customer)
+    public function index(GetAdminBasicRequest $request, Customer $customer)
     {
         $order = $customer->orders;
 
@@ -33,20 +36,11 @@ class OrderCustomerController extends Controller
         ]);
     }
 
-    public function show(Customer $customer, Order $order)
+    public function show(GetAdminBasicRequest $request, Customer $customer, Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
         $query = Order::where("orders.id", "=", $order->id)
-            ->addSelect(
-                "orders.*",
-                "vouchers.id as voucher_id",
-                "vouchers.name",
-                "vouchers.percent",
-                "vouchers.expired_date",
-                "vouchers.deleted"
-            )
-            ->where("customer_id", "=", $customer->id)
-            ->join("vouchers", "orders.voucher_id", "=", "vouchers.id");
+            ->where("customer_id", "=", $customer->id);
 
         if (!$query->exists()) {
             return response()->json([
@@ -56,6 +50,21 @@ class OrderCustomerController extends Controller
         }
 
         $data = $query->first();
+
+        if ($data->voucher_id !== null) {
+            $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
+            
+            $voucher_data = [
+                "voucherId" => $voucher->voucher_id,
+                "percent" => $voucher->percent,
+                "name" => $voucher->name,
+                "expiredDate" => $voucher->expired_date,
+                "deleted" => $voucher->deleted,
+            ];
+        }
+        else {
+            $voucher_data = null;
+        }
 
         // Create product array
         $pivot_table = Order::find($order->id);
@@ -73,13 +82,7 @@ class OrderCustomerController extends Controller
                     "avatar" => $customer->avatar,
                     "defaultAvatar" => $customer->default_avatar,
                 ],
-                "voucher" => [
-                    "voucherId" => $data->voucher_id,
-                    "percent" => $data->percent,
-                    "name" => $data->name,
-                    "expiredDate" => $data->expired_date,
-                    "deleted" => $data->deleted,
-                ],
+                "voucher" => $voucher_data,
                 "order" => [
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
@@ -91,15 +94,15 @@ class OrderCustomerController extends Controller
                     "status" => $data->status,
                     "paidType" => $data->paid_type,
                     "deleted_by" => $data->deleted_by,
-                    "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
-                    "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s"),
+                    "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
+                    "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
                 "products" => ProductDetailResource::collection($data->products)
             ]
         ]);
     }
 
-    public function update(UpdateOrderRequest $request, Customer $customer, Order $order)
+    public function update(UpdateOrderCustomerRequest $request, Customer $customer, Order $order)
     {
         $query = Order::where("id", "=", $order->id)
             ->where("customer_id", "=", $customer->id);
@@ -229,7 +232,57 @@ class OrderCustomerController extends Controller
         ]);
     }
 
-    public function destroy(Customer $customer, Order $order, Request $request)
+    // Use for order has already been delivered to customer
+    public function mail($customer, $order, $listProducts)
+    {
+    }
+
+    public function notifyOrder(GetAdminBasicRequest $request, Customer $customer, Order $order)
+    {
+        // Check order (Soft) Delete state and Order status
+        if ($order->deleted_by !==  null || $order->status === 2) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't Update Status when Order got cancelled or Order is in Completed state"
+            ]);
+        }
+
+        $query = Order::where("id", "=", $order->id)
+            ->where("customer_id", "=", $customer->id);
+
+        // Check Connection between Customer and Order
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Customer don't have this Order with ID = " . $order->id
+            ]);
+        }
+
+        $order_data = $query->first();
+
+        // Send
+        $userName = $customer->first_name . " " . $customer->last_name;
+        $priceOrder = $order->total_price;
+        $idDelivery = $order->id_delivery;
+        
+        // If state is 1, then Send Notify to customer that Order has been delivered
+        if ((int) $request->state === 1) {
+            $title = "Đơn hàng đã được giao thành công";
+            Mail::to($customer->email)->send(new OrderDeliveredState($title, $userName, $idDelivery, $priceOrder));
+        }
+        // If state is 0, then send Notify to Customer to Click "Completed" button to completed order state.
+        else {
+            $title = "Vui lòng xác nhận đơn hàng đã được giao";
+            Mail::to($customer->email)->send(new OrderDeliveredNotify($title, $userName, $idDelivery, $priceOrder));
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Successfully Send Notification to Customer"
+        ]);
+    }
+
+    public function destroy(Customer $customer, Order $order, DeleteAdminBasicRequest $request)
     {
         // Checking The connection between Order and Customer
         $order_data = Order::where("id", "=", $order->id)
@@ -277,7 +330,7 @@ class OrderCustomerController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully cancelled Order ID = " . $order->id . " for Customer ID = " . $customer->id
                 ]
             );
 
@@ -313,7 +366,7 @@ class OrderCustomerController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully reversed cancel Order ID = " . $order->id . " for Customer ID = " . $customer->id
+                    'message' => "Sucessfully reversed cancel Order ID = " . $order->id . " for Customer ID = " . $customer->id
                 ]
             );
         }

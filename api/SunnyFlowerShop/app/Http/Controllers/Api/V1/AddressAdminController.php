@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
 use App\Http\Resources\V1\AddressListCollection;
@@ -14,7 +16,7 @@ use App\Models\Customer;
 
 class AddressAdminController extends Controller
 {
-    public function index()
+    public function index(GetAdminBasicRequest $request)
     {
         $addresses = Address::with("customers");
 
@@ -30,7 +32,7 @@ class AddressAdminController extends Controller
         return new AddressListCollection($addresses->paginate(10));
     }
 
-    public function show(Address $address)
+    public function show(GetAdminBasicRequest $request, Address $address)
     {
         // $request->id is for customer
         // $customer_data = Customer::where("id", "=", $customer->id);
@@ -65,5 +67,14 @@ class AddressAdminController extends Controller
         //     "success" => true,
         //     "data" => new AddressOverviewResource($addresses->first())
         // ]);
+    }
+
+    public function destroy(DeleteAdminBasicRequest $request, Address $address) {
+        $address->delete();
+
+        return response()->json([
+            "success" => true,
+            "message" => "Successfully Deleted Address with Address ID = " . $address->id
+        ]);
     }
 }

@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Product;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+use App\Http\Requests\Admin\Store\StoreProductRequest;
+use App\Http\Requests\Admin\Update\UpdateProductRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Delete\DeleteMultipleProductRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Requests\BulkInsertProductRequest;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
-use App\Http\Resources\V1\ProductListResource;
-use App\Http\Resources\V1\ProductReviewResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -24,48 +25,84 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    // public function indexOld(GetAdminBasicRequest $request)
+    // {
+    //     // $data = Product::with("categories")->paginate();
+    //     $data = Product::with("categories");
+    //     $count = $data->get()->count();
+
+    //     if (empty($count)) {
+    //         return response()->json([
+    //             "success" => false,
+    //             "errors" => "Product list is empty"
+    //         ]);
+    //     }
+
+    //     // Will change later, this is just temporary
+    //     if (!empty($request->get("q"))) {
+    //         $check = (int)$request->get("q");
+    //         $column = "";
+    //         $operator = "";
+    //         $value = "";
+
+    //         if ($check == 0) {
+    //             $column = "name";
+    //             $operator = "like";
+    //             $value = "%" . $request->get("q") . "%";
+    //         } else {
+    //             $column = "id";
+    //             $operator = "=";
+    //             $value = $request->get("q");
+    //         }
+
+    //         $search = Product::where("$column", "$operator", "$value")->get();
+    //     }
+
+    //     $count = DB::table("products")->count();
+
+    //     // return response()->json([
+    //     //     "success" => true,
+    //     //     "total" => $count,
+    //     //     "data" => new ProductListCollection($data)
+    //     // ]);
+
+    //     return new ProductListCollection($data->paginate(10)->appends($request->query()));
+    // }
+
+    public function indexAdmin(GetAdminBasicRequest $request)
     {
-        // $data = Product::with("categories")->paginate();
-        $data = Product::with("categories");
-        $count = $data->get()->count();
+        $data = Product::with("categories")->get();
 
-        if (empty($count)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Product list is empty"
-            ]);
+        if (!empty($request->get('orderBy'))) {
+            $order_type = $request->get('orderBy');
+
+            $data = Product::with("categories")->orderBy("price", $order_type)->get();
         }
 
-        // Will change later, this is just temporary
-        if (!empty($request->get("q"))) {
-            $check = (int)$request->get("q");
-            $column = "";
-            $operator = "";
-            $value = "";
+        $arr = [];
+        // $arr['customer_id'] = $customer->id;
 
-            if ($check == 0) {
-                $column = "name";
-                $operator = "like";
-                $value = "%" . $request->get("q") . "%";
-            } else {
-                $column = "id";
-                $operator = "=";
-                $value = $request->get("q");
+        for ($i = 0; $i < sizeof($data); $i++) {
+            if ($data[$i]->deleted_at !== null) {
+                continue;
             }
+            $arr[$i]['id'] = $data[$i]->id;
+            $arr[$i]['name'] = $data[$i]->name;
+            $arr[$i]['description'] = $data[$i]->description;
+            $arr[$i]['price'] = $data[$i]->price;
+            $arr[$i]['percentSale'] = $data[$i]->percent_sale;
+            $arr[$i]['img'] = $data[$i]->img;
+            $arr[$i]['quantity'] = $data[$i]->quantity;
+            $arr[$i]['status'] = $data[$i]->status;
+            $arr[$i]['createdAt'] = date_format($data[$i]->created_at, "d/m/Y");
 
-            $search = Product::where("$column", "$operator", "$value")->get();
+            for ($j = 0; $j < sizeof($data[$i]->categories); $j++) {
+                $arr[$i]['categories'][$j]['id'] = $data[$i]->categories[$j]->id;
+                $arr[$i]['categories'][$j]['name'] = $data[$i]->categories[$j]->name;
+            }
         }
 
-        $count = DB::table("products")->count();
-
-        // return response()->json([
-        //     "success" => true,
-        //     "total" => $count,
-        //     "data" => new ProductListCollection($data)
-        // ]);
-
-        return new ProductListCollection($data->paginate(12)->appends($request->query()));
+        return $arr;
     }
 
     /**
@@ -178,11 +215,11 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(GetAdminBasicRequest $request)
     {
         $data = Product::find($request->id);
 
-        if (empty($data)) {
+        if (empty($data) || $data->deleted_at !== null) {
             return response()->json([
                 "success" => false,
                 "errors" => "Product doesn't not exist"
@@ -256,6 +293,16 @@ class ProductController extends Controller
             ]);
         }
 
+        $check_existed = Product::where("name", "=", $request->name)->exists();
+
+        // Check if the existence of name product in database
+        if ($check_existed) {
+            return response()->json([
+                'success' => false,
+                'errors' => "Product is already existed"
+            ]);
+        }
+
         // Save all value was changed
         foreach ($data as $key => $value) {
             $product->{$key} = $value;
@@ -296,7 +343,7 @@ class ProductController extends Controller
      */
 
     // This is SOFT DELETE not permanent delete
-    public function destroy(Request $request, $productId)
+    public function destroy(DeleteAdminBasicRequest $request, $productId)
     {
         $data = Product::find($productId);
 
@@ -367,7 +414,93 @@ class ProductController extends Controller
         }
     }
 
-    public function destroyCategory(Category $category, Product $product)
+    public function destroyBulk(DeleteMultipleProductRequest $request)
+    {
+        $count = 0;
+        $invalid_count = 0;
+        $invalid_product_id_array = [];
+        $errors_product_id_array = [];
+        $errors_count = 0;
+
+        $products = $request->all();
+        
+        // If state is 1, then display is "deleted"
+        if ((int) $request->state === 1) {
+            $display = "deleted";
+        }
+        // If state is 0, then display is "reversed deleted"
+        else {
+            $display = "reversed deleted";
+        }
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $query = Product::where("id", "=", $products[$i]['id']);
+
+            if (!$query->exists()) {
+                $invalid_product_id_array[] = $products[$i]['id'];
+                $invalid_count++;
+                continue;
+            }
+
+            $product = $query->first();
+
+            // If state is 0, then proceed to reverse delete
+            if ((int) $request->state === 0) {
+
+                if ($product->deleted_at === null) {
+                    continue;
+                } 
+    
+                $product->deleted_at = null;
+                $result = $product->save();
+    
+                if (!$result) {
+                    $errors_product_id_array[] = $products[$i]['id'];
+                    $errors_count++;
+                }
+    
+                $count++;
+            }
+            // If state is 1, then proceed to delete
+            else {
+                if ($product->deleted_at === 1) {
+                    continue;
+                } 
+    
+                $product->deleted_at = 1;
+                $result = $product->save();
+    
+                if (!$result) {
+                    $errors_product_id_array[] = $products[$i]['id'];
+                    $errors_count++;
+                }
+    
+                $count++;
+            }
+
+        }
+
+        if ($invalid_count !== 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "There are " . $invalid_count . " products with Invalid ID. These IDs are: " . implode(", ", $invalid_product_id_array)
+            ]);
+        }
+
+        if ($errors_count !== 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "There are " . $errors_count . " errors have found during delete progression. Products ID have caused these errors are: " . implode(", ", $errors_product_id_array)
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "There are " . $count . " products has got " . $display
+        ]);
+    }
+
+    public function destroyCategory(DeleteAdminBasicRequest $request, Category $category, Product $product)
     {
         $count = DB::table("category_product")
             ->where("product_id", "=", $product->id)

@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\QualityStatusEnum;
 use App\Models\Customer;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreFeedBackRequest;
-use App\Http\Requests\UpdateFeedBackRequest;
-use App\Http\Resources\V1\FeedBackDetailCollection;
-use App\Http\Resources\V1\FeedBackDetailResource;
-use App\Models\Category;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -35,22 +32,26 @@ class FeedBackAdminController extends Controller
         return $arr;
     }
 
-    public function all(Request $request)
+    public function all(GetAdminBasicRequest $request)
     {
         $customer_product_feedback = Customer::with("customer_product_feedback")->get();
 
         $data = [];
+        $index = 0;
 
         // First loop for customer
         for ($i = 0; $i < sizeof($customer_product_feedback); $i++) {
-            $data[$i]['customerId'] = $customer_product_feedback[$i]->id;
-            $data[$i]['firstName'] = $customer_product_feedback[$i]->first_name;
-            $data[$i]['lastName'] = $customer_product_feedback[$i]->last_name;
             // Second loop for Products
             for ($j = 0; $j < sizeof($customer_product_feedback[$i]['customer_product_feedback']); $j++) {
-                $data[$i]['productId'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->id;
-                $data[$i]['productName'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->name;
-                $data[$i]['img'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->img;
+                $data[$index]['id'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->id;
+
+                $data[$index]['customerId'] = $customer_product_feedback[$i]->id;
+                $data[$index]['firstName'] = $customer_product_feedback[$i]->first_name;
+                $data[$index]['lastName'] = $customer_product_feedback[$i]->last_name;
+
+                $data[$index]['productId'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->id;
+                $data[$index]['productName'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->name;
+                $data[$index]['img'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]->img;
 
                 // $categories = DB::table("category_product")
                 //     ->where("product_id", "=", $customer_product_feedback[$i]['customer_product_feedback'][$j]->id)
@@ -62,21 +63,21 @@ class FeedBackAdminController extends Controller
                 //     $data[$i]['products'][$j]['categories'][$k]['name']= $category->name;
                 // }
 
-                $data[$i]['quality'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->quality;
-                $data[$i]['comment'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->comment;
+                $data[$index]['quality'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->quality;
+                $data[$index]['rating'] = QualityStatusEnum::getQualityAttribute($data[$i]['quality']);
+                $data[$index]['comment'] = $customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->comment;
+                $data[$index]['createdAt'] = date_format($customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->created_at, "d/m/Y H:i:s");
+                $data[$index]['updatedAt'] = date_format($customer_product_feedback[$i]['customer_product_feedback'][$j]['pivot']->updated_at, "d/m/Y H:i:s");
+                $index++;
             }
         }
 
         return $this->paginator($data, $request);
     }
 
-    public function show(Request $request)
+    public function show(GetAdminBasicRequest $request)
     {
-        // $request->id is Feedback ID in customer_product_feedback table
-        $customer = Customer::find($request->user()->id);
-
-        $query = $customer->customer_product_feedback()
-            ->wherePivot("customer_product_feedback.id", "=", $request->id);
+        $query = DB::table("customer_product_feedback")->where("id", "=", $request->id);
 
         if (!$query->exists()) {
             return response()->json([
@@ -88,17 +89,17 @@ class FeedBackAdminController extends Controller
         $customer_product_feedback = $query->first();
 
         // Query to get customer and product info
-        $customer = Customer::where("id", "=", $customer_product_feedback->pivot->customer_id);
-        $product = Product::where("id", "=", $customer_product_feedback->pivot->product_id);
+        $customer_query = Customer::find($customer_product_feedback->customer_id);
+        $product = Product::where("id", "=", $customer_product_feedback->product_id);
 
-        if (!$customer->exists() || !$product->exists()) {
+        if (!$customer_query->exists() || !$product->exists()) {
             return response()->json([
                 "success" => false,
                 "errors" => "Feedback has some invalid information, please double check database before displaying"
             ]);
         }
 
-        $customer = $customer->first();
+        $customer = $customer_query->first();
         $product = $product->first();
 
         $data = [
@@ -108,11 +109,17 @@ class FeedBackAdminController extends Controller
             "productId" => $product->id,
             "productName" => $product->name,
             "img" => $product->img,
-            "quality" => $customer_product_feedback->pivot->quality,
-            "comment" => $customer_product_feedback->pivot->comment,
+            "quality" => $customer_product_feedback->quality,
+            "rating" => QualityStatusEnum::getQualityAttribute($customer_product_feedback->quality),
+            "comment" => $customer_product_feedback->comment,
+            "createdAt" => date_format($customer->customer_product_feedback[0]->pivot->created_at, "d/m/Y H:i:s"),
+            "updatedAt" => date_format($customer->customer_product_feedback[0]->pivot->updated_at, "d/m/Y H:i:s"),
         ];
 
-        return $data;
+        return response()->json([
+            "success" => true,
+            "data" => $data
+        ]);
 
         // return response()->json([
         //     "success" => true,

@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Mail\PlaceOrderMail;
+use App\Notifications\PlaceOrderNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class Order extends Model
 {

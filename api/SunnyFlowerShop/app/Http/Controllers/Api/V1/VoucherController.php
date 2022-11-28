@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Voucher;
-use App\Http\Requests\StoreVoucherRequest;
-use App\Http\Requests\UpdateVoucherRequest;
+use App\Http\Requests\Admin\Store\StoreVoucherRequest;
+use App\Http\Requests\Admin\Update\UpdateVoucherRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Resources\V1\VoucherDetailCollection;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,7 @@ class VoucherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(GetAdminBasicRequest $request)
     {
         $count = Voucher::query()->get()->count();
 
@@ -72,7 +74,7 @@ class VoucherController extends Controller
      * @param  \App\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(GetAdminBasicRequest $request)
     {
         $voucher = Voucher::where("id", "=", $request->id);
 
@@ -86,14 +88,17 @@ class VoucherController extends Controller
         $data = $voucher->first();
 
         return [
-            "voucherID" => $data->id,
-            "name" => $data->name,
-            "percent" => $data->percent,
-            "usage" => $data->usage,
-            "expiredDate" => $data->expired_date,
-            "deleted" => $data->deleted,
-            "createdAt" => date_format($data->created_at, "Y-m-d H:i:s"),
-            "updatedAt" => date_format($data->updated_at, "Y-m-d H:i:s")
+            "success" => true,
+            "data" => [
+                "voucherID" => $data->id,
+                "name" => $data->name,
+                "percent" => $data->percent,
+                "usage" => $data->usage,
+                "expiredDate" => $data->expired_date,
+                "deleted" => $data->deleted,
+                "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
+                "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s")
+            ]
         ];
     }
 
@@ -148,8 +153,9 @@ class VoucherController extends Controller
      * @param  \App\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $voucherID)
+    public function destroy(Request $request)
     {
+        $voucherID = $request->state;
         $query = Voucher::where("id", "=", $voucherID);
 
         if (!$query->exists()) {

@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Admin;
-use App\Http\Requests\StoreAdminRequest;
-use App\Http\Requests\UpdateAdminRequest;
+use App\Http\Requests\Admin\Store\StoreAdminRequest;
+use App\Http\Requests\Admin\Update\UpdateAdminRequest;
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\Admin\Delete\DeleteAdminRequest;
+use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
+use App\Http\Resources\V1\AdminDetailResource;
+use App\Models\AdminToken;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -15,19 +21,11 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(GetAdminBasicRequest $request)
     {
-        //
-    }
+        $admins = Admin::paginate(5);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return AdminDetailResource::collection($admins);
     }
 
     /**
@@ -38,7 +36,39 @@ class AdminController extends Controller
      */
     public function store(StoreAdminRequest $request)
     {
-        //
+        $userCheck = Admin::where("user_name", "=", $request->user_name)->exists();
+        $emailCheck = Admin::where("email", "=", $request->email)->exists();
+
+        if ($userCheck) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Username was taken, Please choose another one"
+            ]);
+        }
+
+        if ($emailCheck) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Email was taken, Please choose another one"
+            ]);
+        }
+
+        $filtered = $request->except(["userName", 'password']);
+        $filtered['password'] = Hash::make($request->password);
+        $data = Admin::create($filtered);
+
+        // Checking if insert into database is isSuccess
+        if (empty($data->id)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Created new Admin account successfully"
+        ]);
     }
 
     /**
@@ -47,20 +77,24 @@ class AdminController extends Controller
      * @param  \App\Models\Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function show(Admin $admin)
+    public function show(GetAdminBasicRequest $request, Admin $admin)
     {
-        //
-    }
+        if ($admin->level === 0) {
+            $display_level = "Admin";
+        } else {
+            $display_level = "Super Admin";
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Admin $admin)
-    {
-        //
+        return response()->json([
+            "success" => true,
+            "data" => [
+                "userName" => $admin->user_name,
+                "email" => $admin->email,
+                "avatar" => $admin->avatar,
+                "defaultAvatar" => $admin->default_avatar,
+                "level" => $display_level
+            ]
+        ]);
     }
 
     /**
@@ -72,7 +106,43 @@ class AdminController extends Controller
      */
     public function update(UpdateAdminRequest $request, Admin $admin)
     {
-        //
+        $userCheck = Admin::where("user_name", "=", $request->user_name)->exists();
+        $emailCheck = Admin::where("email", "=", $request->email)->exists();
+
+        if ($userCheck) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Username was taken, Please choose another one"
+            ]);
+        }
+
+        if ($emailCheck) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Email was taken, Please choose another one"
+            ]);
+        }
+
+        $filtered = $request->except(["userName", 'password']);
+
+        if (!empty($request->password)) {
+            $filtered['password'] = Hash::make($request->password);
+        }
+
+        $result = $admin->update($filtered);
+
+        // Checking data is updated in database is isSuccess
+        if (empty($result)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "An unexpected error has occurred"
+            ]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Updated Admin ID = " . $admin->id . " successfully"
+        ]);
     }
 
     /**
@@ -81,8 +151,31 @@ class AdminController extends Controller
      * @param  \App\Models\Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Admin $admin)
+    public function destroy(DeleteAdminRequest $request, Admin $admin)
     {
-        //
+        // Can't delete Super Admin account
+        if ($admin->level === 1) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Can't delete Super Admin account"
+            ]);
+        }
+
+        // Delete all token related to current account being deleted
+        Auth::guard("customer")->logout();
+        $name = "Admin - " . $admin->id;
+
+        // Delete token in "personal_access_tokens"
+        DB::table("personal_access_tokens")
+            ->where("name", "=", $name)
+            ->delete();
+
+        AdminToken::where("admin_id", "=", $admin->id)->delete();
+        $admin->delete();
+
+        return response()->json([
+            "success" => false,
+            "message" => "Successfully deleted Admin account ID = " . $admin->id
+        ]);
     }
 }

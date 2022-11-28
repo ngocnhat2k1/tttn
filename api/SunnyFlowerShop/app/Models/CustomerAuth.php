@@ -17,7 +17,6 @@ class CustomerAuth extends Authenticatable
         'email',
         'password',
         'avatar',
-        'subscribed'
     ];
 
     protected $table = "customers";

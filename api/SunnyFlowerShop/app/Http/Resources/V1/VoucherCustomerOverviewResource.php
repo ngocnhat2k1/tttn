@@ -19,8 +19,8 @@ class VoucherCustomerOverviewResource extends JsonResource
             "voucherId" => $this->voucher_id,
             "nameVoucher" => $this->name,
             "percent" => $this->percent,
-            "usedDate" => $this->date_order,
-            "expiredDate" => $this->expired_date,
+            "usedDate" => date("d/m/Y H:i:s", strtotime($this->date_order)),
+            "expiredDate" => date("d/m/Y H:i:s", strtotime($this->expired_date))
         ];
     }
 }

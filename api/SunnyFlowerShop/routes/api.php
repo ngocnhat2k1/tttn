@@ -5,9 +5,12 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\V1\AddressAdminController;
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AddressCustomerController;
+use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CartAdminController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\CheckoutController;
+use App\Http\Controllers\Api\V1\CheckoutPaypalController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\FeedBackController;
 use App\Http\Controllers\Api\V1\OrderController;
@@ -15,6 +18,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteProductCustomerController;
 use App\Http\Controllers\Api\V1\FeedBackAdminController;
+use App\Http\Controllers\api\v1\ForgotPasswordController;
 use App\Http\Controllers\Api\V1\OrderAdminController;
 use App\Http\Controllers\Api\V1\OrderCustomerController;
 use App\Http\Controllers\Api\V1\VoucherController;
@@ -43,14 +47,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // ***** Admin ***** \\
 Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
 Route::post("/admin/login", [AdminAuthController::class, "login"]);
-Route::get("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
+Route::post("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
 Route::middleware("auth:sanctum")->group(function () {
 
     // Route for admin
     Route::group(["prefix" => "admin"], function () {
+        Route::get("/userInfo", [AdminAuthController::class, "userInfo"]);
         Route::get("/dashboard", [AdminAuthController::class, "dashboard"]);
+        Route::get("/dashboardOop", [AdminAuthController::class, "dashboardOop"]);
         Route::get("/profile", [AdminAuthController::class, "profile"]);
         Route::put("/update", [AdminAuthController::class, "update"]);
+        Route::put("/changePassword", [AdminAuthController::class, "changePassword"]);
         Route::put("/avatar/upload", [AdminAuthController::class, "upload"]);
         Route::delete("/avatar/destroy", [AdminAuthController::class, "destroyAvatar"]);
         Route::post("/logout", [AdminAuthController::class, "logout"]);
@@ -60,13 +67,14 @@ Route::middleware("auth:sanctum")->group(function () {
 
         // Route for Product
         Route::group(['prefix' => "products"], function () {
-            Route::get('/', [ProductController::class, "index"]); // Show all products
+            Route::get('/', [ProductController::class, "indexAdmin"]); // Show all products
             Route::get('/{id}', [ProductController::class, "show"]); // Show detail of a specific product
             Route::post('/add', [ProductController::class, "store"]); // Add single product to database
             Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
             Route::put('/{id}/edit', [ProductController::class, "update"]); // Update detail of a specific product
             Route::delete('/destroy/category={category}&product={product}', [ProductController::class, "destroyCategory"]); // Delete a category from product
             Route::delete('/{id}/destroy={state}', [ProductController::class, "destroy"]); // (Soft) Delete product from database
+            Route::delete('/destroyBulk={state}', [ProductController::class, "destroyBulk"]); // (Soft) Delete product from database
             /** Need to add fucntion
              * Adjust products value function for each products
              * Favourite - Still figure this one out
@@ -81,6 +89,13 @@ Route::middleware("auth:sanctum")->group(function () {
          * Update (low level) admin information
          * Delete (or Soft ?) (low level) admin account
          */
+        Route::group(['prefix' => "admins"], function () {
+            Route::get("/", [AdminController::class, "index"]);
+            Route::post("/create", [AdminController::class, "store"]);
+            Route::get("/{admin}", [AdminController::class, "show"]);
+            Route::put("/{admin}/update", [AdminController::class, "update"]);
+            Route::delete("/{admin}/delete", [AdminController::class, "destroy"]);
+        });
 
         // Route for User
         Route::group(['prefix' => "users"], function () {
@@ -88,8 +103,8 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/", [CustomerController::class, "index"]); // Show all user available
             Route::get("/{customer}", [CustomerController::class, "show"]); // Show detail information from specific customer
             Route::post("/create", [CustomerController::class, "store"]); // Create account from admin site
-            Route::put("{customer}/update_og", [CustomerController::class, "update"]); // Update information for specific customer from admin site
-            Route::put("{customer}/update", [CustomerController::class, "updateValue"]); // Update information for specific customer from admin site
+            Route::put("{customer}/update", [CustomerController::class, "update"]); // Update information for specific customer from admin site
+            Route::put("{customer}/changePassword", [CustomerController::class, "changePassword"]); // Update information for specific customer from admin site
             Route::delete("/{customer}/disable={state}", [CustomerController::class, "disable"]); // Disable customer account
             Route::put("{customer}/avatar/upload", [CustomerController::class, "upload"]);
             Route::delete("{customer}/avatar/destroy", [CustomerController::class, "destroyAvatar"]);
@@ -106,6 +121,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{customer}/orders/{order}", [OrderCustomerController::class, "show"]);
             Route::put("/{customer}/orders/{order}/update", [OrderCustomerController::class, "update"]);
             Route::put("/{customer}/orders/{order}/update/status={state}", [OrderCustomerController::class, "updateStatus"]); // Update only status of order
+            Route::get("/{customer}/orders/{order}/notifyOrder={state}", [OrderCustomerController::class, "notifyOrder"]); // Update only status of order
             Route::delete("/{customer}/orders/{order}/destroy={state}", [OrderCustomerController::class, "destroy"]);
 
             // Voucher from User info
@@ -127,6 +143,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/", [OrderAdminController::class, "index"]);
             Route::get("/{order}", [OrderAdminController::class, "show"]);
             Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
+            Route::delete("/{order}/destroy={state}", [OrderAdminController::class, "destroy"]);
         });
 
         /** Address
@@ -137,6 +154,8 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::group(['prefix' => 'addresses'], function () {
             Route::get("/", [AddressAdminController::class, "index"]);
             Route::get("/{address}", [AddressAdminController::class, "show"]);
+            // Update Address ??
+            Route::delete("/{address}/destroy", [AddressAdminController::class, "destroy"]);
         });
 
         /** Category
@@ -172,6 +191,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::group(['prefix' => 'feedbacks'], function () {
             Route::get("/", [FeedBackAdminController::class, "all"]);
             Route::get("/{id}", [FeedBackAdminController::class, "show"]);
+            // Delete Feedback ??
         });
 
         /** Cart
@@ -198,7 +218,11 @@ Route::middleware("auth:sanctum")->group(function () {
 
 
 // ***** CUSTOMER ***** \\
-Route::get('/products', [ProductController::class, "index"]); // Show all products
+Route::get('/products', [ProductQueryController::class, "indexCustomer"]); // Show all products
+Route::get('/products/{id}', [ProductQueryController::class, "show"]); // Show detail of a specific product
+Route::get('/products/categories/{filter}', [ProductQueryController::class, "filterProducts"]);// Show detail of a specific product
+Route::get('/products/filter/search={value}', [ProductQueryController::class, "searchProduct"])->name("filter.search"); // Show detail of a specific product
+Route::get('/products/topBar/search={value}', [ProductQueryController::class, "searchTopBar"]); // Show detail of a specific product
 /** Query for products appearance in front page
  * Trending product
  * New products
@@ -206,36 +230,54 @@ Route::get('/products', [ProductController::class, "index"]); // Show all produc
  * Sale products
  * All of them are top 10
  */
-Route::get('/products/newArrival', [ProductQueryController::class, "arrival"]); // Show all products
-Route::get('/products/saleProduct', [ProductQueryController::class, "sale"]); // Show all products
-Route::get('/products/bestSeller', [ProductQueryController::class, "best"]); // Show all products
-Route::get('/products/trending/day={day}', [ProductQueryController::class, "trending"]); // Show all products
-Route::get('/products/{id}', [ProductController::class, "show"]); // Show detail of a specific product
+Route::get('/product/newArrival', [ProductQueryController::class, "arrival"]); // Show all products
+Route::get('/product/saleProduct', [ProductQueryController::class, "sale"]); // Show all products
+Route::get('/product/bestSeller', [ProductQueryController::class, "best"]); // Show all products
+Route::get('/product/trending/day={day}', [ProductQueryController::class, "trending"]); // Show all products
+Route::get('/mostfavoriteProducts', [ProductQueryController::class, "mostfavoriteProducts"]); // Show detail of a specific product
 
 Route::post("/register", [UserAuthController::class, "register"]); // Register
 Route::post("/login", [UserAuthController::class, "login"]); // Login
-Route::get("/retrieveToken", [UserAuthController::class, "retrieveToken"]);
+Route::post("/forgotPassword", [ForgotPasswordController::class, "forgot"]);
+Route::post("/checkCode", [ForgotPasswordController::class, "checkCode"]);
+Route::post("/resetPassword", [ForgotPasswordController::class, "reset"]);
+Route::post("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => "user"], function () {
+        
+
         // View profile
+        Route::get("/userInfo", [UserAuthController::class, "userInfo"]);
         Route::get("/profile", [UserAuthController::class, "profile"]); // May only be use for editing info in user profile page (Only for login user)
-        // Route::put("/update_og", [UserAuthController::class, "update"]); // Update user information
-        Route::put("/update", [UserAuthController::class, "updateValue"]); // Update user information (no restrict)
+        Route::put("/update", [UserAuthController::class, "update"]); // Update user information
+        Route::put("/changePassword", [UserAuthController::class, "changePassword"]); // Update user information (no restrict)
         Route::put("/avatar/upload", [UserAuthController::class, "upload"]);
         Route::delete("/avatar/destroy", [UserAuthController::class, "destroyAvatar"]);
+        Route::get("/vipCustomer", [UserAuthController::class, "vipCustomerCheck"]); // Use for after placing order to check how many order has customer ordered to create special Voucher for only that customer
 
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
-        Route::get("/cart", [CartController::class, "index"]);
+        Route::get("/cart/state={state}", [CartController::class, "index"]);
         Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
+        Route::post("/cart/add/{id}", [CartController::class, "singleQuantity"]); // Update quantity or add new product to cart - Apply in Products page and cart page
         Route::put("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
-        Route::get("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
+        Route::post("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
         Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
 
         // Create-Review-Cancel Order function
         Route::get("/order", [OrderController::class, "index"]); // Show all order from current login user
         Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
-        Route::post("/order/placeorder", [OrderController::class, "store"]); // Placeorder
+        Route::post("/order/placeorder", [CheckoutController::class, "store"]); // Placeorder
+        Route::post("/order/placeorderPaypal", [CheckoutPaypalController::class, "store"]); // Placeorder
+        Route::get("/order/{id}/payment", [CheckoutController::class, "redirect"])->name("redirect.page");
+
+        // After payment completed
+        Route::get(
+            "/order/payment?partnerCode={partnerCode}&orderId={orderId}&requestId={requestId}&amount={amount}&orderInfo={orderInfo}&orderType={orderType}&transId={transId}&resultCode={resultCode}&message={message}&payType={payType}&responseTime={responseTime}&extraData={extraData}&signature={signature}",
+            [CheckoutController::class, "redirect"]
+        )->name("return.page");
+        Route::post("/order/complete/payment", [CheckoutController::class, "redirect"]); // Use this when front-end can't get header redirect URL
+
         Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
         Route::put("/order/{id}/status", [OrderController::class, "updateStatus"]); // Customer only allow to confirm "Completed" state for order
 
@@ -256,7 +298,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Create-Review-Delete Products from Favorite
         Route::get("/favorite", [FavoriteController::class, "viewFavorite"]);
-        Route::get("/favorite/{id}", [FavoriteController::class, "storeFavorite"]); // Using {id} to add product to favorite. May need to reconsider about GET Method
+        // Should use POST or GET for Adding product to Favorite (??)
+        Route::post("/favorite/{id}", [FavoriteController::class, "storeFavorite"]); // Using {id} to add product to favorite. May need to reconsider about GET Method
         Route::delete("/favorite/destroy/{id}", [FavoriteController::class, "destroyFavorite"]);
     });
     Route::post("/logout", [UserAuthController::class, "logout"]);

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProductToCartRequest;
-use App\Http\Requests\UpdateProductToCartRequest;
+use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
+use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
+use App\Http\Requests\Customer\Store\StoreProductToCartRequest;
+use App\Http\Requests\Customer\Update\UpdateProductToCartRequest;
 use App\Http\Resources\V1\CartViewResource;
 use App\Http\Resources\V1\CustomerOverviewCollection;
+use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -19,7 +22,8 @@ class CartController extends Controller
     // REASON FOR CHECKING USER ACTIVITIES TO MAKE A DECISION TO FREE UP SPACE IN DATABASE VIA PIVOT CART TABLE
 
     // Paginator function
-    public function paginator($arr, $request) {
+    public function paginator($arr, $request)
+    {
         $total = count($arr);
         $per_page = 5;
         $current_page = $request->input("page") ?? 1;
@@ -37,18 +41,8 @@ class CartController extends Controller
     }
 
     /** Admin & CUSTOMER FUNCTION */
-    public function index(Request $request)
+    public function generateProductsArray(GetCustomerBasicRequest $request)
     {
-        $check = DB::table("customer_product_cart")
-            ->where("customer_id", "=", $request->user()->id)->exists();
-
-        if (!$check) {
-            return response()->json([
-                "success" => false,
-                "errors" => "This user hasn't added any product to cart yet"
-            ]);
-        }
-
         $customer = Customer::where("id", "=", $request->user()->id)->first();
         // $customer['products'] = $customer->customer_product_cart;
         $products_in_cart = $customer->customer_product_cart;
@@ -57,22 +51,62 @@ class CartController extends Controller
         // $arr['customer_id'] = $customer->id;
 
         for ($i = 0; $i < sizeof($products_in_cart); $i++) {
-            $arr[$i]['id'] = $products_in_cart[$i]['id']; 
+            $arr[$i]['id'] = $products_in_cart[$i]['id'];
             $arr[$i]['name'] = $products_in_cart[$i]['name'];
             $arr[$i]['description'] = $products_in_cart[$i]['description'];
             $arr[$i]['price'] = $products_in_cart[$i]['price'];
             $arr[$i]['percentSale'] = $products_in_cart[$i]['percentSale'];
             $arr[$i]['img'] = $products_in_cart[$i]['img'];
-            $arr[$i]['quantity'] = $products_in_cart[$i]['quantity'];
+            $arr[$i]['quantity'] = $products_in_cart[$i]['pivot']->quantity;
             $arr[$i]['status'] = $products_in_cart[$i]['status'];
             $arr[$i]['deletedAt'] = $products_in_cart[$i]['deleted_at'];
+            $categories = DB::table("category_product")
+                ->where("product_id", "=", $products_in_cart[$i]['id'])
+                ->get();
+
+            for ($j = 0; $j < sizeof($categories); $j++) {
+                $category = Category::where("id", "=", $categories[$j]->category_id)
+                    ->first();
+                
+                $arr[$i]['categories'][$j]['id'] = $category->id;
+                $arr[$i]['categories'][$j]['name'] = $category->name;
+            }
+            // $arr[$i]['categories'] = 
         }
 
         // return $customer;
-        $new_arr = $this->paginator($arr, $request);
-        return $new_arr;
+        return $arr;
     }
+    
+    public function index(GetCustomerBasicRequest $request)
+    {
+        $check = DB::table("customer_product_cart")
+            ->where("customer_id", "=", $request->user()->id)->exists();
 
+        // If cart is empty
+        if (!$check) {
+            return response()->json([
+                "success" => false,
+                "errors" => "This user hasn't added any product to cart yet"
+            ]);
+        }
+        
+        $arr = $this->generateProductsArray($request);
+
+        // if state is "all" then return all
+        if ($request->state === "all") {
+            return [
+                "total" => sizeof ($arr),
+                "data" => $arr
+            ];
+        }
+
+        $new_arr = $this->paginator($arr, $request);
+        return [
+            "total" => sizeof ($arr),
+            "data" => $new_arr
+        ];
+    }
 
     /** CUSTOMER FUNCTION */
     public function store(StoreProductToCartRequest $request)
@@ -88,10 +122,10 @@ class CartController extends Controller
 
         $product = Product::find($request->product_id);
 
-        if (empty($customer) || empty($product)) {
+        if (empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Please recheck Product ID"
             ]);
         }
 
@@ -144,7 +178,77 @@ class CartController extends Controller
         }
     }
 
-    public function reduce(Request $request)
+    // 1 quantity at a the time for each product
+    public function singleQuantity(GetCustomerBasicRequest $request)
+    {
+        if ($request->quantity < 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Quantity value is invalid"
+            ]);
+        }
+
+        $customer = Customer::find($request->user()->id);
+
+        $product = Product::find($request->id);
+
+        if (empty($product)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Please recheck Product ID"
+            ]);
+        }
+
+        if ($product->quantity < $request->quantity) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+            ]);
+        }
+
+        $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
+
+        $check = $data->where("product_id", "=", $product->id)->exists();
+
+        if (empty($check)) {
+            $customer->customer_product_cart()->attach($product, [
+                "quantity" => 1
+            ]);
+
+            return response()->json([
+                "success" => true,
+                "message" => "Added product to cart successfully"
+            ]);
+        } else {
+            $data = $data->where("product_id", "=", $request->id)->first();
+
+            $total = $data->quantity + 1;
+            if ($total > $product->quantity) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                ]);
+            }
+
+            $result = $customer->customer_product_cart()->updateExistingPivot($product, [
+                "quantity" => $total
+            ]);
+
+            if (!$result) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Something went wrong"
+                ]);
+            }
+
+            return response()->json([
+                "success" => true,
+                "message" => "Updated quantity of existed product successfully"
+            ]);
+        }
+    }
+
+    public function reduce(GetCustomerBasicRequest $request)
     {
         // request->id is Product ID
         $customer = Customer::find($request->user()->id);
@@ -154,7 +258,7 @@ class CartController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Product ID is invalid"
             ]);
         }
 
@@ -204,7 +308,7 @@ class CartController extends Controller
                 "errors" => "Please recheck Customer ID and Product ID"
             ]);
         }
-        
+
         // Check Request Quantity before update quantity value to cart
         if ($product->quantity < $request->quantity) {
             return response()->json([
@@ -227,7 +331,7 @@ class CartController extends Controller
                 ]);
             }
 
-            $customer->customer_product_cart()->attach($product,[
+            $customer->customer_product_cart()->attach($product, [
                 "quantity" => $request->quantity
             ]);
 
@@ -265,7 +369,7 @@ class CartController extends Controller
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity*(-1) . " quantity"
+                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity * (-1) . " quantity"
             ]);
         }
 
@@ -275,7 +379,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function destroy(Request $request)
+    public function destroy(DeleteCustomerRequest $request)
     {
         // request->id is Product ID
         $customer = Customer::find($request->user()->id);
