@@ -380,9 +380,10 @@ class UserAuthController extends Controller
     // Use when user first enter website
     public function retrieveToken(Request $request)
     {
-        $decrypt_token = Crypt::decryptString($request->token);
+        // $decrypt_token = Crypt::decryptString($request->token);
         // Checking token existence
-        $token = Token::where("token", "=", $decrypt_token)->first();
+        // $token = Token::where("token", "=", $decrypt_token)->first();
+        $token = Token::where("token", "=", $request->bearerToken())->first();
 
         if ($token === null) {
             return response()->json([

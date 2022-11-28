@@ -25,49 +25,67 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function indexOld(GetAdminBasicRequest $request)
-    // {
-    //     // $data = Product::with("categories")->paginate();
-    //     $data = Product::with("categories");
-    //     $count = $data->get()->count();
+    public function index(GetAdminBasicRequest $request)
+    {
+        // $data = Product::with("categories")->paginate();
+        $data = Product::with("categories");
+        $count = $data->get()->count();
 
-    //     if (empty($count)) {
-    //         return response()->json([
-    //             "success" => false,
-    //             "errors" => "Product list is empty"
-    //         ]);
-    //     }
+        if (empty($count)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Product list is empty"
+            ]);
+        }
 
-    //     // Will change later, this is just temporary
-    //     if (!empty($request->get("q"))) {
-    //         $check = (int)$request->get("q");
-    //         $column = "";
-    //         $operator = "";
-    //         $value = "";
+        // Will change later, this is just temporary
+        if (!empty($request->get("q"))) {
+            $check = (int)$request->get("q");
+            $column = "";
+            $operator = "";
+            $value = "";
 
-    //         if ($check == 0) {
-    //             $column = "name";
-    //             $operator = "like";
-    //             $value = "%" . $request->get("q") . "%";
-    //         } else {
-    //             $column = "id";
-    //             $operator = "=";
-    //             $value = $request->get("q");
-    //         }
+            if ($check == 0) {
+                $column = "name";
+                $operator = "like";
+                $value = "%" . $request->get("q") . "%";
+            } else {
+                $column = "id";
+                $operator = "=";
+                $value = $request->get("q");
+            }
 
-    //         $search = Product::where("$column", "$operator", "$value")->get();
-    //     }
+            $search = Product::where("$column", "$operator", "$value")->get();
+        }
 
-    //     $count = DB::table("products")->count();
+        // $count = DB::table("products")->count();
 
-    //     // return response()->json([
-    //     //     "success" => true,
-    //     //     "total" => $count,
-    //     //     "data" => new ProductListCollection($data)
-    //     // ]);
+        // return response()->json([
+        //     "success" => true,
+        //     "total" => $count,
+        //     "data" => new ProductListCollection($data)
+        // ]);
 
-    //     return new ProductListCollection($data->paginate(10)->appends($request->query()));
-    // }
+        return new ProductListCollection($data->paginate(12)->appends($request->query()));
+    }
+
+    public function paginator($arr, $request)
+    {
+        $total = count($arr);
+        $per_page = 12;
+        $current_page = $request->input("page") ?? 1;
+
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $arr = array_slice($arr, $starting_point, $per_page, true);
+
+        $arr = new LengthAwarePaginator($arr, $total, $per_page, $current_page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
+
+        return $arr;
+    }
 
     public function indexAdmin(GetAdminBasicRequest $request)
     {
@@ -102,7 +120,8 @@ class ProductController extends Controller
             }
         }
 
-        return $arr;
+        // return $arr;
+        return $this->paginator($arr, $request);
     }
 
     /**

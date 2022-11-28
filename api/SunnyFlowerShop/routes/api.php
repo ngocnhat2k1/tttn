@@ -67,7 +67,8 @@ Route::middleware("auth:sanctum")->group(function () {
 
         // Route for Product
         Route::group(['prefix' => "products"], function () {
-            Route::get('/', [ProductController::class, "indexAdmin"]); // Show all products
+            Route::get('/', [ProductController::class, "indexAdmin"]); // Show all products w/o paginating
+            Route::get('/indexOld', [ProductController::class, "index"]); // Show all products
             Route::get('/{id}', [ProductController::class, "show"]); // Show detail of a specific product
             Route::post('/add', [ProductController::class, "store"]); // Add single product to database
             Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
@@ -241,6 +242,7 @@ Route::post("/login", [UserAuthController::class, "login"]); // Login
 Route::post("/forgotPassword", [ForgotPasswordController::class, "forgot"]);
 Route::post("/checkCode", [ForgotPasswordController::class, "checkCode"]);
 Route::post("/resetPassword", [ForgotPasswordController::class, "reset"]);
+// Route::post("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
 Route::post("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
 
 Route::middleware('auth:sanctum')->group(function () {

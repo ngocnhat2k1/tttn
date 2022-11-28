@@ -34,7 +34,10 @@ class ProductQueryController extends Controller
 
     public function arrival()
     {
-        $products = Product::orderBy("created_at", "DESC")->take(10)->get();
+        $products = Product::orderBy("created_at", "DESC")
+            ->where("status", "<>", 0)
+            ->where("deleted_at", "=", null)
+            ->take(8)->get();
 
         return new ProductListCollection($products);
     }
@@ -42,7 +45,9 @@ class ProductQueryController extends Controller
     public function sale()
     { // Base on new arrival
         $products_sale = Product::where("percent_sale", "<>", "0")
-            ->orderBy("created_at", "DESC")->take(10)->get();
+            ->where("status", "<>", 0)
+            ->where("deleted_at", "=", null)
+            ->orderBy("created_at", "DESC")->take(8)->get();
 
         return new ProductListCollection($products_sale);
     }
@@ -210,29 +215,6 @@ class ProductQueryController extends Controller
         return $arr_products_filter;
     }
 
-    /** Display on main page (when login into website) */
-    // public function index(Request $request)
-    // {
-    //     // $data = Product::with("categories")->paginate();
-    //     $data = Product::with("categories");
-    //     $count = $data->get()->count();
-
-    //     if (empty($count)) {
-    //         return response()->json([
-    //             "success" => false,
-    //             "errors" => "Product list is empty"
-    //         ]);
-    //     }
-
-    //     if (!empty($request->get('orderBy'))) {
-    //         $order_type = $request->get('orderBy');
-
-    //         $data = $data->orderBy("price", $order_type);
-    //     }
-
-    //     return new ProductListCollection($data->paginate(8)->appends($request->query()));
-    // }
-
     public function indexCustomer(Request $request)
     {
         $data = Product::with("categories")->get();
@@ -247,7 +229,7 @@ class ProductQueryController extends Controller
         // $arr['customer_id'] = $customer->id;
 
         for ($i = 0; $i < sizeof($data); $i++) {
-            if ($data[$i]->deleted_at !== null) {
+            if ($data[$i]->deleted_at !== null || $data[$i]->status !== 1) {
                 continue;
             }
             $arr[$i]['id'] = $data[$i]->id;
