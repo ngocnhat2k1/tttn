@@ -24,10 +24,10 @@ function usePaginate(url, query) {
                 setData({
                     data: response.data.data,
                     total: response.data.total,
-                    page: response.data.meta.current_page,
-                    lastPage: response.data.meta.last_page,
-                    nextPage: response.data.meta.current_page + 1,
-                    prevPage: response.data.meta.current_page - 1,
+                    page: response.data.current_page,
+                    lastPage: response.data.data.last_page,
+                    nextPage: response.data.current_page + 1,
+                    prevPage: response.data.current_page - 1,
                 });
             });
     }, [query.toString()]);

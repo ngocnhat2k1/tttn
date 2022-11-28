@@ -18,7 +18,7 @@ const ListProducts = ({ listProducts }) => {
                             <a href="/product-details-one/1 ">{Product.name}</a>
                         </td>
                         <td>
-                            {Product.categories.map((Categories, i) => {
+                            {Product.categories && Product.categories.map((Categories, i) => {
                                 if (i + 1 === Product.categories.length) {
                                     return (Categories.name)
                                 }

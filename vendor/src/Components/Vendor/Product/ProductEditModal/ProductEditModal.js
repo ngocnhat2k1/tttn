@@ -29,7 +29,6 @@ const ProductEditModal = ({ idDetail }) => {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
             })
-
             .then((response) => {
                 reset(response.data.data)
                 setPoductName(response.data.data.name);
@@ -51,7 +50,6 @@ const ProductEditModal = ({ idDetail }) => {
             .then((response) => {
                 setListCategories(response.data.data)
             })
-
     };
     const closeModal = () => {
         setModal(!modal);
@@ -63,17 +61,9 @@ const ProductEditModal = ({ idDetail }) => {
     }
 
     const onSubmit = (data) => {
-        console.log(img)
-        const list = []
-
-        for (let i = 0; i < data.category.length; i++) {
-            list.push({ id: data.category[i] })
-        }
-        console.log(list)
         const payload = {
             ...data,
             img: img,
-            category: list
         }
         console.log(payload)
         axios
@@ -84,7 +74,7 @@ const ProductEditModal = ({ idDetail }) => {
             })
             .then((response) => {
                 alert(response.data.success);
-                console.log(response.data.error);
+                console.log(response.data.success);
                 if (response.data.success === true) {
                     window.location.href = 'http://localhost:4000/all-product';
                 }
@@ -125,24 +115,6 @@ const ProductEditModal = ({ idDetail }) => {
         setDescription(e.target.value)
     }
 
-    const handleCheckCategory = (category) => {
-
-        const isFound = listCategoriesOfProduct.some(categoryOfProduct => {
-            if (categoryOfProduct.id === category.id) {
-                return true;
-            }
-            return false;
-        });
-        const newObjCaterory = {
-            id: category.id,
-            name: category.name
-        }
-        if (isFound) {
-            setListCategoriesOfProduct(listCategoriesOfProduct.remove(newObjCaterory))
-        } else {
-            setListCategoriesOfProduct(listCategoriesOfProduct.push(newObjCaterory))
-        }
-    }
     return (
         <>
             <FaEdit onClick={toggleModal} className="btn-modal">
@@ -168,7 +140,6 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="text"
                                             className="form-control"
                                             id="name"
-                                            // value={productName}
                                             {...register('name', { onChange: onChangeName })} />
                                     </div>
                                 </Col>
@@ -178,7 +149,6 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="price"
-                                            // value={price}
                                             {...register('price', { onChange: onChangePrice })} />
                                     </div>
                                 </Col>
@@ -188,7 +158,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="percentSale"
-                                            // value={precentSale}
+                                            value={precentSale}
                                             {...register('precentSale', { onChange: onChangePercent })} />
                                     </div>
                                 </Col>
@@ -198,7 +168,6 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="quantity"
-                                            // value={quantity}
                                             {...register('quantity', { onChange: onChangeQuantity })} />
                                     </div>
                                 </Col>
@@ -208,9 +177,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <select type="select"
                                             className="form-control"
                                             id="status"
-                                            // value={status}
                                             {...register('status', { required: true })}>
-
                                             <option value='1'>Còn hàng</option>
                                             <option value='0'>Hết hàng</option>
                                         </select>
@@ -218,22 +185,19 @@ const ProductEditModal = ({ idDetail }) => {
                                 </Col>
                                 <Col lg={12}>
                                     <div className='fotm-group'>
-                                        <label htmlFor="Caterory">Caterory</label>
+                                        <label htmlFor="categoryId ">Caterory</label>
                                         <Row>
                                             {listCategories.map((category) => {
                                                 return (
                                                     <Col lg={4} key={category.id}>
                                                         <div className='checkbox_group'>
-
                                                             <>
                                                                 < input
-                                                                    // onClick={() => { handleCheckCategory(category) }}
-                                                                    id='Caterory'
-                                                                    type='checkbox'
+                                                                    id='categoryId '
+                                                                    type='radio'
                                                                     value={category.id}
-                                                                    // checked={handleCheckCategory}
                                                                     className='check_box'
-                                                                    {...register("category", {})}
+                                                                    {...register("categoryId ", {})}
                                                                 />
                                                                 < p> {category.name}</p>
                                                             </>

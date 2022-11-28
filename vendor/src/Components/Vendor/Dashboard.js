@@ -21,7 +21,7 @@ const Dashboard = () => {
                 setRecenOrders(response.data.data)
 
             })
-    }, [RecentOrders])
+    }, [])
 
     useEffect(() => {
         axios
@@ -34,13 +34,9 @@ const Dashboard = () => {
                 setOrderPending(response.data.totalOrdersPending)
                 setTotalProduct(response.data.totalProducts)
                 setTotalSales(response.data.totalSales)
-                setRecenOrders(response.data.recentOrders)
             })
     }, [totalProduct])
 
-    // for (let RecentOrder of RecentOrders) {
-
-    // }
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -84,9 +80,9 @@ const Dashboard = () => {
                                 <tbody>
                                     {RecentOrders && RecentOrders.map((Order) => {
                                         return (
-                                            <tr key={Order.id}>
+                                            <tr key={Order.orderId}>
                                                 <td>
-                                                    <a className='text-primary' href=".">{Order.id}</a>
+                                                    <a className='text-primary' href=".">{Order.orderId}</a>
                                                 </td>
                                                 <td>{Order.address}</td>
                                                 <td>{Order.nameReceiver}</td>
