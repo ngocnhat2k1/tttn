@@ -18,17 +18,17 @@ class ProductSeeder extends Seeder
     {
         Product::factory()
             ->count(10)
-            ->hasCategories(3)
+            ->hasCategories(1)
             ->create();
 
         Product::factory()
             ->count(15)
-            ->hasCategories(2)
+            ->hasCategories(1)
             ->create();
 
         Product::factory()
             ->count(12)
-            ->hasCategories(3)
+            ->hasCategories(1)
             ->create();
     }
 }
