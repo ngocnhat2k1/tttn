@@ -30,6 +30,7 @@ const ProductEditModal = ({ idDetail }) => {
                 },
             })
             .then((response) => {
+                console.log(response.data.data)
                 reset(response.data.data)
                 setPoductName(response.data.data.name);
                 setPrice(response.data.data.price)
@@ -40,7 +41,6 @@ const ProductEditModal = ({ idDetail }) => {
                 setDescription(response.data.data.description)
 
             });
-
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories`, {
                 headers: {
@@ -94,32 +94,14 @@ const ProductEditModal = ({ idDetail }) => {
         Reader.onload = () => {
             if (Reader.readyState === 2) {
                 setImg(Reader.result);
-
             }
         };
     };
-    const onChangeName = (e) => {
-        setPoductName(e.target.value)
-    }
-
-    const onChangePrice = (e) => {
-        setPrice(e.target.value)
-    }
-    const onChangePercent = (e) => {
-        setPrecentSale(e.target.value)
-    }
-    const onChangeQuantity = (e) => {
-        setQuantity(e.target.value)
-    }
-    const onChangeDescription = (e) => {
-        setDescription(e.target.value)
-    }
 
     return (
         <>
             <FaEdit onClick={toggleModal} className="btn-modal">
             </FaEdit>
-
             {modal && (
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
@@ -140,7 +122,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="text"
                                             className="form-control"
                                             id="name"
-                                            {...register('name', { onChange: onChangeName })} />
+                                            {...register('name', { onChange: (e) => { setPoductName(e.target.value) } })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -149,7 +131,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="price"
-                                            {...register('price', { onChange: onChangePrice })} />
+                                            {...register('price', { onChange: (e) => { setPrice(e.target.value) } })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -158,8 +140,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="percentSale"
-                                            value={precentSale}
-                                            {...register('precentSale', { onChange: onChangePercent })} />
+                                            {...register('percentSale', { onChange: (e) => { setPrecentSale(e.target.value) } })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -168,7 +149,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="quantity"
-                                            {...register('quantity', { onChange: onChangeQuantity })} />
+                                            {...register('quantity', { onChange: (e) => { setQuantity(e.target.value) } })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -215,9 +196,8 @@ const ProductEditModal = ({ idDetail }) => {
                                             id='description'
                                             rows="4" cols=""
                                             className='form-control'
-                                            // value={description}
                                             spellCheck="false"
-                                            {...register("description", { onChange: onChangeDescription })}
+                                            {...register("description", { onChange: (e) => { setDescription(e.target.value) } })}
                                         ></textarea>
                                     </div>
                                 </Col>
