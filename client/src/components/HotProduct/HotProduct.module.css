@@ -36,10 +36,11 @@
     background: transparent;
     padding-bottom: 5px;
 
-    &:hover {
-        color: #f79837;
-        cursor: pointer;
-    }
+}
+
+.navTabs li:hover {
+    color: #f79837;
+    cursor: pointer;
 }
 
 .navTabs li:first-child {
