@@ -38,7 +38,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                 setEmail(response.data.data.customer.email)
                 setState(response.data.data.order.status)
                 setAddress(response.data.data.order.address)
-                setDeletedBy(response.data.data.order.deletedBy)
+                setDeletedBy(response.data.data.order.deleted_by)
                 setImgProduct(response.data.data.product.img)
             });
     };
@@ -49,7 +49,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
     const handleState = () => {
         console.log(Cookies.get('adminToken'))
         axios
-            .put(`http://127.0.0.1:8000/api/v1/users/${idCustomer}/orders/${idOrder}/update/status=${state + 1}`, {
+            .put(`http://127.0.0.1:8000/api/v1/orders/${idOrder}/update/status=${state + 1}`, 1, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
@@ -66,7 +66,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                 },
             })
             .then((response) => {
-                alert(response.data.message)
+                alert(response.data.success)
             })
             .catch((err) => { console.log(err) })
 
@@ -159,10 +159,11 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                         </tfoot>
                                     </table>
                                     <div className='detail-footer text-right'>
+                                        {deletedBy ? "" : state === 2 ? "" : <p>Which state would you like to change?</p>}
                                         <div className='buttons'>
-                                            {state === 0 ? <button className='theme-btn-one btn-black-overlay btn_sm' onClick={handleState}>Confirm</button> : state === 1 ? <button className='theme-btn-one btn-black-overlay btn_sm' onClick={handleState}>Complete</button> : ""}
+                                            {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Confirm</button> : state === 1 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Complete</button> : ""}
 
-                                            <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Cancel</button>
+                                            {deletedBy ? "" : state === 2 ? '' : <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Cancel</button>}
                                         </div>
                                     </div>
                                     <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>

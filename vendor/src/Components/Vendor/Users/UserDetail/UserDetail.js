@@ -120,9 +120,9 @@ const UserDetail = ({ idDetail, firstNameDetail, lastNameDetail }) => {
                                     </div>
                                 </Col>
                             </Row>
-                            {<div className="btn_left_table">
+                            {/* {<div className="btn_left_table">
                                 <button onClick={closeModal} className="theme-btn-one bg-black btn_sm">Close</button>
-                            </div>}
+                            </div>} */}
                             <div className="btn_right_table">
                                 <button onClick={closeModal} className="theme-btn-one bg-black btn_sm">Close</button>
                             </div>

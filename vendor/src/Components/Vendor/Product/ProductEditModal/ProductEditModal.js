@@ -20,7 +20,7 @@ const ProductEditModal = ({ idDetail }) => {
     const [listCategories, setListCategories] = useState([]);
     const [listCategoriesOfProduct, setListCategoriesOfProduct] = useState([])
     const [description, setDescription] = useState('')
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
     const toggleModal = () => {
         setModal(!modal);
         axios
@@ -31,6 +31,7 @@ const ProductEditModal = ({ idDetail }) => {
             })
 
             .then((response) => {
+                reset(response.data.data)
                 setPoductName(response.data.data.name);
                 setPrice(response.data.data.price)
                 setPrecentSale(response.data.data.precentSale)
@@ -167,7 +168,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="text"
                                             className="form-control"
                                             id="name"
-                                            value={productName}
+                                            // value={productName}
                                             {...register('name', { onChange: onChangeName })} />
                                     </div>
                                 </Col>
@@ -177,7 +178,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="price"
-                                            value={price}
+                                            // value={price}
                                             {...register('price', { onChange: onChangePrice })} />
                                     </div>
                                 </Col>
@@ -187,8 +188,8 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="percentSale"
-                                            value={precentSale}
-                                            {...register('percentSale', { onChange: onChangePercent })} />
+                                            // value={precentSale}
+                                            {...register('precentSale', { onChange: onChangePercent })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -197,7 +198,7 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="quantity"
-                                            value={quantity}
+                                            // value={quantity}
                                             {...register('quantity', { onChange: onChangeQuantity })} />
                                     </div>
                                 </Col>
@@ -250,7 +251,7 @@ const ProductEditModal = ({ idDetail }) => {
                                             id='description'
                                             rows="4" cols=""
                                             className='form-control'
-                                            value={description}
+                                            // value={description}
                                             spellCheck="false"
                                             {...register("description", { onChange: onChangeDescription })}
                                         ></textarea>

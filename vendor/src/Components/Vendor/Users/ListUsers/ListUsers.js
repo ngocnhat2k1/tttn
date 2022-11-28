@@ -12,7 +12,7 @@ const ListUsers = ({ listUsers }) => {
                         <td>{User.id}</td>
                         <td>
                             <a>
-                                {User.avatar ? <img width="70px" src={User.avatar} alt="img" /> : <img width="70px" src={User.default_avatar} alt="img" />}
+                                {User.avatar ? <img width="70px" src={User.avatar} alt="img" /> : <img width="70px" src={User.defaultAvatar} alt="img" />}
                             </a>
                         </td>
                         <td>

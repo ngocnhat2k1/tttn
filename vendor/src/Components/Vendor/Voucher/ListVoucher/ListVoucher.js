@@ -8,9 +8,9 @@ const ListVoucher = ({ currentVoucher }) => {
         <>
             {currentVoucher && currentVoucher.map((Voucher) => {
                 return (
-                    <tr key={Voucher.id}>
+                    <tr key={Voucher.voucherId}>
                         <td>
-                            <a href="/invoice-one" className='text-primary'>{Voucher.id}</a>
+                            <a href="/invoice-one" className='text-primary'>{Voucher.voucherId}</a>
                         </td>
                         <td>{Voucher.name}</td>
                         <td>{Voucher.usage}</td>
