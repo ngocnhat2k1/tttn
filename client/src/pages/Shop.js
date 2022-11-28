@@ -9,7 +9,6 @@ function Shop() {
         <>
             <CommonBanner namePage="Shop" />
             <ShopMainArea />
-            <FacebookInfo />
         </>
     )
 };
