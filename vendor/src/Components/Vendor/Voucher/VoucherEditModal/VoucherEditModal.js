@@ -5,8 +5,9 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
-import "./Modal.css";
+import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import formatDate from "../../../../until/formatDateTime";
 
 const VoucherEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
@@ -15,6 +16,7 @@ const VoucherEditModal = ({ idDetail }) => {
     const [voucherPercent, setVoucherPercent] = useState('')
     const [voucherUsage, setVoucherUsage] = useState('')
     const [VoucherExpiredDate, setVoucherexpiredDate] = useState('')
+    const [deleted, setDeleted] = useState('')
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
@@ -31,8 +33,23 @@ const VoucherEditModal = ({ idDetail }) => {
                 setVoucherPercent(response.data.percent)
                 setVoucherUsage(response.data.usage)
                 setVoucherexpiredDate(response.data.expiredDate)
+                setDeleted(response.data.deleted)
             });
     };
+    const reversedVoucher = () => {
+        axios
+            .delete(`http://127.0.0.1:8000/api/v1/vouchers/${idDetail}/destroy=0`, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('adminToken')}`,
+                },
+            })
+            .then((response) => {
+                alert(response.data.message)
+                if (response.data.success === true) {
+                    window.location.reload();
+                }
+            })
+    }
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -42,9 +59,13 @@ const VoucherEditModal = ({ idDetail }) => {
         setModal(!modal)
     }
     const onSubmit = (data) => {
-        console.log(data)
+        const payload = {
+            ...data,
+            expiredDate: formatDate(data.expiredDate)
+        }
+        console.log(payload)
         axios
-            .put(`http://127.0.0.1:8000/api/v1/voucher/${idDetail}/update`, data, {
+            .put(`http://127.0.0.1:8000/api/v1/vouchers/${idDetail}/update`, payload, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`
                 },
@@ -53,7 +74,7 @@ const VoucherEditModal = ({ idDetail }) => {
                 alert(response.data.success);
                 console.log(response.data.error);
                 if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/vendor-category';
+                    window.location.reload();
                 }
             })
             .catch(function (error) {
@@ -70,6 +91,9 @@ const VoucherEditModal = ({ idDetail }) => {
     const onChangeUsage = (e) => {
         setVoucherUsage(e.target.value)
     }
+    const onChangeDate = (e) => {
+        setVoucherexpiredDate(e.target.value)
+    }
 
     return (
         <>
@@ -79,7 +103,7 @@ const VoucherEditModal = ({ idDetail }) => {
             {modal && (
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
-                    <div className="modal-content">
+                    <div className="modal-content-edit-voucher">
                         <h2 className="title_modal">Edit Voucher {idDetail}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
@@ -90,7 +114,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="name"
                                             value={voucherName}
-                                            {...register('name', { required: true, onChange: onChangeName })} />
+                                            {...register('name', { onChange: onChangeName })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -100,7 +124,7 @@ const VoucherEditModal = ({ idDetail }) => {
                                             className="form-control"
                                             id="percent"
                                             value={voucherPercent}
-                                            {...register('percent', { required: true, onChange: onChangePercent })} />
+                                            {...register('percent', { onChange: onChangePercent })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -109,25 +133,31 @@ const VoucherEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="usage"
-                                            value={voucherName}
-                                            {...register('usage', { required: true, onChange: onChangeUsage })} />
+                                            value={voucherUsage}
+                                            {...register('usage', { onChange: onChangeUsage })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="name">Voucher Name</label>
-                                        <input type="text"
+                                        <label htmlFor="VoucherExpiredDate">Voucher Expired Date</label>
+                                        <input type="datetime-local"
                                             className="form-control"
-                                            id="name"
-                                            value={voucherName}
-                                            {...register('name', { required: true, onChange: onChangeName })} />
+                                            id="VoucherExpiredDate"
+                                            value={VoucherExpiredDate}
+                                            {...register('expiredDate', { onChange: onChangeDate })} />
                                     </div>
                                 </Col>
 
                             </Row>
-                            <div className="btn_right_table">
-                                <button className="theme-btn-one bg-black btn_sm">Save</button>
-                            </div>
+                            <Col lg={12}>
+                                {deleted ?
+                                    <div className="btn_left_table" onClick={reversedVoucher}>
+                                        <button className="theme-btn-one bg-black btn_sm">Restore</button>
+                                    </div> : ""}
+                                <div className="btn_right_table">
+                                    <button className="theme-btn-one bg-black btn_sm">Save</button>
+                                </div>
+                            </Col>
                         </form>
 
                         <button className="close close-modal" onClick={closeModal}><FaTimes /></button>

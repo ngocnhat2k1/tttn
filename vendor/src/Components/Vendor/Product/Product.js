@@ -34,14 +34,17 @@ const Product = () => {
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>
-                                        <thead className='thead-light'>
+                                        <thead>
                                             <tr>
                                                 <th scope="col">Image</th>
                                                 <th scope="col">Product Name</th>
                                                 <th scope="col">Category</th>
                                                 <th scope="col">Price</th>
                                                 <th scope="col">Sales</th>
+                                                <th scope='col'>Status</th>
+                                                <th scope='col'>Deleted</th>
                                                 <th scope="col">Edit/Delete</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>

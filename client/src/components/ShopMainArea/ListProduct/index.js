@@ -1,52 +1,51 @@
 import styles from './ListProduct.module.scss'
 import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row'
 import { FaRegHeart, FaExpand } from "react-icons/fa";
 import { formatter } from '../../../utils/utils'
 
-function ListProduct({currentItems}) {
+function ListProduct({ currentItems }) {
     return (
-        <>
-            {
-                currentItems.map((product) => {
-                    return (
-                        <Col lg={4} md={4} sm={6} xs={12} key={product.id}>
-                            <div className={styles.productWrapper}>
-                                <div className={styles.thumb}>
-                                    <a href="" className={styles.image}>
-                                        <img src={product.image} alt={product.name} />
-                                        {/* <img src="" alt="" /> */}
+        <Row>
+            {currentItems && Object.values(currentItems).map((product) => {
+                return (
+                    <Col lg={4} md={4} sm={6} xs={12} key={product.id}>
+                        <div className={styles.productWrapper}>
+                            <div className={styles.thumb}>
+                                <a href="" className={styles.image}>
+                                    <img src={product.image} alt={product.name} />
+                                </a>
+                                <span className={styles.badges}>
+                                    <span
+                                        className={
+                                            product.percentSale !== "" ? styles.sale : ""
+                                        }>
+                                        {product.percentSale !== "" ? product.percentSale + "% OFF" : product.productUnit}</span>
+                                </span>
+                                <div className={styles.actions}>
+                                    <a href="" className={`${styles.wishList} ${styles.action}`} title="Wishlist">
+                                        <FaRegHeart />
                                     </a>
-                                    <span className={styles.badges}>
-                                        <span
-                                            className={
-                                                product.discount !== "" ? styles.sale : ""
-                                            }>
-                                            {product.discount !== "" ? product.discount + "% OFF" : product.productUnit}</span>
-                                    </span>
-                                    <div className={styles.actions}>
-                                        <a href="" className={`${styles.wishList} ${styles.action}`} title="Wishlist">
-                                            <FaRegHeart />
-                                        </a>
-                                        <a href="" className={`${styles.quickView} ${styles.action}`} title="Quickview">
-                                            <FaExpand />
-                                        </a>
-                                    </div>
-                                    <button className={`${styles.addToCart}`}>Add to cart</button>
+                                    <a href="" className={`${styles.quickView} ${styles.action}`} title="Quickview">
+                                        <FaExpand />
+                                    </a>
                                 </div>
-                                <div className={styles.content}>
-                                    <h5 className={styles.title}>
-                                        <a href="">{product.name}</a>
-                                    </h5>
-                                    <span className={styles.price}>
-                                        {product.discount !== "" ? formatter.format(product.cost * ((100 - product.discount) / 100)) : formatter.format(product.cost)}
-                                    </span>
-                                </div>
+                                <button className={`${styles.addToCart}`}>Add to cart</button>
                             </div>
-                        </Col>
-                    )
-                })
+                            <div className={styles.content}>
+                                <h5 className={styles.title}>
+                                    <a href="">{product.name}</a>
+                                </h5>
+                                <span className={styles.price}>
+                                    {product.percentSale !== "" ? formatter.format(product.price * ((100 - product.percentSale) / 100)) : formatter.format(product.price)}
+                                </span>
+                            </div>
+                        </div>
+                    </Col>
+                )
+            })
             }
-        </>
+        </Row>
     )
 }
 

@@ -8,8 +8,7 @@ function TopHeaderRightAuth(user) {
 
     const handleLogout = () => {
         axios
-            .post(
-                'http://localhost:8000/api/logout',{},
+            .post('http://localhost:8000/api/logout', {},
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('token')}`,
@@ -18,7 +17,7 @@ function TopHeaderRightAuth(user) {
             )
             .then(function (response) {
                 if (response.data.success) {
-                    Cookies.remove('token', { path: '/', domain: 'localhost'});
+                    Cookies.remove('token', { path: '/', domain: 'localhost' });
                     window.location.href = 'http://localhost:3000/login';
                 } else {
                     console.log(response);

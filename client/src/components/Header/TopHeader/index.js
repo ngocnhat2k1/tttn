@@ -13,19 +13,21 @@ function TopHeader() {
     const [user, setUser] = useState();
 
     useEffect(() => {
-        axios
-            .get(`http://localhost:8000/api/user/profile`, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            })
-            .then((response) => {
-                setUser(response.data.data);
-
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        if (Cookies.get('token') === false) {
+            axios
+                .get(`http://127.0.0.1:8000/api/user/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('token')}`,
+                    },
+                })
+                .then((response) => {
+                    console.log(response.data)
+                    setUser(response.data.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
     }, []);
 
     return (

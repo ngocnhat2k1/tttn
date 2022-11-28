@@ -1,4 +1,6 @@
 import React from 'react'
+import UserDetail from '../UserDetail/UserDetail'
+
 
 const ListUsers = ({ listUsers }) => {
     return (
@@ -10,7 +12,7 @@ const ListUsers = ({ listUsers }) => {
                         <td>{User.id}</td>
                         <td>
                             <a>
-                                {User.avatar ? <img width="70px" src={User.avatar} alt="img" /> : <img width="70px" src={User.default_avatar} alt="img" />}
+                                {User.avatar ? <img width="70px" src={User.avatar} alt="img" /> : <img width="70px" src={User.defaultAvatar} alt="img" />}
                             </a>
                         </td>
                         <td>
@@ -18,6 +20,7 @@ const ListUsers = ({ listUsers }) => {
                         </td>
                         <td>{User.email}</td>
                         {User.subscribed === 0 ? <td>No</td> : <td>Yes</td>}
+                        <td><UserDetail idDetail={User.id} firstNameDetail={User.firstName} lastNameDetail={User.lastName} /></td>
 
 
                     </tr>
