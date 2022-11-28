@@ -18,6 +18,7 @@ function ProductWrapper({ unit }) {
         axios
             .get(`http://localhost:8000/api/product/newArrival`)
             .then(response => {
+                console.log("1", response.data)
                 setListNewArrival(response.data.data)
             })
             .catch(err => {
@@ -27,6 +28,7 @@ function ProductWrapper({ unit }) {
         axios
             .get(`http://localhost:8000/api/product/saleProduct`)
             .then(response => {
+                console.log("2", response.data)
                 setListOnSell(response.data.data)
             })
             .catch(err => {
@@ -36,7 +38,8 @@ function ProductWrapper({ unit }) {
         axios
             .get(`http://localhost:8000/api/product/bestSeller`)
             .then(response => {
-                setListBestSellers(response.data.data)
+                // console.log("3", response.data)
+                setListBestSellers(response.data)
             })
             .catch(err => {
                 console.log(err);
@@ -79,7 +82,7 @@ function ProductWrapper({ unit }) {
                                 <span className={styles.badges}>
                                     <span
                                         className={
-                                            unit === "New Arrival" ? styles.new : unit === "Best Seller" ? styles.best : unit === "Trending" ? styles.trending : styles.sale
+                                            unit === "New Arrival" ? styles.new : unit === "Best Sellers" ? styles.best : unit === "Trending" ? styles.trending : styles.sale
                                         }>
                                         {unit === "On Sell" ? product.percentSale + "% OFF" : unit}</span>
                                 </span>
@@ -98,7 +101,7 @@ function ProductWrapper({ unit }) {
                                 <Link to={`/shop/${product.id}`}>{product.name}</Link>
                                 </h5>
                                 <span className={styles.price}>
-                                    {unit === "On Sell" ? formatter.format(product.price * ((100 - product.percentSale) / 100)) : formatter.format(product.price)}
+                                    {formatter.format(product.price * ((100 - product.percentSale) / 100))}
                                 </span>
                             </div>
                         </div>
