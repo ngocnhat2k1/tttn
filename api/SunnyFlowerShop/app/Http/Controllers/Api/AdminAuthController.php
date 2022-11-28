@@ -159,9 +159,9 @@ class AdminAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "token_type" => "Encrypted",
-            // "token" => $token,
-            "encryptedToken" => $token_encrypt,
+            // "token_type" => "Encrypted",
+            "token" => $token,
+            // "encryptedToken" => $token_encrypt,
             "data" => [
                 "id" => $admin->id,
                 "userName" => $admin->user_name,
