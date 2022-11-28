@@ -146,8 +146,8 @@ class UserAuthController extends Controller
         return response()->json([
             "success" => true,
             "tokenType" => "Encrypted",
-            // "token" => $token,
-            "encryptedToken" => $token_encrypt,
+            "token" => $token,
+            // "encryptedToken" => $token_encrypt,
             // "data" => new CustomerDetailResource($customer)
             "data" => [
                 "customerId" => $customer->id,
