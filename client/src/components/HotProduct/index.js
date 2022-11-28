@@ -25,7 +25,7 @@ function HotProduct() {
                             <ul className={styles.navTabs}>
                                 <li className={unit === "New Arrival" ? styles.tabOnClick : ''} onClick={() => setUnit('New Arrival')}>NEW ARRIVAL</li>
                                 {/* <li className={unit === "Trending" ? styles.tabOnClick : ''} onClick={() => setUnit('Trending')}>TRENDING</li> */}
-                                <li className={unit === "Best Seller" ? styles.tabOnClick : ''} onClick={() => setUnit('Best Seller')}>BEST SELLERS</li>
+                                <li className={unit === "Best Seller" ? styles.tabOnClick : ''} onClick={() => setUnit('Best Sellers')}>BEST SELLERS</li>
                                 <li className={unit === "On Sell" ? styles.tabOnClick : ''} onClick={() => setUnit('On Sell')}>ON SELL</li>
                             </ul>
                         </div>
