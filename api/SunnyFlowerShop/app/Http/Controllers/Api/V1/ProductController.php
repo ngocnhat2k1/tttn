@@ -115,12 +115,20 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $check_existed = Product::where("name", "=", $request->name)->exists();
+        $check_existed_category = Category::where("id", "=", $request->categoryId)->exists();
 
         // Check if the existence of name product in database
         if ($check_existed) {
             return response()->json([
                 'success' => false,
                 'errors' => "Product is already existed"
+            ]);
+        }
+
+        if (!$check_existed_category) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Category ID is invalid"
             ]);
         }
 
@@ -137,19 +145,21 @@ class ProductController extends Controller
             ]);
         }
 
-        // Add each categories to pivot table "category_product"
-        for ($i = 0; $i < sizeof($filtered['category']); $i++) {
-            $category_id = $filtered['category'][$i]['id'];
+        $data->categories()->attach($request->categoryId);
 
-            $category = Category::find($category_id);
+        // // Add each categories to pivot table "category_product"
+        // for ($i = 0; $i < sizeof($filtered['category']); $i++) {
+        //     $category_id = $filtered['category'][$i]['id'];
 
-            // Checking category id - If it doesn't exist just skip
-            if (empty($category)) {
-                continue;
-            }
+        //     $category = Category::find($category_id);
 
-            $data->categories()->attach($category_id);
-        }
+        //     // Checking category id - If it doesn't exist just skip
+        //     if (empty($category)) {
+        //         continue;
+        //     }
+
+        //     $data->categories()->attach($category_id);
+        // }
 
         return response()->json([
             'success' => true,
@@ -423,7 +433,7 @@ class ProductController extends Controller
         $errors_count = 0;
 
         $products = $request->all();
-        
+
         // If state is 1, then display is "deleted"
         if ((int) $request->state === 1) {
             $display = "deleted";
@@ -449,35 +459,34 @@ class ProductController extends Controller
 
                 if ($product->deleted_at === null) {
                     continue;
-                } 
-    
+                }
+
                 $product->deleted_at = null;
                 $result = $product->save();
-    
+
                 if (!$result) {
                     $errors_product_id_array[] = $products[$i]['id'];
                     $errors_count++;
                 }
-    
+
                 $count++;
             }
             // If state is 1, then proceed to delete
             else {
                 if ($product->deleted_at === 1) {
                     continue;
-                } 
-    
+                }
+
                 $product->deleted_at = 1;
                 $result = $product->save();
-    
+
                 if (!$result) {
                     $errors_product_id_array[] = $products[$i]['id'];
                     $errors_count++;
                 }
-    
+
                 $count++;
             }
-
         }
 
         if ($invalid_count !== 0) {
