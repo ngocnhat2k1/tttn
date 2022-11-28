@@ -50,12 +50,16 @@ class BulkInsertProductRequest extends FormRequest
                 "required",
                 "string",
             ],
-            "*.category" => [
-                "*.id" => [
-                    "required",
-                    "integer",
-                ]
+            "*.categoryId" => [
+                "required",
+                "integer",
             ],
+            // "*.category" => [
+            //     "*.id" => [
+            //         "required",
+            //         "integer",
+            //     ]
+            // ],
         ];
     }
 

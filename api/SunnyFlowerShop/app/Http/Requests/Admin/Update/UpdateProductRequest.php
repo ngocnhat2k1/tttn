@@ -61,11 +61,9 @@ class UpdateProductRequest extends FormRequest
                 "required",
                 "boolean",
             ],
-            "category" => [
-                "*.id" => [
-                    "required",
-                    "integer",
-                ]
+            "categoryId" => [
+                "required",
+                "integer",
             ],
         ];
     }

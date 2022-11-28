@@ -186,11 +186,12 @@ class ProductController extends Controller
         ]);
     }
 
+    // This function has been updated but haven't been tested yet
     public function bulkStore(BulkInsertProductRequest $request)
     {
         // Main Data use for blueprint
         $bulk = collect($request->all())->map(function ($arr, $key) {
-            return Arr::except($arr, ["category", "percentSale"]);
+            return Arr::except($arr, ["categoryId", "percentSale"]);
         });
 
         // Data use for searching in category table to insert to intermediate (category_product) table - $data is an array
@@ -219,15 +220,22 @@ class ProductController extends Controller
                 ]);
             }
 
-            // Insert each category id to pivot table "category_product"
-            for ($j = 0; $j < sizeof($data[$i]['category']); $j++) {
-                // Find Category ID in category table using $data variable
-                $category_id = $data[$i]['category'][$j]["id"];
-                $category = Category::find($category_id);
-                $product = Product::find($result->id);
-
-                $product->categories()->attach($category);
+            $check_existed_category = Category::where("id", "=", $request->categoryId)->exists();
+            if (!$check_existed_category) {
+                continue;
             }
+
+            $result->categories()->attach($request->categoryId);
+
+            // Insert each category id to pivot table "category_product"
+            // for ($j = 0; $j < sizeof($data[$i]['category']); $j++) {
+            //     // Find Category ID in category table using $data variable
+            //     $category_id = $data[$i]['category'][$j]["id"];
+            //     $category = Category::find($category_id);
+            //     $product = Product::find($result->id);
+
+            //     $product->categories()->attach($category);
+            // }
 
             $count++;
         }
@@ -311,7 +319,7 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $productId)
     {
-        $data = $request->except(['category', "percentSale"]);
+        $data = $request->except(['categoryId', "percentSale"]);
 
         // Checking Product ID
         $product = Product::find($productId);
@@ -323,6 +331,14 @@ class ProductController extends Controller
         }
 
         $check_existed = Product::where("name", "=", $request->name)->exists();
+        $check_existed_category = Category::where("id", "=", $request->categoryId)->exists();
+
+        if (!$check_existed_category) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Category ID is invalid"
+            ]);
+        }
 
         // Check if the existence of name product in database
         if ($check_existed) {
@@ -350,13 +366,15 @@ class ProductController extends Controller
         // Remove all existed categories from product to readd everything back
         $product->categories()->detach();
 
-        // Checking all categories that product has to decide to attach new categories or skip
-        for ($i = 0; $i < sizeof($request['category']); $i++) {
-            $category_id = $request['category'][$i]['id'];
+        $product->categories()->attach($request->categoryId);
 
-            $category = Category::find($category_id);
-            $product->categories()->attach($category);
-        }
+        // Checking all categories that product has to decide to attach new categories or skip
+        // for ($i = 0; $i < sizeof($request['category']); $i++) {
+        //     $category_id = $request['category'][$i]['id'];
+
+        //     $category = Category::find($category_id);
+        //     $product->categories()->attach($category);
+        // }
 
         return response()->json([
             'success' => true,
