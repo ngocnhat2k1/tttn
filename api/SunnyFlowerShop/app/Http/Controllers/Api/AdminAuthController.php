@@ -311,8 +311,9 @@ class AdminAuthController extends Controller
     public function retrieveToken(Request $request)
     {
         // Checking token existence
-        $decrypt_token = Crypt::decryptString($request->token); // Decrypt first
-        $token = AdminToken::where("token", "=", $decrypt_token)->first();
+        // $decrypt_token = Crypt::decryptString($request->token); // Decrypt first
+        // $token = AdminToken::where("token", "=", $decrypt_token)->first();
+        $token = AdminToken::where("token", "=", $request->bearerToken())->first();
 
         if ($token === null) {
             return response()->json([
