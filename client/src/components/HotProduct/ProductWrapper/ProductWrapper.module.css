@@ -1,26 +1,26 @@
 .productWrapper {
     margin-top: 30px;
     overflow: hidden;
+}
 
-    &:hover {
-        .action {
-            visibility: visible;
-            -webkit-transform: translateY(0);
-            transform: translateY(0);
-            opacity: 1;
-        }
+.productWrapper:hover .action {
+    visibility: visible;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
 
-        .addToCart {
-            visibility: visible;
-            -webkit-transform: translateY(0);
-            transform: translateY(0);
-            opacity: 1;
+}
 
-            &:hover {
-                color: #f79837;
-            }
-        }
-    }
+.productWrapper:hover.addToCart {
+    visibility: visible;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
+
+}
+
+.productWrapper:hover .addToCart:hover {
+    color: #f79837;
 }
 
 .thumb {
@@ -34,6 +34,14 @@
     position: relative;
     display: block;
     overflow: hidden;
+}
+
+.productWrapper .thumb .image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    max-width: 100%;
+    aspect-ratio: 10/11;
 }
 
 .productWrapper .thumb .image img {
@@ -72,10 +80,10 @@ img {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
+}
 
-    &:hover {
-        color: #f79837;
-    }
+.title a:hover {
+    color: #f79837;
 }
 
 .price {
@@ -123,7 +131,7 @@ img {
 }
 
 .best {
-    background-color:#fb26f1;
+    background-color: #fb26f1;
 }
 
 .actions {
@@ -148,10 +156,11 @@ img {
     border-radius: 50%;
     background-color: #fff;
 
-    &:hover {
-        color: white;
-        background-color: #f79837;
-    }
+}
+
+.action:hover {
+    color: white;
+    background-color: #f79837;
 }
 
 .action:not(.wishList) {

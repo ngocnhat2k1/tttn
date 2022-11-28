@@ -18,7 +18,7 @@ class ProductInCartViewResource extends JsonResource
             "productId" => $this->id,
             "name" => $this->name,
             "price" => $this->price,
-            "precentSale" => $this->percent_sale,
+            "percentSale" => $this->percent_sale,
             "img" => $this->img,
             "quantity" => $this->pivot->quantity,
             "status" => $this->status,

@@ -13,30 +13,9 @@ import Footer from "./components/Footer";
 import AccountEdit from "./pages/AccountEdit";
 import Wishlist from "./pages/Wishlist";
 import AddressEdit from "./pages/AddressEdit";
-import { useState, useEffect } from 'react'
-import Cookies from "js-cookie";
-import axios from "axios";
-import AccountEditArea from "./components/AccountEditArea";
+import NotFound from "./components/NotFound";
 
 function App() {
-  // const [listAddress, setListAddress] = useState([]);
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`http://localhost:8000/api/user/address`, {
-  //       headers: {
-  //         Authorization: `Bearer ${Cookies.get('token')}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       if (response.data.success) {
-  //         setListAddress(response.data.data);
-  //       }
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // }, []);
 
   return (
     <GlobalStyles>
@@ -66,14 +45,8 @@ function App() {
             </Route>
             <Route path="/address-edit/*" element={<AddressEdit />}>
             </Route>
-
-
-            {/* {listAddress.leng !== 0 &&
-              listAddress.map((address, index) => {
-                return (
-                  <Route key={index} path={`/address-edit/id=${address.id}`} element={<AddressEdit id={address.id} />}></Route>
-                )
-              })} */}
+            <Route path="*" element={<NotFound />}>
+            </Route>
           </Routes>
           <Footer />
         </div>

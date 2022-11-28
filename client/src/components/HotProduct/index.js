@@ -1,4 +1,4 @@
-import styles from './HotProduct.module.scss'
+import styles from './HotProduct.module.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -24,9 +24,9 @@ function HotProduct() {
                         <div>
                             <ul className={styles.navTabs}>
                                 <li className={unit === "New Arrival" ? styles.tabOnClick : ''} onClick={() => setUnit('New Arrival')}>NEW ARRIVAL</li>
-                                <li className={unit === "Trending" ? styles.tabOnClick : ''} onClick={() => setUnit('Trending')}>TRENDING</li>
+                                {/* <li className={unit === "Trending" ? styles.tabOnClick : ''} onClick={() => setUnit('Trending')}>TRENDING</li> */}
                                 <li className={unit === "Best Seller" ? styles.tabOnClick : ''} onClick={() => setUnit('Best Seller')}>BEST SELLERS</li>
-                                <li className={unit === "On Sell" ? styles.tabOnClick : ''}onClick={() => setUnit('On Sell')}>ON SELL</li>
+                                <li className={unit === "On Sell" ? styles.tabOnClick : ''} onClick={() => setUnit('On Sell')}>ON SELL</li>
                             </ul>
                         </div>
                     </Col>
@@ -35,7 +35,7 @@ function HotProduct() {
                             <div>
                                 <div>
                                     <Row>
-                                        <ProductWrapper productUnit={unit} />
+                                        <ProductWrapper unit={unit} />
                                     </Row>
                                 </div>
                             </div>
