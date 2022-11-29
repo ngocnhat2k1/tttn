@@ -26,6 +26,7 @@
       - Tạo: file <b>.env</b> bằng cách copy file <b>.env.example</b> và sửa tên lại <br>
       - Chạy: <b>php artisan key:generate</b> để tạo APP_KEY trong file <b>.env</b> <br>
       - Thay đổi <b>DB_DATABASE</b> thành <b>NPCamera</b> <br>
+      - Trong file .env thay đổi mục <b>QUEUE_CONNECTION</b> từ <b>sync</b> thành <b>database</b>
       - Chạy: <b>php artisan migrate</b> hoặc <b>php artisan migrate --seed</b> để tạo dữ liệu seed kèm theo database <br>
       - Nếu trong quá trình chạy migrate gặp vấn đề mà muốn refresh lại thì chỉ cần thêm <b>:refresh</b> hoặc <b>:fresh</b> ở phía sau <b>....migrate...</b> là được.<br>
       
@@ -33,5 +34,5 @@
       - Để test gửi mail, trước tiền bạn cần phải vào trang <b>mailtrap.io</b> và đăng nhập, sau đó vào SMTP Setting ở phần Sandbox<br>
       - Ở phần <b>Integrations</b> chọn <b>Laravel 7+</b><br>
       - Vào file <b>.env</b> và điền theo giống với những gì mà trang <b>mailtrap.io</b> cung cấp ở phần dưới <b>Integrations</b> vào trong file đó từ phần <b>MAIL_MAILER</b> đến <b>MAIL_ENCRYPTION</b><br>
-      - Còn phần MAIL_FROM_ADDRESS thì điền bất cứ mail nào cũng được và không nhất thiết là mail đã tồn tại
-      - Cuối cùng là đổi tên phần <b>APP_NAME</b> thành tên theo ý muốn (Nếu muốn thêm tên có dấu cách thì nên thêm dấu "" vào để tránh gây báo lỗi)
+      - Còn phần MAIL_FROM_ADDRESS thì điền bất cứ mail nào cũng được và không nhất thiết là mail đã tồn tại<br>
+      - Đổi tên phần <b>APP_NAME</b> thành tên theo ý muốn (Nếu muốn thêm tên có dấu cách thì nên thêm dấu "" vào để tránh gây báo lỗi)<br>
