@@ -99,7 +99,7 @@ class ProductQueryController extends Controller
 
             if ($product->status === 0 || $product->deleted_at !== null) continue;
 
-            $products_best_seller[$i]["productId"] = $product->id;
+            $products_best_seller[$i]["id"] = $product->id;
             $products_best_seller[$i]["name"] = $product->name;
             $products_best_seller[$i]["description"] = $product->description;
             $products_best_seller[$i]["price"] = $product->price;
@@ -258,7 +258,7 @@ class ProductQueryController extends Controller
         if (empty($data) || $data->deleted_at !== null) {
             return response()->json([
                 "success" => false,
-                "errors" => "Product doesn't not exist"
+                "errors" => "Sản phẩm không tồn tại."
             ]);
         }
 
@@ -369,7 +369,7 @@ class ProductQueryController extends Controller
 
             return response()->json([
                 "success" => false,
-                "errors" => "No products was found base on your keywords"
+                "errors" => "Không sản phẩm nào được tìm thấy sản phẩm."
             ]);
         }
 
@@ -419,7 +419,7 @@ class ProductQueryController extends Controller
 
             return response()->json([
                 "success" => false,
-                "errors" => "No products was found base on your keywords"
+                "errors" => "Không tìm thấy sản phẩm."
             ]);
         }
 

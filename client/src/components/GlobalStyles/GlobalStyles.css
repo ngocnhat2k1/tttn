@@ -22,7 +22,7 @@ section {
     padding-bottom: 100px;
 }
 
-.colorOrange{
+.colorOrange {
     color: #f79837 !important;
 }
 
@@ -30,7 +30,8 @@ body {
     font-family: "Poppins", sans-serif;
 }
 
-ul, ul li {
+ul,
+ul li {
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -49,7 +50,7 @@ a:hover {
     color: #f79837;
 }
 
-.btn_sm{
+.btn_sm {
     padding: 10px 16px;
 }
 
@@ -63,7 +64,8 @@ a:hover {
     text-decoration: none;
 }
 
-.bg-black, .bg-black:hover {
+.bg-black,
+.bg-black:hover {
     border: 1px solid #000;
 }
 
@@ -72,7 +74,8 @@ a:hover {
     background-color: #fff !important;
 }
 
-.bg-black, .bg-whites:hover {
+.bg-black,
+.bg-whites:hover {
     color: #fff;
     background-color: #000;
 }
@@ -100,5 +103,28 @@ table {
 }
 
 .justifyContentCenter {
-    justify-content: center!important;
+    justify-content: center !important;
+}
+
+.btnNo {
+    background-color: black !important;
+    color: white;
+}
+
+.btnYes {
+    background-color: red !important;
+    color: white;
+}
+
+.svgQuestion {
+    color: #f79837 !important;
+}
+
+.colorSuccess {
+    color: #28a745 !important;
+}
+
+.colorFail {
+    color: red !important;
+
 }

@@ -13,7 +13,7 @@ function TopHeader() {
     const [user, setUser] = useState();
 
     useEffect(() => {
-        if (Cookies.get('token') === false) {
+        if (Cookies.get('token')) {
             axios
                 .get(`http://127.0.0.1:8000/api/user/profile`, {
                     headers: {
@@ -21,7 +21,6 @@ function TopHeader() {
                     },
                 })
                 .then((response) => {
-                    console.log(response.data)
                     setUser(response.data.data);
                 })
                 .catch(function (error) {
@@ -40,7 +39,8 @@ function TopHeader() {
                         </div>
                     </Col>
                     <Col lg={6} md={6} sm={12} xs={12}>
-                        {user && <TopHeaderRightAuth user={user} /> || !user && <TopHeaderRightDefault />}
+                        {user && <TopHeaderRightAuth user={user} />}
+                        {!user && <TopHeaderRightDefault />}
                     </Col>
                 </Row>
             </Container>

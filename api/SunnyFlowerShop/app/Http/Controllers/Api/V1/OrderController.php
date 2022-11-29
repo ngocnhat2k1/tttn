@@ -29,7 +29,7 @@ class OrderController extends Controller
         if (empty($count)) {
             return response()->json([
                 'success' => false,
-                "errors" => "This user hasn't made any order yet"
+                "errors" => "Danh sách đơn hàng hiện đang trống."
             ]);
         }
 
@@ -63,7 +63,7 @@ class OrderController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong, Please recheck Order ID"
+                "errors" => "Đơn hàng không tồn tại."
             ]);
         }
 
@@ -71,7 +71,7 @@ class OrderController extends Controller
 
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
-            
+
             $voucher_data = [
                 "voucherId" => $voucher->voucher_id,
                 "percent" => $voucher->percent,
@@ -79,8 +79,7 @@ class OrderController extends Controller
                 "expiredDate" => $voucher->expired_date,
                 "deleted" => $voucher->deleted,
             ];
-        }
-        else {
+        } else {
             $voucher_data = null;
         }
 
@@ -136,7 +135,7 @@ class OrderController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Order ID is invalid"
+                "errors" => "Đơn hàng không tồn tại."
             ]);
         }
 
@@ -145,7 +144,7 @@ class OrderController extends Controller
         if ($order->deleted_by !== null) {
             return response()->json([
                 "success" => false,
-                "errors" => "Order has already cancelled"
+                "errors" => "Đơn hàng đã bị hủy."
             ]);
         }
 
@@ -157,19 +156,19 @@ class OrderController extends Controller
         if (!$result) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json(
             [
                 'success' => true,
-                'message' => "Sucessfully canceled Order ID = " . $request->id
+                'message' => "Thành công việc hủy Đơn hàng với ID = " . $query->first()->id_delivery
             ]
         );
     }
 
-    public function updateStatus(Request $request)
+    public function updateStatus(GetCustomerBasicRequest $request)
     {
         $query = Order::where("id", "=", $request->id)
             ->where("customer_id", "=", $request->user()->id);
@@ -178,17 +177,17 @@ class OrderController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Customer don't have this Order with ID = " . $request->id
+                "errors" => "Đơn hàng không tồn tại."
             ]);
         }
 
         $order = $query->first();
 
         // We only allow customer to change Order Status to Completed state
-        if ($order->status === 0 || $order->status === 2) {
+        if ($order->status === 2) {
             return response()->json([
                 "success" => false,
-                "errors" => "This Order was updated to Completed State"
+                "errors" => "Đơn hàng này đã được chuyển sang trạng thái hoàn tất."
             ]);
         }
 
@@ -198,7 +197,7 @@ class OrderController extends Controller
         if ($products->count() === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "HOW AN ORDER DON'T HAVE ANY PRODUCTS??? WHAT IS THIS???"
+                "errors" => "TẠI SAO ĐƠN HÀNG KHÔNG CÓ SẢN PHẨM?? ALO??"
             ]);
         }
 
@@ -225,13 +224,13 @@ class OrderController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected errors has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully Updated Order state to Completed state"
+            "message" => "Cập nhật thành công Đơn hàng sang trạng thái Hoàn tất"
         ]);
 
         /**

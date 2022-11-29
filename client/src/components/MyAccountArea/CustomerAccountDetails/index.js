@@ -3,16 +3,15 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import axios from '../../../service/axiosClient'
 import Cookies from 'js-cookie';
+import MessageModal from './MessageModal/index'
 
 function CustomerAccountDetails() {
 
-    const [profile, setProfile] = useState({
-        avatar: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: ''
-    });
+    const [lastName, setLastName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [email, setEmail] = useState('');
+    const [avatar, setAvatar] = useState('');
+    const [subscribe, setSubscribe] = useState('');
 
     useEffect(() => {
         axios
@@ -22,7 +21,15 @@ function CustomerAccountDetails() {
                 },
             })
             .then((response) => {
-                setProfile(response.data.data);
+                setFirstName(response.data.data.firstName);
+                setLastName(response.data.data.lastName);
+                setEmail(response.data.data.email);
+                if (!response.data.data.avatar) {
+                    setAvatar(response.data.data.defaultAvatar)
+                } else {
+                    setAvatar(response.data.data.avatar)
+                }
+                setSubscribe(response.data.data.subscribe);
             })
             .catch(function (error) {
                 console.log(error);
@@ -39,24 +46,21 @@ function CustomerAccountDetails() {
                 <div className={styles.accountDetailsForm}>
                     <form>
                         <div className={styles.imgProfiles}>
-                            <img src={profile?.avatar} alt="img" />
+                            <img src={avatar} alt="img" />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>First Name</label>
-                            <input type="text" name="first-name" value={profile?.firstName} className='form-control' disabled />
+                            <input type="text" name="first-name" value={firstName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Last Name</label>
-                            <input type="text" name="last-name" value={profile?.lastName} className='form-control' disabled />
+                            <input type="text" name="last-name" value={lastName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Email</label>
-                            <input type="text" name="email-name" value={profile?.email} className='form-control' disabled />
+                            <input type="text" name="email-name" value={email} className='form-control' disabled />
                         </div>
-                        <div className={styles.defaultFormBox}>
-                            <label>Phone number</label>
-                            <input type="text" name="phone-number" value={profile?.phoneNumber} className='form-control' disabled />
-                        </div>
+                        <MessageModal subsc={subscribe} />
                     </form>
                 </div>
             </div>

@@ -42,7 +42,7 @@ class ForgotPasswordController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "No user was found associated with this email"
+                "errors" => "Email không tồn tại."
             ]);
         }
 
@@ -72,12 +72,12 @@ class ForgotPasswordController extends Controller
         // Send email
         $userName = $user->first_name . " " . $user->last_name;
         $title = "Yêu cầu đổi mật khẩu";
-        Mail::to($user->email)->send(new ForgotPasswordMail($userName, $resetCode, $title, $title));
+        Mail::to($user->email)->queue(new ForgotPasswordMail($userName, $resetCode, $title, $title));
 
         return response()->json([
             "success" => true,
             "email" => $request->email,
-            "message" => "A code was send to your email"
+            "message" => "Một đoạn mã xác thực đã được gửi đến email."
         ]);
     }
 
@@ -101,7 +101,7 @@ class ForgotPasswordController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Invalid reset password code"
+                "errors" => "Mã xác thực không hợp lệ."
             ]);
         }
 
@@ -110,14 +110,14 @@ class ForgotPasswordController extends Controller
         if (!$this->checkTimeValid($user->expired)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Sorry code is expired, please send another request"
+                "errors" => "Mã xác thực đã hết hạn, vui lòng gửi lại mã xác thực để tiến hành thực hiện đổi mật khẩu."
             ]);
         }
 
         return response()->json([
             "success" => true,
             "email" => $request->email,
-            "message" => "Reset password code is verified. You will be redirected to reset password page"
+            "message" => "Mã xác thực hợp lệ. Bạn sẽ được chuyển đến trang đổi mật khẩu."
         ]);
     }
 
@@ -130,14 +130,14 @@ class ForgotPasswordController extends Controller
         if (!$queryPasswordReset->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Oops! You're not supposed to be here"
+                "errors" => "Đi đâu vậy anh bạn?!"
             ]);
         }
 
         if (!$queryUser->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't change password with invalid email"
+                "errors" => "Không thể thực hiện đổi mật khẩu với email không tồn tại."
             ]);
         }
 
@@ -145,7 +145,7 @@ class ForgotPasswordController extends Controller
         if ($request->password !== $request->confirmPassword) {
             return response()->json([
                 "success" => false,
-                "errors" => "Passwords are not the same"
+                "errors" => "Mật khẩu không khớp."
             ]);
         }
 
@@ -155,7 +155,7 @@ class ForgotPasswordController extends Controller
         if (Hash::check($request->password, $user->password)) {
             return response()->json([
                 "success" => false,
-                "errors" => "New password can't be the same as an old one"
+                "errors" => "Mật khẩu mới không thể giống với mật khẩu cũ."
             ]);
         }
 
@@ -172,11 +172,11 @@ class ForgotPasswordController extends Controller
         // Send mail to notify password has changed
         $userName = $user->first_name . " " . $user->last_name;
         $title = "Mật khẩu của quý khách đã được thay đổi";
-        Mail::to($user->email)->send(new ResetPasswordSuccessMail($userName, $title, $title));
+        Mail::to($user->email)->queue(new ResetPasswordSuccessMail($userName, $title, $title));
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully reset password"
+            "message" => "Đổi mật khẩu thành công."
         ]);
     }
 }

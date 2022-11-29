@@ -21,7 +21,7 @@ class VoucherCustomerController extends Controller
         if (!$vouchers->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "This user hasn't used any voucher yet"
+                "errors" => "Người dùng này chưa dùng mã giảm giá nào."
             ]);
         }
 
@@ -38,7 +38,7 @@ class VoucherCustomerController extends Controller
         if (!$data->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "This customer hasn't used this voucher yet"
+                "errors" => "Người dùng này chưa dùng mã giảm giá này."
             ]);
         }
 

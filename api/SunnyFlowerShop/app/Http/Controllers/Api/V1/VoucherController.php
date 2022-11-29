@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
 use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Resources\V1\VoucherDetailCollection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VoucherController extends Controller
 {
@@ -25,7 +26,7 @@ class VoucherController extends Controller
         if (empty($count)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Voucher list is empty"
+                "errors" => "Danh sách mã giảm giá hiện đang trống."
             ]);
         }
 
@@ -47,7 +48,7 @@ class VoucherController extends Controller
         if ($voucher) {
             return response()->json([
                 "success" => false,
-                "errors" => "Voucher name has already existsed"
+                "errors" => "Tên mã giảm giá đã tồn tại."
             ]);
         }
 
@@ -58,13 +59,13 @@ class VoucherController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected errors has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Created new Voucher successfully"
+            "message" => "Tạo mã giảm giá mới thành công."
         ]);
     }
 
@@ -81,7 +82,7 @@ class VoucherController extends Controller
         if (!$voucher->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Voucher ID is invalid"
+                "errors" => "Mã giảm giá không tồn tại."
             ]);
         }
 
@@ -116,7 +117,7 @@ class VoucherController extends Controller
         if ($voucher) {
             return response()->json([
                 "success" => false,
-                "errors" => "Voucher name has already existsed"
+                "errors" => "Tên mã giảm giá đã tồn tại."
             ]);
         }
 
@@ -125,7 +126,7 @@ class VoucherController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't update with invalid Voucher ID"
+                "errors" => "Không thể cập nhật thông tin của mã giảm giá không tồn tại."
             ]);
         }
 
@@ -137,14 +138,69 @@ class VoucherController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected errors has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated Voucher with ID = " . $request->id . " successfully"
+            "message" => "Cập nhật thành công thông tin của Mã giảm giá có ID = " . $request->id
         ]);
+    }
+
+    public function showVoucher(GetAdminBasicRequest $request) {
+        $voucherShowed = Voucher::where("show", "=", 1)->get();
+
+        $voucherSelected = Voucher::find($request->id);
+
+        // If state is 1, then proceed to show voucher
+        if ((int) $request->state === 1) {
+
+            if ($voucherShowed->count() >= 1) {
+                $arr = [];
+    
+                for ($i = 0; $i < sizeof($voucherShowed); $i++) {
+                    if ($voucherShowed[$i]->show === 1)  {
+                        $arr[$i] = $voucherShowed[$i]->name;
+                    }
+                }
+    
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Những mã giảm giá hiện đang được hiển thị " . implode(", ", $arr)
+                ]);
+            }
+
+            if ($voucherSelected->show === 1) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Mã giảm giá ĐÃ ĐƯỢC chuyển sang trạng thái hiển thị."
+                ]);
+            }
+            $voucherSelected->show = 1;
+            $voucherSelected->save();
+
+            return response()->json([
+                "success" => true,
+                "message" => "Mã giảm giá được chuyển sang trạng thái hiển thị."
+            ]);
+        }
+        // If state is 0, then proceed to hide voucher
+        else {
+            if ($voucherSelected->show === 0) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Mã giảm giá ĐÃ ĐƯỢC chuyển sang trạng thái ẩn."
+                ]);
+            }
+            $voucherSelected->show = 0;
+            $voucherSelected->save();
+
+            return response()->json([
+                "success" => true,
+                "message" => "Mã giảm giá được chuyển sang trạng thái ẩn."
+            ]);
+        }
     }
 
     /**
@@ -153,15 +209,15 @@ class VoucherController extends Controller
      * @param  \App\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(GetAdminBasicRequest $request)
     {
         $voucherID = $request->state;
-        $query = Voucher::where("id", "=", $voucherID);
+        $query = Voucher::where("id", "=", $request->id);
 
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't delete with invalid Voucher ID"
+                "errors" => "Mã giảm giá không tồn tại."
             ]);
         }
 
@@ -174,7 +230,7 @@ class VoucherController extends Controller
             if ($voucher->deleted !== null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Voucher with ID = " . $voucherID . " has already been (Soft) deleted"
+                    "errors" => "Mã giảm giá với ID = " . $request->id . " đã được xóa (mềm)"
                 ]);
             }
 
@@ -185,13 +241,13 @@ class VoucherController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected errors has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json([
                 "success" => true,
-                "message" => "Deleted Voucher with ID = " . $voucherID . " successfully"
+                "message" => "Xóa thành công Mã giảm giá với ID = " . $request->id
             ]);
         }
         // If not then Reverse (Soft) Delete
@@ -200,7 +256,7 @@ class VoucherController extends Controller
             if ($voucher->deleted !== 1) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Voucher with ID = " . $voucherID . " has already been reversed (Soft) deleteion process"
+                    "errors" => "Mã giảm giá với ID = " . $request->id . " đã được hoàn tác việc xóa."
                 ]);
             }
 
@@ -211,13 +267,13 @@ class VoucherController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected errors has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json([
                 "success" => true,
-                "message" => "Reversed Deletion new Voucher with ID = " . $voucherID . " successfully"
+                "message" => "Hoàn tác thành công việc xóa Mã giảm giá với ID = " . $request->id
             ]);
         }
     }

@@ -30,7 +30,7 @@ class CustomerController extends Controller
         if ($check === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "User list is empty"
+                "errors" => "Danh sách người dùng hiện đang trống."
             ]);
         }
 
@@ -56,7 +56,7 @@ class CustomerController extends Controller
         if ($check_email) {
             return response()->json([
                 "success" => false,
-                "errors" => "Email has already been used"
+                "errors" => "Email đã được sử dụng."
             ]);
         }
 
@@ -67,13 +67,13 @@ class CustomerController extends Controller
         if (empty($result->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Create account succesfully"
+            "message" => "Tạo tài khoản người dùng thành công."
         ]);
     }
 
@@ -84,7 +84,7 @@ class CustomerController extends Controller
         if (empty($customer)) {
             return response()->json([
                 "success" => false,
-                "errors" => "User ID is invalid"
+                "errors" => "Tài khoản không tồn tại."
             ]);
         }
 
@@ -94,7 +94,7 @@ class CustomerController extends Controller
             if ($customer->disabled !== null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Customer with ID = " . $customer->id . " has already been disabled"
+                    "errors" => "Tài khoản có ID = " . $customer->id . " đã bị vô hiệu hóa."
                 ]);
             }
 
@@ -116,14 +116,14 @@ class CustomerController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully disabled account customer with ID = " . $customer->id
+                    'errors' => "Đã thành công vô hiệu quá Khách hàng có ID = " . $customer->id
                 ]
             );
         }
@@ -132,7 +132,7 @@ class CustomerController extends Controller
             if ($customer->disabled === null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Customer with ID = " . $customer->id . " has already been reversed disabled"
+                    "errors" => "Khách hàng có ID = " . $customer->id . " đã được hoàn tác việc vô hiệu hóa."
                 ]);
             }
 
@@ -142,14 +142,14 @@ class CustomerController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
                 ]);
             }
 
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully reversed disable account customer with ID = " . $customer->id
+                    'errors' => "Thành công việc hoàn tác vô hiệu hóa Khách hàng có ID = " . $customer->id
                 ]
             );
         }
@@ -169,7 +169,7 @@ class CustomerController extends Controller
             if ($check) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Email has already been used"
+                    "errors" => "Email đã tồn tại, vui lòng sử dụng email khác."
                 ]);
             }
         }
@@ -186,13 +186,13 @@ class CustomerController extends Controller
         if (empty($update)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated Customer information successfully"
+            "message" => "Cập nhật thông tin người dùng thành công."
         ]);
     }
 
@@ -202,7 +202,7 @@ class CustomerController extends Controller
         if (Hash::check($request->password, $customer->password)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't replace password with the same old one"
+                "errors" => "Mật khẩu mới không thể giống với mật khẩu cũ."
             ]);
         }
 
@@ -212,13 +212,13 @@ class CustomerController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully changed password"
+            "message" => "Đổi mật khẩu thành công."
         ]);
     }
 
@@ -232,13 +232,13 @@ class CustomerController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Uploaded avatar successfully"
+            "message" => "Cập nhật ảnh đại diện người dùng thành công."
         ]);
     }
 
@@ -251,13 +251,13 @@ class CustomerController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Remove avatar successfully"
+            "message" => "Xóa ảnh đại diện người dùng thành công."
         ]);
     }
 }

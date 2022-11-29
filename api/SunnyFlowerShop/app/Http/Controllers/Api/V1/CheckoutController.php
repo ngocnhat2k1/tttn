@@ -121,7 +121,7 @@ class CheckoutController extends Controller
         $userName = $customer->first_name . " " . $customer->last_name;
         $priceOrder = $order->total_price;
         $idDelivery = $order->id_delivery;
-        Mail::to($customer->email)->send(new PlaceOrderMail($title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
+        Mail::to($customer->email)->queue(new PlaceOrderMail($title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
     }
 
     public function generateDeliveryCode($orderType)
@@ -145,7 +145,7 @@ class CheckoutController extends Controller
         if ($order->deleted_by !== null || $momo->status === -1) {
             return response()->json([
                 "success" => false,
-                "errors" => "Oops! Something went wrong. This order has already been cancelled"
+                "errors" => "Đi đâu vậy anh bạn. Đơn hàng đã được hủy rồi!"
             ]);
         }
 
@@ -184,7 +184,7 @@ class CheckoutController extends Controller
 
             $json_return = [
                 "success" => false,
-                "errors" => "Transaction has been cancelled by customer"
+                "errors" => "Giao dịch đã bị hủy bởi người dùng."
             ];
 
             // Restore voucher usage
@@ -241,13 +241,13 @@ class CheckoutController extends Controller
         if (empty($detach)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Placed order successfully"
+            "message" => "Đơn hàng đã được đặt hàng thành công."
         ]);
     }
 
@@ -271,7 +271,7 @@ class CheckoutController extends Controller
             if ((strtotime($vouchers->expired_date) - strtotime($current_date)) < 0 || $vouchers->deleted !== null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Voucher code is expired, please recheck your voucher code"
+                    "errors" => "Mã giảm giá đã hết hạn, vui lòng sử dụng mã giảm giá khác."
                 ]);
             }
 
@@ -279,7 +279,7 @@ class CheckoutController extends Controller
             if ($vouchers->usage === 0) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Voucher code is out of usage, better luck next time"
+                    "errors" => "Mã giảm giá đã hết hạn sử dụng, Chúc bạn may mắn lần sau."
                 ]);
             }
 
@@ -290,13 +290,13 @@ class CheckoutController extends Controller
             if ($voucher_exist_in_customer) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "You have already used this voucher."
+                    "errors" => "Bạn đã sử dụng mã giảm giá này."
                 ]);
             }
         } else if (!empty($request->voucher_code)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Voucher code doesn't exist, please recheck your voucher code"
+                "errors" => "Mã giảm giá không tồn tại, Vui lòng kiểm tra lại mã đang được sử dụng."
             ]);
         }
 
@@ -322,7 +322,7 @@ class CheckoutController extends Controller
         if (!empty($invalid_product_quantity_arr)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Some products don't have enough quantity in Cart. These are: " . implode(", ", $invalid_product_quantity_arr)
+                "errors" => "Một vài sản phẩm không đủ số lượng trong kho. Các sản phẩm đó là: " . implode(", ", $invalid_product_quantity_arr)
             ]);
         }
 
@@ -330,7 +330,7 @@ class CheckoutController extends Controller
         if ($count !== 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "1 or 2 product got deleted or have already out of stock, please recheck your cart"
+                "errors" => "Một vài sản phẩm đã bị xóa hoặc bị đã hết hàng."
             ]);
         }
         /** ##### END OF IF CONDITION SECTION ##### */
@@ -387,7 +387,7 @@ class CheckoutController extends Controller
         if (empty($check->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -397,7 +397,7 @@ class CheckoutController extends Controller
         if (empty($order->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành (lần 2) !!"
             ]);
         }
 
@@ -418,7 +418,7 @@ class CheckoutController extends Controller
             if (empty($result->id)) {
                 return response()->json([
                     "success" => false,
-                    "erorrs" => "An unexpected error has occurred"
+                    "erorrs" => "Đã có lỗi xảy ra trong quá trình vận hành (lần 3) !!"
                 ]);
             }
 
@@ -442,7 +442,7 @@ class CheckoutController extends Controller
         if ($data->count() === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "Your cart is empty or Your Order is currently in progress"
+                "errors" => "Giỏ hàng của bạn đang trống."
             ]);
         }
 

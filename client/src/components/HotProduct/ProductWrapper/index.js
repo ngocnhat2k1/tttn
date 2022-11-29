@@ -2,9 +2,11 @@ import styles from './ProductWrapper.module.css'
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import { Link } from 'react-router-dom'
-import { FaRegHeart, FaExpand } from "react-icons/fa";
+import { FaExpand } from "react-icons/fa";
 import { formatter } from '../../../utils/utils';
 import { useEffect, useState } from 'react';
+import ModalAddToWishList from './ModalAddToWishList';
+import ModalAddToCart from './ModalAddToCart';
 
 function ProductWrapper({ unit }) {
 
@@ -18,7 +20,6 @@ function ProductWrapper({ unit }) {
         axios
             .get(`http://localhost:8000/api/product/newArrival`)
             .then(response => {
-                console.log("1", response.data)
                 setListNewArrival(response.data.data)
             })
             .catch(err => {
@@ -28,7 +29,6 @@ function ProductWrapper({ unit }) {
         axios
             .get(`http://localhost:8000/api/product/saleProduct`)
             .then(response => {
-                console.log("2", response.data)
                 setListOnSell(response.data.data)
             })
             .catch(err => {
@@ -87,18 +87,16 @@ function ProductWrapper({ unit }) {
                                         {unit === "On Sell" ? product.percentSale + "% OFF" : unit}</span>
                                 </span>
                                 <div className={styles.actions}>
-                                    <a className={`${styles.wishList} ${styles.action}`} title="Wishlist">
-                                        <FaRegHeart />
-                                    </a>
-                                    <a className={`${styles.quickView} ${styles.action}`} title="Quickview">
+                                    <ModalAddToWishList productId={product.id} />
+                                    <a className={`${styles.action}`} title="Quickview">
                                         <FaExpand />
                                     </a>
                                 </div>
-                                <button className={`${styles.addToCart}`}>Add to cart</button>
+                                <ModalAddToCart productId={product.id} />
                             </div>
                             <div className={styles.content}>
                                 <h5 className={styles.title}>
-                                <Link to={`/shop/${product.id}`}>{product.name}</Link>
+                                    <Link to={`/shop/${product.id}`}>{product.name}</Link>
                                 </h5>
                                 <span className={styles.price}>
                                     {formatter.format(product.price * ((100 - product.percentSale) / 100))}

@@ -17,10 +17,8 @@ function CustomerAddress() {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
-            .then((response) => {
-                if (response.data.success) {
+            .then(response => {
                     setListAddress(response.data.data);
-                }
             })
             .catch(function (error) {
                 console.log(error);
