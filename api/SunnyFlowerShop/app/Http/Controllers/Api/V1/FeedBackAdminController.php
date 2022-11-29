@@ -82,7 +82,7 @@ class FeedBackAdminController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong, please rechack Feedback ID"
+                "errors" => "Phản hồi sản phẩm không tồn tại."
             ]);
         }
 
@@ -95,7 +95,7 @@ class FeedBackAdminController extends Controller
         if (!$customer_query->exists() || !$product->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Feedback has some invalid information, please double check database before displaying"
+                "errors" => "Phản hồi sản phẩm có vài thông tin không hợp lệ, vui lòng kiểm tra trước khi hiển thị lên màn hình."
             ]);
         }
 
@@ -140,13 +140,13 @@ class FeedBackAdminController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Product ID is invalid"
+                "errors" => "Phản hồi của Sản phẩm có ID = " . $productId->id . " không tồn tại."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Deleted feedback of Product ID = " . $productId->id . " successfully"
+            "message" => "Xóa thành công phản hồi của Sản phẩm có ID = " . $productId->id
         ]);
     }
 }

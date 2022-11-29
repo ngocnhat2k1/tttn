@@ -40,7 +40,7 @@ class FavoriteController extends Controller
         if ($favorite_products->count() === 0) {
             return response()->json([
                 "success" => false,
-                "message" => "This user hasn't added any product to favorite yet"
+                "message" => "Chưa có sản phẩm nào được thêm vào mục yêu thích."
             ]);
         }
 
@@ -89,13 +89,13 @@ class FavoriteController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Added Product to favorite successfully"
+                "message" => "Thêm sản phẩm vào mục yêu thích thành công."
             ]);
         }
 
         return response()->json([
             "success" => false,
-            "message" => "Product has already been added to favorite"
+            "message" => "Sản phẩm đã được thêm vào mục yêu thích."
         ]);
     }
 
@@ -114,7 +114,7 @@ class FavoriteController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't remove an unexisted product from favorite"
+                "errors" => "Không thể xóa sản phẩm không tồn tại khỏi mục yêu thích."
             ]);
         }
 
@@ -123,13 +123,13 @@ class FavoriteController extends Controller
         if (empty($data)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Removed product from favorite successfully"
+            "message" => "Xóa sản phẩm khỏi mục yêu thích thành công."
         ]);
     }
 }

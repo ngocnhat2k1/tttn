@@ -26,7 +26,6 @@ class ProductDetailResource extends JsonResource
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
             "categoryId" =>$this->categories[0]->id
-
         ];
     }
 }

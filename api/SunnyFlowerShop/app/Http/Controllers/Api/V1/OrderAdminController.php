@@ -42,7 +42,7 @@ class OrderAdminController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Order list is empty"
+                "errors" => "Danh sách đơn hàng hiện đang trống."
             ]);
         }
 
@@ -94,7 +94,7 @@ class OrderAdminController extends Controller
         if (!$voucher_query->exists() || !$customer_query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Order has some invalid information, please double check database before displaying"
+                "errors" => "Đơn hàng có vài thông tin không hợp lệ, vui lòng kiểm tra lại trước khi cho phép hiển thị trên màn hình."
             ]);
         }
 
@@ -142,7 +142,7 @@ class OrderAdminController extends Controller
         if ($order->deleted_by !==  null || $order->status === 2) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't Update Status when Order got cancelled or Order is in Completed state"
+                "errors" => "Không thể thay đổi trạng thái Đơn hàng nếu Đơn hàng đang ở trạng thái hủy hoặc hoàn tất."
             ]);
         }
 
@@ -153,21 +153,21 @@ class OrderAdminController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         if ($state === 0) {
-            $order_state = "Pending";
+            $order_state = "Đang xử lý";
         } else if ($state === 1) {
-            $order_state = "Confirmed";
+            $order_state = "Xác nhận";
         } else {
-            $order_state = "Completed";
+            $order_state = "Hoàn tất";
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully Updated Order with ID = " . $order->id .  " to " . $order_state . " state"
+            "message" => "Cập nhật thành công trạng thái của Đơn hàng có ID = " . $order->id .  " sang trạng thái " . $order_state
         ]);
     }
 
@@ -177,7 +177,7 @@ class OrderAdminController extends Controller
         if ($order->status === 2) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't cancelled Order in Completed State"
+                "errors" => "Không thể hủy đơn hàng nếu Đơn hàng đang trong trạng thái Hoàn tất."
             ]);
         }
 
@@ -189,7 +189,7 @@ class OrderAdminController extends Controller
             if ($order->deleted_by !== null || $order->deleted_by === 0) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Order with ID = " . $order->id . " has already been cancelled"
+                    "errors" => "Đơn hàng với ID = " . $order->id . " đã được hủy."
                 ]);
             }
 
@@ -200,14 +200,14 @@ class OrderAdminController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json(
                 [
                     'success' => true,
-                    'message' => "Sucessfully cancelled Order ID = " . $order->id
+                    'message' => "Hủy thành công Đơn hàng có ID = " . $order->id
                 ]
             );
 
@@ -218,7 +218,7 @@ class OrderAdminController extends Controller
             if ($order->deleted_by === null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Order with ID = " . $order->id . " has already been reversed cancel"
+                    "errors" => "Đơn hàng với ID = " . $order->id . " đã được hoàn tác việc hủy đơn."
                 ]);
             }
 
@@ -229,14 +229,14 @@ class OrderAdminController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json(
                 [
                     'success' => true,
-                    'message' => "Sucessfully reversed cancel Order ID = " . $order->id
+                    'message' => "Hoàn tác thành công việc hủy Đơn hàng với ID = " . $order->id
                 ]
             );
         }

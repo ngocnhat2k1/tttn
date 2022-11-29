@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedTinyInteger("percent")->comment("Max is 100");
             $table->unsignedInteger("usage")->default(5)->comment("Minimum limit usage is 5");
             $table->dateTime("expired_date");
+            $table->boolean("show")->default(0)->comment("Only 1 can be turn to TRUE value. This column used for show new voucher available on front page");
             $table->boolean("deleted")->nullable()->comment("1 for deleted, NULL for default value");
             $table->timestamps();
         });

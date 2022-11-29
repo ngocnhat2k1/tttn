@@ -24,7 +24,7 @@ class AddressCustomerController extends Controller
         if ($addresses->count() === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "This user has created any address yet"
+                "errors" => "Người dùng chưa tạo địa chỉ liên kết với tài khoản."
             ]);
         }
 
@@ -42,7 +42,7 @@ class AddressCustomerController extends Controller
         if (!$addresses->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
+                "errors" => "Vui lòng kiểm tra lại ID Khách hàng và ID Địa chỉ."
             ]);
         }
 
@@ -65,7 +65,7 @@ class AddressCustomerController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address is already existed"
+                "errors" => "Địa chỉ đã được liên kết với tài khoản này."
             ]);
         }
 
@@ -77,7 +77,7 @@ class AddressCustomerController extends Controller
         if (empty($address)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã cói lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -85,7 +85,7 @@ class AddressCustomerController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Create new address for Customer ID = " . $customer->id . " successfully"
+            "message" => "Tạo địa chỉ thành công cho Khách hàng có ID = " . $customer->id
         ]);
     }
 
@@ -98,7 +98,7 @@ class AddressCustomerController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
+                "errors" => "Vui lòng kiểm tra lại ID Khách hàng và ID Địa chỉ."
             ]);
         }
 
@@ -116,7 +116,7 @@ class AddressCustomerController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address is already associated with this account"
+                "errors" => "Địa chỉ đã được liên kết với tài khoản này."
             ]);
         }
 
@@ -128,13 +128,13 @@ class AddressCustomerController extends Controller
         if (empty($update)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã cói lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Update Address with ID = " . $address->id . " successfully"
+            "message" => "Cập nhật thành công Địa chỉ có ID = " . $address->id
         ]);
     }
 
@@ -147,7 +147,7 @@ class AddressCustomerController extends Controller
         if (!$query_address->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck Customer ID and Address ID"
+                "errors" => "Vui lòng kiểm tra lại ID Khách hàng và ID Địa chỉ."
             ]);
         }
 
@@ -158,13 +158,13 @@ class AddressCustomerController extends Controller
         if (empty($delete)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã cói lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Remove addess with Address ID = " . $address->id . " from Customer ID = " . $customer->id . " successfully"
+            "message" => "Xóa thành công Địa chỉ có ID = " . $address->id . " từ Khách hàng có ID = " . $customer->id
         ]);
     }
 }

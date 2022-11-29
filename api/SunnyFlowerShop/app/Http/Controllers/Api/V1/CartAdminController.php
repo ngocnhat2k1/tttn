@@ -46,7 +46,7 @@ class CartAdminController extends Controller
         if ($check === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "User list is empty"
+                "errors" => "Danh sách người dùng hiện đang trống"
             ]);
         }
 
@@ -64,7 +64,7 @@ class CartAdminController extends Controller
         if (!$check) {
             return response()->json([
                 "success" => false,
-                "errors" => "This user hasn't added any product to cart yet"
+                "errors" => "Người dùng chưa thêm sản phẩm vào giỏ hàng."
             ]);
         }
 
@@ -102,7 +102,7 @@ class CartAdminController extends Controller
         if (!$customer->exists() || !$product->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck Customer ID and Product ID"
+                "errors" => "Vui lòng kiểm tra lại Product ID và Customer ID."
             ]);
         }
 
@@ -114,7 +114,7 @@ class CartAdminController extends Controller
         if (!$product_cart->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't find product in Customer Cart, product may already got deleted"
+                "errors" => "Không tìm thấy sản phẩm trong Giỏ hành của Khách hàng. Có thể sản phẩm đã bị xóa trước đó."
             ]);
         }
 
@@ -124,13 +124,13 @@ class CartAdminController extends Controller
         if (empty($delete)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "messagee" => "Removed Product with ID = " . $product->first()->id ." from Customer Cart with ID = " . $customer->first()->id . " successfully"
+            "messagee" => "Xóa thành công Sản phẩm với ID = " . $product->first()->id ." từ Khách hàng có ID = " . $customer->first()->id
         ]);
     }
 
@@ -141,7 +141,7 @@ class CartAdminController extends Controller
         if (!$customer->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't empty Customer Cart with invalid Customer ID"
+                "errors" => "Không thể làm trống giỏ hàng của khách hàng không tồn tại."
             ]);
         }
 
@@ -152,7 +152,7 @@ class CartAdminController extends Controller
         if (!$cart_customer->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't empty an Empty Cart"
+                "errors" => "Không thể làm trống giỏ hàng đã trống."
             ]);
         }
 
@@ -162,13 +162,13 @@ class CartAdminController extends Controller
         if (empty($delete)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "messagee" => "Emptied Customer Cart with ID = " . $customer->first()->id . " successfully"
+            "messagee" => "Làm trống thành công giỏ hàng của Khách hàng có ID = " . $customer->first()->id
         ]);
     }
     /** END OF ADMIN FUNCTION */
@@ -182,7 +182,7 @@ class CartAdminController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID sản phẩm và ID Khách hàng."
             ]);
         }
         
@@ -190,7 +190,7 @@ class CartAdminController extends Controller
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+                "errors" => "Số lượng sản phẩm đã gần hết, vui lòng giảm số lượng sản phẩm trước khi thêm vào giỏ hàng."
             ]);
         }
 
@@ -204,7 +204,7 @@ class CartAdminController extends Controller
             if ($request->quantity < 0) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Can't add product to cart with negative quantity"
+                    "errors" => "Không thể thêm sản phẩm với số lượng là số âm."
                 ]);
             }
 
@@ -214,7 +214,7 @@ class CartAdminController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been added with " . $request->quantity . " quantity"
+                "message" => "Thêm thành công Sản phẩm có ID = " . $request->product_id . " với số lượng là " . $request->quantity
             ]);
         }
 
@@ -226,7 +226,7 @@ class CartAdminController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Successfully removed Product with ID = " . $request->id . " from cart"
+                "message" => "Xóa thành công Sản phẩm có ID = " . $request->id . " khỏi giỏ hàng."
             ]);
         }
 
@@ -235,7 +235,7 @@ class CartAdminController extends Controller
         if ($total > $product->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                "errors" => "Tổng số lượng sản phẩm đã đến giới hạn, vui lòng giảm số lượng sản phẩm."
             ]);
         }
 
@@ -246,13 +246,13 @@ class CartAdminController extends Controller
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity*(-1) . " quantity"
+                "message" => "Sản phẩm có ID = " . $request->product_id . " đã giảm thành công với số lượng là " . $request->quantity*(-1)
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated " . $request->quantity . " quantity to existed product successfully"
+            "message" => "Cập nhật thành công Sản phẩm với số lượng là " . $request->quantity
         ]);
     }
 }

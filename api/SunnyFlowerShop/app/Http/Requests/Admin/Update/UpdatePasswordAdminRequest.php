@@ -28,7 +28,17 @@ class UpdatePasswordAdminRequest extends FormRequest
     public function rules()
     {
         return [
+            "oldPassword" => [
+                "required",
+                "string",
+            ],
             "password" => [
+                "required",
+                "string",
+                "min:6",
+                "max:24",
+            ],
+            "confirmPassword" => [
                 "required",
                 "string",
                 "min:6",
