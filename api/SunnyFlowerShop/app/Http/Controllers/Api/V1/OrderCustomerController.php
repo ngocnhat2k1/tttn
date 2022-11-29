@@ -268,12 +268,12 @@ class OrderCustomerController extends Controller
         // If state is 1, then Send Notify to customer that Order has been delivered
         if ((int) $request->state === 1) {
             $title = "Đơn hàng đã được giao thành công";
-            Mail::to($customer->email)->send(new OrderDeliveredState($title, $userName, $idDelivery, $priceOrder));
+            Mail::to($customer->email)->queue(new OrderDeliveredState($title, $userName, $idDelivery, $priceOrder));
         }
         // If state is 0, then send Notify to Customer to Click "Completed" button to completed order state.
         else {
             $title = "Vui lòng xác nhận đơn hàng đã được giao";
-            Mail::to($customer->email)->send(new OrderDeliveredNotify($title, $userName, $idDelivery, $priceOrder));
+            Mail::to($customer->email)->queue(new OrderDeliveredNotify($title, $userName, $idDelivery, $priceOrder));
         }
 
         return response()->json([

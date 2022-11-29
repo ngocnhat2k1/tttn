@@ -72,7 +72,7 @@ class ForgotPasswordController extends Controller
         // Send email
         $userName = $user->first_name . " " . $user->last_name;
         $title = "Yêu cầu đổi mật khẩu";
-        Mail::to($user->email)->send(new ForgotPasswordMail($userName, $resetCode, $title, $title));
+        Mail::to($user->email)->queue(new ForgotPasswordMail($userName, $resetCode, $title, $title));
 
         return response()->json([
             "success" => true,
@@ -172,7 +172,7 @@ class ForgotPasswordController extends Controller
         // Send mail to notify password has changed
         $userName = $user->first_name . " " . $user->last_name;
         $title = "Mật khẩu của quý khách đã được thay đổi";
-        Mail::to($user->email)->send(new ResetPasswordSuccessMail($userName, $title, $title));
+        Mail::to($user->email)->queue(new ResetPasswordSuccessMail($userName, $title, $title));
 
         return response()->json([
             "success" => true,
