@@ -14,7 +14,9 @@
 <h1>BACKEND</h1> <br>
 <h3>** Đây là phiên bản Laravel 9 **</h3> <br>
 
-Để chạy localhost thì chỉ cần sử dụng lệnh <b>php artisan serv</b><br>
+Cần phải chạy 2 terminal/ 2 cmd tương ứng với từng nhiệm vụ sau:
+- Terminal 1: Chạy localhost bằng cách sử dụng lệnh <b>php artisan serv</b><br>
+- Terminal 2: Chạy Queue để gửi mail bằng cách sử dụng lệnh <b>php artisan queue:work</b><br>
 
 <b>Đối với Laravel thì cần thực hiện những việc sau trước khi chạy dự án:</b><br>
 <b>CHÚ Ý: Nếu đã cài đặt composer cho PHP 8.1.10 thì bỏ qua 2 bước đầu tiên</b><br>
