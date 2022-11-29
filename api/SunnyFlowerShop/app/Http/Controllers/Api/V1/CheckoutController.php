@@ -121,7 +121,7 @@ class CheckoutController extends Controller
         $userName = $customer->first_name . " " . $customer->last_name;
         $priceOrder = $order->total_price;
         $idDelivery = $order->id_delivery;
-        Mail::to($customer->email)->send(new PlaceOrderMail($title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
+        Mail::to($customer->email)->queue(new PlaceOrderMail($title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
     }
 
     public function generateDeliveryCode($orderType)

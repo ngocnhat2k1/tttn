@@ -403,7 +403,7 @@ class UserAuthController extends Controller
 
         // Send email
         $title = "Mật khẩu của quý khách đã được thay đổi";
-        Mail::to($customer)->send(new ResetPasswordSuccessMail($userName, $title, $title));
+        Mail::to($customer)->queue(new ResetPasswordSuccessMail($userName, $title, $title));
 
         return response()->json([
             "success" => true,
