@@ -23,13 +23,14 @@ const Users = () => {
 
                         <div className='table-responsive'>
                             <table className='table pending_table'>
-                                <thead className='thead-light'>
+                                <thead>
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Avatar</th>
                                         <th scope="col">Full Name</th>
                                         <th scope="col">Email</th>
                                         <th scope="col">Subscribed</th>
+                                        <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

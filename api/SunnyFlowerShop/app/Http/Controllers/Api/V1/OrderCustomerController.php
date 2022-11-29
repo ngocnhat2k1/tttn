@@ -179,8 +179,8 @@ class OrderCustomerController extends Controller
     }
 
     public function updateStatus(Request $request, Customer $customer, Order $order)
-    {
-        /** Update current status of order 
+    {return($request->user());
+        /** Update current status of order
          * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
          * Status can only be changed from "Confirmed" to "Completed", no reverse allow
          * When status is in "Completed" status, quantity was store in pivot table "order_prodcut" with use to minus the quantity of products in "products" table

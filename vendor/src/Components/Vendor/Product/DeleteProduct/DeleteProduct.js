@@ -6,14 +6,13 @@ import { useForm } from "react-hook-form";
 import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const DeleteCategory = ({ idDetail, nameDetail }) => {
+const DeleteProduct = ({ idDetail, nameDetail }) => {
     const [modal, setModal] = useState(false);
     const { handleSubmit, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
 
     };
-
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -22,7 +21,7 @@ const DeleteCategory = ({ idDetail, nameDetail }) => {
     const onSubmit = (data) => {
         setModal(!modal);
         axios
-            .delete(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/destroy`,
+            .delete(`http://127.0.0.1:8000/api/v1/products/${idDetail}/destroy=1`,
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('adminToken')}`,
@@ -30,7 +29,7 @@ const DeleteCategory = ({ idDetail, nameDetail }) => {
                 },)
             .then((response) => {
 
-                // alert(response.data.success);
+                alert(response.data.success);
                 window.location.reload(false)
                 console.log('kkhi da bam')
 
@@ -48,7 +47,7 @@ const DeleteCategory = ({ idDetail, nameDetail }) => {
                     <div className="modal">
                         <div onClick={toggleModal} className="overlay"></div>
                         <div className="modal-content">
-                            <h2 className="title_modal">Confirm delete Category <p>{nameDetail}</p></h2>
+                            <h2 className="title_modal">Confirm delete Category <p>{idDetail}</p></h2>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="btn_right_table">
 
@@ -64,8 +63,7 @@ const DeleteCategory = ({ idDetail, nameDetail }) => {
                 )
             }
         </>
-
     )
 }
 
-export default DeleteCategory
+export default DeleteProduct

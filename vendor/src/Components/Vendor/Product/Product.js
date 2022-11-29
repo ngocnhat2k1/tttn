@@ -26,22 +26,25 @@ const Product = () => {
                             <div className='vendor_order_boxed pt-4'>
                                 <div className='mb-2'>
                                     <h4>
-                                        All Product
+                                        Tất Cả Sản Phẩm
                                     </h4>
                                     <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-products">
-                                        Add Product
+                                        Thêm Sản Phẩm
                                     </Link>
                                 </div>
                                 <div className='table-responsive'>
                                     <table className='table pending_table'>
-                                        <thead className='thead-light'>
+                                        <thead>
                                             <tr>
-                                                <th scope="col">Image</th>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Category</th>
-                                                <th scope="col">Price</th>
-                                                <th scope="col">Sales</th>
-                                                <th scope="col">Edit/Delete</th>
+                                                <th scope="col">Ảnh</th>
+                                                <th scope="col">Tên Sản Phẩm</th>
+                                                <th scope="col">Danh Mục</th>
+                                                <th scope="col">Giá</th>
+                                                <th scope="col">Giảm giá</th>
+                                                <th scope='col'>Trạng Thái</th>
+                                                <th scope='col'>Xoá</th>
+                                                <th scope="col">Sửa/Xoá</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>

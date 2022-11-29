@@ -250,7 +250,7 @@ Route::get("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // D
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => "user"], function () {
-        
+    
         // View profile
         Route::get("/dashboard", [UserAuthController::class, "dashbooard"]);
         Route::get("/userInfo", [UserAuthController::class, "userInfo"]);

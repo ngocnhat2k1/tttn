@@ -35,6 +35,8 @@
     position: relative;
     display: block;
     overflow: hidden;
+    max-width: 100%;
+    aspect-ratio: 10/11;
 }
 
 .productWrapper .thumb .image img {

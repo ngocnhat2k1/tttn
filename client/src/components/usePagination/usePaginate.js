@@ -25,9 +25,9 @@ function usePaginate(url, query) {
                     data: response.data.data,
                     total: response.data.total,
                     page: response.data.current_page,
-                    lastPage: response.data.data.last_page,
-                    nextPage: response.data.current_page + 1,
-                    prevPage: response.data.current_page - 1,
+                    lastPage: response.last_page,
+                    nextPage: response.current_page + 1,
+                    prevPage: response.current_page - 1,
                 });
             });
     }, [query.toString()]);
