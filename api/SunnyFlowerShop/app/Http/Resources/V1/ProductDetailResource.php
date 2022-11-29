@@ -25,12 +25,8 @@ class ProductDetailResource extends JsonResource
             "quality" => $this->quality,
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
-            "category" =>
-            [
-                "id" => $this->categories[0]->id,
-                "name" => $this->categories[0]->name,
-                // CategoryListResource::collection($this->categories)
-            ]
+            "categoryId" =>$this->categories[0]->id
+
         ];
     }
 }
