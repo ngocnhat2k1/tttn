@@ -397,10 +397,8 @@ input[type="checkbox"]:checked:after {
 }
 
 .modal-content-order {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    margin: 1% auto;
     line-height: 1.4;
     background: #f1f1f1;
     padding: 25px 50px;

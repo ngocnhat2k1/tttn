@@ -87,7 +87,7 @@ class CartController extends Controller
         if (!$check) {
             return response()->json([
                 "success" => false,
-                "errors" => "This user hasn't added any product to cart yet"
+                "errors" => "Giỏ hàng hiện đang trống."
             ]);
         }
         
@@ -114,7 +114,7 @@ class CartController extends Controller
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "Quantity value is invalid"
+                "errors" => "Không thể thêm sản phẩm với số lượng là số âm."
             ]);
         }
 
@@ -125,14 +125,14 @@ class CartController extends Controller
         if (empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID Sản phẩm."
             ]);
         }
 
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+                "errors" => "Số lượng sản phẩm đã gần hết, vui lòng giảm số lượng sản phẩm trước khi thêm vào giỏ hàng."
             ]);
         }
 
@@ -147,7 +147,7 @@ class CartController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Added product to cart successfully"
+                "message" => "Thêm sản phẩm vào giỏ hàng thành công."
             ]);
         } else {
             $data = $data->where("product_id", "=", $request->product_id)->first();
@@ -156,7 +156,7 @@ class CartController extends Controller
             if ($total > $product->quantity) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                    "errors" => "Tổng số lượng sản phẩm đã đến giới hạn, vui lòng giảm số lượng sản phẩm."
                 ]);
             }
 
@@ -167,13 +167,13 @@ class CartController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Something went wrong"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json([
                 "success" => true,
-                "message" => "Updated quantity of existed product successfully"
+                "message" => "Cập nhật thành công số lượng Sản phẩm có ID = " . $product->id
             ]);
         }
     }
@@ -184,7 +184,7 @@ class CartController extends Controller
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "Quantity value is invalid"
+                "errors" => "Số lượng sản phẩm không hợp lệ."
             ]);
         }
 
@@ -195,14 +195,14 @@ class CartController extends Controller
         if (empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID Sản phẩm."
             ]);
         }
 
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+                "errors" => "Số lượng sản phẩm đã gần hết, vui lòng giảm số lượng sản phẩm trước khi thêm vào giỏ hàng."
             ]);
         }
 
@@ -217,7 +217,7 @@ class CartController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Added product to cart successfully"
+                "message" => "Thêm sản phẩm vào giỏ hàng thành công."
             ]);
         } else {
             $data = $data->where("product_id", "=", $request->id)->first();
@@ -226,7 +226,7 @@ class CartController extends Controller
             if ($total > $product->quantity) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                    "errors" => "Tổng số lượng sản phẩm đã đến giới hạn, vui lòng giảm số lượng sản phẩm."
                 ]);
             }
 
@@ -237,13 +237,13 @@ class CartController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Something went wrong"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
             return response()->json([
                 "success" => true,
-                "message" => "Updated quantity of existed product successfully"
+                "message" => "Cập nhật thành công số lượng Sản phẩm có ID = " . $product->id
             ]);
         }
     }
@@ -258,7 +258,7 @@ class CartController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Product ID is invalid"
+                "errors" => "Sản phẩm không tồn tại."
             ]);
         }
 
@@ -271,7 +271,7 @@ class CartController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID Khách hàng và ID Sản phẩm."
             ]);
         }
 
@@ -282,7 +282,7 @@ class CartController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Successfully removed Product with ID = " . $request->id . " from cart"
+                "message" => "Xóa thành công Sản phẩm có ID = " . $request->id . " khỏi giỏ hàng."
             ]);
         }
 
@@ -292,7 +292,7 @@ class CartController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Product with ID = " . $request->id . " has successfully been reduced 1 quantity"
+            "message" => "Sản phẩm có ID = " . $request->id . " đã được giảm đi 1 đơn vị số lượng sản phẩm."
         ]);
     }
 
@@ -305,7 +305,7 @@ class CartController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID Khách hàng và ID Sản phẩm."
             ]);
         }
 
@@ -313,7 +313,7 @@ class CartController extends Controller
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Out of Product Quantity, please reduce the amount of quantity before add product to cart"
+                "errors" => "Số lượng sản phẩm đã gần hết, vui lòng giảm số lượng sản phẩm trước khi thêm vào giỏ hàng."
             ]);
         }
 
@@ -327,7 +327,7 @@ class CartController extends Controller
             if ($request->quantity < 0) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Can't add product to cart with negative quantity"
+                    "errors" => "Không thể thêm sản phẩm vào giỏ hàng với số lượng là số âm."
                 ]);
             }
 
@@ -337,7 +337,7 @@ class CartController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been added with " . $request->quantity . " quantity"
+                "message" => "Sản phẩm có ID = " . $request->product_id . " đã được thêm vào giỏ hàng với số lượng sản phẩm là " . $request->quantity
             ]);
         }
 
@@ -349,7 +349,7 @@ class CartController extends Controller
 
             return response()->json([
                 "success" => true,
-                "message" => "Successfully removed Product with ID = " . $request->id . " from cart"
+                "message" => "Xóa thành Sản phẩm có ID = " . $request->id . " khỏi giỏ hàng."
             ]);
         }
 
@@ -358,7 +358,7 @@ class CartController extends Controller
         if ($total > $product->quantity) {
             return response()->json([
                 "success" => false,
-                "errors" => "Total Product Quantity has reached limit, please reduce product quantity"
+                "errors" => "Tổng số lượng sản phẩm đã đến giới hạn, vui lòng giảm số lượng sản phẩm."
             ]);
         }
 
@@ -369,13 +369,13 @@ class CartController extends Controller
         if ($request->quantity < 0) {
             return response()->json([
                 "success" => true,
-                "message" => "Product with ID = " . $request->product_id . " has successfully been reduced " . $request->quantity * (-1) . " quantity"
+                "message" => "Sản phẩm vói ID = " . $request->product_id . " đã được giảm thành công với số lượng là " . $request->quantity * (-1)
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated " . $request->quantity . " quantity to existed product successfully"
+            "message" => "Cập nhật thành công số lượng sản phẩm là " . $request->quantity . " cho một sản phẩm trong giỏ hàng."
         ]);
     }
 
@@ -389,7 +389,7 @@ class CartController extends Controller
         if (empty($customer) || empty($product)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Please recheck Customer ID and Product ID"
+                "errors" => "Vui lòng kiểm tra lại ID Sản phẩm và ID Khách hàng."
             ]);
         }
 
@@ -401,7 +401,7 @@ class CartController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong - Please recheck your Customer ID and Product ID"
+                "errors" => "Sản phẩm có thể không tồn tại trong giỏ hàng của Khách hàng. Vui lòng kiểm tra lại ID Sản phẩm và ID Khách hàng."
             ]);
         }
 
@@ -409,7 +409,7 @@ class CartController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Proudct with ID = " . $request->id . " has been successfully remomved from cart"
+            "message" => "Sản phẩm có ID = " . $request->id . " đã được xóa khỏi giỏ hàng."
         ]);
     }
 }

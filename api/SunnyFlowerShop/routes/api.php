@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // ***** Admin ***** \\
 Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
 Route::post("/admin/login", [AdminAuthController::class, "login"]);
+// Route::post("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]); // old one that has encrypt function
 Route::get("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
 Route::middleware("auth:sanctum")->group(function () {
 
@@ -73,7 +74,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post('/add', [ProductController::class, "store"]); // Add single product to database
             Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
             Route::put('/{id}/edit', [ProductController::class, "update"]); // Update detail of a specific product
-            Route::delete('/destroy/category={category}&product={product}', [ProductController::class, "destroyCategory"]); // Delete a category from product
+            Route::put('/change/category={category}&product={product}', [ProductController::class, "changeCategory"]); // Delete a category from product
             Route::delete('/{id}/destroy={state}', [ProductController::class, "destroy"]); // (Soft) Delete product from database
             Route::delete('/destroyBulk={state}', [ProductController::class, "destroyBulk"]); // (Soft) Delete product from database
             /** Need to add fucntion
@@ -183,6 +184,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{id}", [VoucherController::class, "show"]);
             Route::post("/create", [VoucherController::class, "store"]);
             Route::put("/{id}/update", [VoucherController::class, "update"]);
+            Route::put("/{id}/showVoucher={state}", [VoucherController::class, "showVoucher"]);
             Route::delete("/{id}/destroy={state}", [VoucherController::class, "destroy"]);
         });
 
@@ -248,9 +250,9 @@ Route::get("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // D
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => "user"], function () {
-        
-
+    
         // View profile
+        Route::get("/dashboard", [UserAuthController::class, "dashbooard"]);
         Route::get("/userInfo", [UserAuthController::class, "userInfo"]);
         Route::get("/profile", [UserAuthController::class, "profile"]); // May only be use for editing info in user profile page (Only for login user)
         Route::put("/update", [UserAuthController::class, "update"]); // Update user information
@@ -281,7 +283,7 @@ Route::middleware('auth:sanctum')->group(function () {
         )->name("return.page");
         Route::post("/order/complete/payment", [CheckoutController::class, "redirect"]); // Use this when front-end can't get header redirect URL
 
-        Route::delete("/order/placeorder&cancel={id}", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
+        Route::delete("/order/{id}/cancel", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
         Route::put("/order/{id}/status", [OrderController::class, "updateStatus"]); // Customer only allow to confirm "Completed" state for order
 
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function

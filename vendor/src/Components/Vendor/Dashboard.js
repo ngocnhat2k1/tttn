@@ -45,19 +45,19 @@ const Dashboard = () => {
                         <Col lg={4} md={4} sm={6} xs={12}>
                             <div className='vendor_top_box'>
                                 <h2>{totalProduct}</h2>
-                                <h4>Total Product</h4>
+                                <h4>Tổng Sản Phẩm</h4>
                             </div>
                         </Col>
                         <Col lg={4} md={4} sm={6} xs={12}>
                             <div className='vendor_top_box'>
                                 <h2>{totalSales}</h2>
-                                <h4>Total Sales</h4>
+                                <h4>Tổng Đơn Hàng </h4>
                             </div>
                         </Col>
                         <Col lg={4} md={4} sm={6} xs={12}>
                             <div className='vendor_top_box'>
                                 <h2>{orderPending}</h2>
-                                <h4>Order Pending</h4>
+                                <h4>Số Đơn Hàng Đang Xử Lí</h4>
                             </div>
                         </Col>
                     </Row>
@@ -65,16 +65,16 @@ const Dashboard = () => {
                         <Col lg={12} md={12} sm={12} xs={12}>
                             <div className='vendor_order_boxed pt-4'>
                                 <h4>
-                                    Recent Order
+                                    Những Đơn Hàng Gần Đây
                                 </h4>
                             </div>
                             <table className='table pending_table'>
                                 <thead className='thead-light'>
                                     <tr>
-                                        <th scope='col'>Order ID</th>
-                                        <th scope='col'>Address</th>
-                                        <th scope='col'>Name Receiver</th>
-                                        <th scope='col'>Status</th>
+                                        <th scope='col'>Mã Đơn Hàng</th>
+                                        <th scope='col'>Địa Chỉ</th>
+                                        <th scope='col'>Tên Người Nhận</th>
+                                        <th scope='col'>Trạng Thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>

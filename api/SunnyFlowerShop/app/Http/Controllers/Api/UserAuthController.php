@@ -34,6 +34,30 @@ class UserAuthController extends Controller
         $this->middleware("auth:sanctum", ["except" => ["register", "login", "retrieveToken", "upload"]]);
     }
 
+    public function dashbooard(GetCustomerBasicRequest $request)
+    {
+        $totalOrders = Order::where("customer_id", "=", $request->user()->id)
+            ->get()
+            ->count();
+        $totalCompletedOrders = Order::where("customer_id", "=", $request->user()->id)
+            ->where("status", "=", 2)
+            ->get()
+            ->count();
+        $totalPendingOrders = Order::where("customer_id", "=", $request->user()->id)
+            ->where("status", "=", 0)
+            ->get()
+            ->count();
+
+        return response()->json([
+            "success" => true,
+            "data" => [
+                "totalOrders" => $totalOrders,
+                "totalCompletedOrders" => $totalCompletedOrders,
+                "totalPendingOrders" => $totalPendingOrders
+            ]
+        ]);
+    }
+
     public function register(Request $request)
     {
         $data = Validator::make($request->all(), [
@@ -58,7 +82,7 @@ class UserAuthController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Email already exists"
+                "errors" => "Email đã được sử dụng."
             ]);
         }
 
@@ -66,7 +90,7 @@ class UserAuthController extends Controller
         if ($request->password !== $request->confirmPassword) {
             return response()->json([
                 "success" => false,
-                "errors" => "Password are changing. Please make sure your information is consistent"
+                "errors" => "Mật khẩu không khớp, vui lòng kiểm tra lại."
             ]);
         }
 
@@ -86,7 +110,7 @@ class UserAuthController extends Controller
                 // "token" => $token,
                 // "tokenType" => "Bearer",
                 // "user" => new CustomerRegisterResource($customer)
-                "message" => "Successfully created account"
+                "message" => "Tạo tài khoản mới thành công."
             ]);
         }
     }
@@ -98,7 +122,7 @@ class UserAuthController extends Controller
         if (!Auth::guard("customer")->attempt(['email' => $request->email, 'password' => $request->password])) {
             return response()->json([
                 "success" => false,
-                "errors" => "Invalid credential"
+                "errors" => "Email hoặc mật khẩu không hợp lệ."
             ]);
         }
 
@@ -116,7 +140,7 @@ class UserAuthController extends Controller
 
             return response()->json([
                 "success" => false,
-                "errors" => "This account has already been disabled by admin"
+                "errors" => "Tài khoản này đã bị vô hiệu quá bởi Admin."
             ]);
         }
 
@@ -139,13 +163,14 @@ class UserAuthController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "tokenType" => "Encrypted",
+            // "tokenType" => "Encrypted",
+            "tokenType" => "Bearer",
             "token" => $token,
             // "encryptedToken" => $token_encrypt,
             // "data" => new CustomerDetailResource($customer)
@@ -170,7 +195,7 @@ class UserAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Log out successfully"
+            "message" => "Đăng xuất thành công."
         ]);
     }
 
@@ -194,7 +219,8 @@ class UserAuthController extends Controller
     }
 
     // Generate after placeorder (for front-end)
-    public function filledNumber($count) {
+    public function filledNumber($count)
+    {
         // create order count display
         if ($count < 10) {
             $order_count_display = "00" . $count;
@@ -276,15 +302,15 @@ class UserAuthController extends Controller
             if (empty($result->id)) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
-            
+
             return response()->json([
                 "success" => true,
                 "data" => [
                     "name" => $voucher,
-                    "usage" => "You only have 1 usage",
+                    "usage" => "Mã giảm giá này chỉ có giá trị dùng 1 lần.",
                     "percent" => $discount,
                     "expiredDate" => $expired_date
                 ]
@@ -306,7 +332,7 @@ class UserAuthController extends Controller
             if ($check) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Email has already been used"
+                    "errors" => "Email đã được sử dụng. Vui lòng sử dụng email khác."
                 ]);
             }
         }
@@ -326,13 +352,13 @@ class UserAuthController extends Controller
         if (empty($update)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated Customer information successfully"
+            "message" => "Cập nhật thông tin cá nhân thành công."
         ]);
     }
 
@@ -341,10 +367,18 @@ class UserAuthController extends Controller
     {
         $customer = Customer::where("id", "=", $request->user()->id)->first();
 
+        // Check old Password
+        if (!Hash::check($request->oldPassword, $customer->password)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Mật khẩu cũ không chính xác."
+            ]);
+        }
+
         if (Hash::check($request->password, $customer->password)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't replace password with the same old one"
+                "errors" => "Mật khẩu mới không thể giống với mật khẩu cũ."
             ]);
         }
 
@@ -352,7 +386,7 @@ class UserAuthController extends Controller
         if ($request->password !== $request->confirmPassword) {
             return response()->json([
                 "success" => false,
-                "errors" => "Passwords are not the same"
+                "errors" => "Mật khẩu không khớp."
             ]);
         }
 
@@ -363,17 +397,17 @@ class UserAuthController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
-        
+
         // Send email
         $title = "Mật khẩu của quý khách đã được thay đổi";
         Mail::to($customer)->send(new ResetPasswordSuccessMail($userName, $title, $title));
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully changed password"
+            "message" => "Mật khẩu đã được thay đổi thành công."
         ]);
     }
 
@@ -388,8 +422,7 @@ class UserAuthController extends Controller
         if ($token === null) {
             return response()->json([
                 "success" => false,
-                "token" => $request->bearerToken(),
-                "errors" => "No token found"
+                "errors" => "Không tìm thấy token."
             ]);
         }
 
@@ -400,24 +433,24 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function encryptToken(Request $request)
-    {
-        // Checking token existence
-        // $token = Token::where("token", "=", $request->bearerToken())->first();
+    // public function encryptToken(Request $request)
+    // {
+    //     // Checking token existence
+    //     $token = Token::where("token", "=", $request->bearerToken())->first();
 
-        // if ($token === null) {
-        //     return response()->json([
-        //         "success" => false,
-        //         "errors" => "No token found"
-        //     ]);
-        // }
+    //     if ($token === null) {
+    //         return response()->json([
+    //             "success" => false,
+    //             "errors" => "No token found"
+    //         ]);
+    //     }
 
-        // return response()->json([
-        //     "success" => true,
-        //     "token" => $request->bearerToken(),
-        //     "tokenType" => "Bearer Token",
-        // ]);
-    }
+    //     return response()->json([
+    //         "success" => true,
+    //         "token" => $request->bearerToken(),
+    //         "tokenType" => "Bearer Token",
+    //     ]);
+    // }
 
     public function upload(StoreAvatarCustomerRequest $request)
     {
@@ -430,13 +463,13 @@ class UserAuthController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Uploaded avatar successfully"
+            "message" => "Cập nhật ảnh đại diện thành công."
         ]);
     }
 
@@ -451,13 +484,13 @@ class UserAuthController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Remove avatar successfully"
+            "message" => "Xóa ảnh đại diện thành công."
         ]);
     }
 }
