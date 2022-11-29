@@ -25,7 +25,7 @@ function usePaginate(url, query) {
                     data: response.data.data,
                     total: response.data.total,
                     page: response.data.current_page,
-                    lastPage: response.data.data.last_page,
+                    lastPage: response.data.last_page,
                     nextPage: response.data.current_page + 1,
                     prevPage: response.data.current_page - 1,
                 });
