@@ -388,6 +388,7 @@ class UserAuthController extends Controller
         if ($token === null) {
             return response()->json([
                 "success" => false,
+                "token" => $request->bearerToken(),
                 "errors" => "No token found"
             ]);
         }

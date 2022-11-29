@@ -1,13 +1,14 @@
-import styles from './AccountEditArea.module.scss';
+import styles from './AccountEditArea.module.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaCamera } from 'react-icons/fa';
-import BaoAvatar from '../../images/Bao_avatar.jpg';
+import { useForm } from "react-hook-form";
 import axios from '../../service/axiosClient';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import AccountEditModal from './AccountEditModal';
 
 function AccountEditArea() {
 
@@ -15,19 +16,20 @@ function AccountEditArea() {
     const [firstName, setFirstName] = useState('');
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
-    const [password, setPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
-    const [errors, setError] = useState({
-        firstName: false,
-        lastName: false,
-        email: false,
-        avatar: false,
-        password: false,
-        newPassword: false,
-        confirmNewPassword: false,
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues: {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            avatar: avatar
+        }
     });
-    const regExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const { register: register2, handleSubmit: handleSubmit2, formState: { errors: errors2 }, reset: reset2 } = useForm();
+
+    const { register: register3, handleSubmit: handleSubmit3, formState: { errors: errors3 } } = useForm();
 
     useEffect(() => {
         axios
@@ -37,92 +39,106 @@ function AccountEditArea() {
                 },
             })
             .then((response) => {
-                setLastName(response.data.data.lastName);
+                reset(response.data.data);
                 setFirstName(response.data.data.firstName);
+                setLastName(response.data.data.lastName);
                 setEmail(response.data.data.email);
-                setAvatar(response.data.data.avatar)
+                if (!response.data.data.avatar) {
+                    setAvatar(response.data.data.defaultAvatar)
+                } else {
+                    setAvatar(response.data.data.avatar)
+                }
             })
             .catch(function (error) {
                 console.log(error);
             });
     }, []);
 
-    const handleUpdateName = () => {
-        if (firstName === '' || firstName.length < 2 || firstName.length > 50) {
-            setError((prevState) => ({
-                ...prevState,
-                firstName: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                firstName: false,
-            }));
-        }
+    const handleUpdateInformation = (data) => {
+        let { id, createdAt, defaultAvatar, avatar, disabled, subscribed, updatedAt, ...rest } = data;
 
-        if (lastName === '' || lastName.length < 2 || firstName.length > 50) {
-            setError((prevState) => ({
-                ...prevState,
-                lastName: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                lastName: false,
-            }));
-        }
+        axios
+            .put(`http://localhost:8000/api/user/update`, rest, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then(function (response) {
+                if (response.data.success) {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message)
+                } else {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    const handleUpdatePassword = (data) => {
+        console.log(data);
+
+        axios
+            .put(`http://localhost:8000/api/user/changePassword`, data, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then(function (response) {
+                if (response.data.success) {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message)
+                    reset2()
+                } else {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
-    const handleUpdateEmail = () => {
-        if (!email.match(regExp) || email === '') {
-            setError((prevState) => ({
-                ...prevState,
-                email: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                email: false,
-            }));
-        }
+    const handleImage = (e) => {
+        const file = e.target.files[0];
+
+        const Reader = new FileReader();
+
+        Reader.readAsDataURL(file);
+
+        Reader.onload = () => {
+            if (Reader.readyState === 2) {
+                setAvatar(Reader.result);
+            }
+        };
     }
 
-    const handleUpdatePassword = () => {
-        if (password === '' || password.length < 6 || password.length > 24) {
-            setError((prevState) => ({
-                ...prevState,
-                password: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                password: false,
-            }));
+    const handleUpdateAvatar = (data) => {
+
+        const payload = {
+            avatar: avatar,
         }
 
-        if (newPassword === '' || newPassword.length < 6 || newPassword.length > 24) {
-            setError((prevState) => ({
-                ...prevState,
-                newPassword: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                newPassword: false,
-            }));
-        }
-
-        if (confirmNewPassword !== newPassword) {
-            setError((prevState) => ({
-                ...prevState,
-                confirmNewPassword: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                confirmNewPassword: false,
-            }));
-        }
+        axios
+            .put(`http://localhost:8000/api/user/avatar/upload`, payload, {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                },
+            })
+            .then(function (response) {
+                if (response.data.success) {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message)
+                } else {
+                    setSuccess(response.data.success)
+                    setMessage(response.data.message);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     return (
@@ -131,118 +147,117 @@ function AccountEditArea() {
                 <Row>
                     <Col lg={6}>
                         <div className={styles.backBtn}>
-                            <Link to='/my-account/customer-account-details'><FaArrowLeft /> Back to Dashboard</Link>
+                            <Link to='/my-account/customer-account-details'><FaArrowLeft /> Trở về trang Dashboard</Link>
                         </div>
                     </Col>
                 </Row>
                 <Row>
                     <Col lg={3}>
                         <div className={styles.accountThumd}>
-                            <div className={styles.accountThumbImg}>
-                                <img src={BaoAvatar} alt="img" />
-                                <div className={styles.fixedIcon}>
-                                    <input type="file" accept='image/*' /><FaCamera />
+                            <form onSubmit={handleSubmit3(handleUpdateAvatar)}>
+                                <div className={styles.accountThumbImg}>
+                                    <img src={avatar} alt="img" />
+                                    <div className={styles.fixedIcon}>
+                                        <input
+                                            className="FormInput"
+                                            type="file"
+                                            accept='image/*'
+                                            {...register3("avatar", { onChange: handleImage })}
+                                        /><FaCamera />
+                                    </div>
                                 </div>
-                            </div>
-                            <h4>Lê Quốc Bảo</h4>
+                                <div className='m-4 mx-auto'>
+                                    <AccountEditModal nameBtn='Cập nhật ảnh đại diện' message={message} success={success} />
+                                </div>
+                            </form>
                         </div>
                     </Col>
                     <Col lg={9}>
                         <div className={styles.accountSetting}>
                             <div className={styles.accountSettingHeading}>
-                                <h2>Account Details</h2>
-                                <p>Edit your account settings and change your password here.</p>
+                                <h2>Thông tin tài khoản</h2>
+                                <p>Chỉnh sửa thông tin tài khoản của bạn và thay đổi mật khẩu của bạn tại đây.</p>
                             </div>
-                            <form id={styles.accountEditForm}>
+                            <form onSubmit={handleSubmit(handleUpdateInformation)} id='accountEditFormInformation' className={styles.accountEditForm}>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="firstName">
-                                        First Name
-                                    </label>
+                                    <label htmlFor="firstName">Họ</label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={firstName}
-                                        onChange={e => setFirstName(e.target.value)}
-                                        required
+                                        placeholder="VD: Lê Quốc"
+                                        {...register("firstName", { required: true, minLength: 2, maxLength: 50, onChange: (e) => { setFirstName(e.target.value) } })}
                                     />
                                     {errors["firstName"] && (
-                                        <p className="checkInput">Invalid First Name</p>
+                                        <p className="checkInput">Họ không hợp lệ</p>
                                     )}
-                                    <label htmlFor="lastName">
-                                        Last Name
-                                    </label>
+                                    <label htmlFor="lastName">Tên</label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={lastName}
-                                        onChange={e => setLastName(e.target.value)}
-                                        required
+                                        placeholder="VD: Bảo"
+                                        {...register("lastName", { required: true, minLength: 2, maxLength: 50, onChange: (e) => { setLastName(e.target.value) } })}
                                     />
                                     {errors["lastName"] && (
-                                        <p className="checkInput">Invalid Last Name</p>
+                                        <p className="checkInput">Tên không hợp lệ</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdateName}>Update Name</button>
                                 </div>
+
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="email">Email Address
-                                    </label>
+                                    <label htmlFor="email">Email</label>
                                     <input
                                         className="FormInput"
-                                        type="email"
-                                        value={email}
-                                        onChange={e => setEmail(e.target.value)}
-                                        required
+                                        type="text"
+                                        placeholder="Username or Email"
+                                        {...register("email", { required: true, pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, onChange: (e) => { setEmail(e.target.value) } })}
                                     />
                                     {errors["email"] && (
-                                        <p className="checkInput">Invalid Email</p>
+                                        <p className="checkInput">Email không hợp lệ</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdateEmail}>Update Email</button>
                                 </div>
+                                <AccountEditModal nameBtn='Cập nhật thông tin' message={message} success={success} />
+                            </form>
+                            <form onSubmit={handleSubmit2(handleUpdatePassword)} id='accountEditFormPassword' className={styles.accountEditForm}>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="password">Current Password
+                                    <label htmlFor="password">Mật khẩu hiện tại
+                                        <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="password"
-                                        value={password}
-                                        onChange={e => setPassword(e.target.value)}
-                                        required
+                                        placeholder="Mật khẩu hiện tại"
+                                        {...register2("password", { required: true, minLength: 3, maxLength: 24 })}
                                     />
-                                    {errors["password"] && (
-                                        <p className="checkInput">Invalid Password</p>
+                                    {errors2["password"] && (
+                                        <p className="checkInput">Mật khẩu phải có từ 3 đến 24 ký tự</p>
                                     )}
-                                    <label htmlFor="newPassword">New Password
-                                    </label>
+                                    <label htmlFor="newPassword">Mật khẩu mới</label>
                                     <input
                                         className="FormInput"
                                         type="password"
-                                        value={newPassword}
-                                        onChange={e => setNewPassword(e.target.value)}
-                                        required
+                                        placeholder="Mật khẩu mới"
+                                        {...register2("newPassword", { required: true, minLength: 6, maxLength: 24 })}
                                     />
-                                    {errors["newPassword"] && (
-                                        <p className="checkInput">Invalid Password</p>
+                                    {errors2["newPassword"] && (
+                                        <p className="checkInput">Mật khẩu mới phải có từ 6 đến 24 ký tự</p>
                                     )}
-                                    <label htmlFor="confirmNewPassword">Password
-                                    </label>
+                                    <label htmlFor="confirmNewPassword">Xác nhận mật khẩu mới</label>
                                     <input
                                         className="FormInput"
                                         type="password"
-                                        value={confirmNewPassword}
-                                        onChange={e => setConfirmNewPassword(e.target.value)}
-                                        required
+                                        placeholder="Xác nhận mật khẩu mới"
+                                        {...register2("confirmNewPassword", { required: true, minLength: 6, maxLength: 24 })}
                                     />
-                                    {errors["confirmNewPassword"] && (
-                                        <p className="checkInput">Those passwords didn't match. Try again.</p>
+                                    {errors2["confirmNewPassword"] && (
+                                        <p className="checkInput">Mật khẩu hiện tại và mật khẩu mới phải giống nhau</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdatePassword}>Update Password</button>
                                 </div>
+                                <AccountEditModal nameBtn='Cập nhật mật khẩu' message={message} success={success} />
                             </form>
                         </div>
                     </Col>
                 </Row>
-            </Container>
-        </section>
+            </Container >
+        </section >
     )
 }
 

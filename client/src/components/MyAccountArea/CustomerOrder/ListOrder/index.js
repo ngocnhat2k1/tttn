@@ -15,15 +15,15 @@ function ListOrder() {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
-            .then((response) => {
-                if (response.data.success) {
-                    setListOrders(response.data.data);
-                }
+            .then(response => {
+                setListOrders(response.data.data);
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
             });
     }, []);
+
+    console.log(listOrder)
 
     return (
         <>

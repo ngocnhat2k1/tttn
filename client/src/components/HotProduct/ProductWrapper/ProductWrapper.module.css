@@ -59,7 +59,7 @@ img {
 
 .content {
     position: relative;
-    z-index: 10;
+    /* z-index: 10; */
     display: flex;
     flex-direction: column;
     padding: 20px 15px 23px;
@@ -98,7 +98,7 @@ img {
 
 .badges {
     position: absolute;
-    z-index: 8;
+    /* z-index: 8; */
     top: 18px;
     left: 18px;
     display: flex;
@@ -136,7 +136,7 @@ img {
 
 .actions {
     position: absolute;
-    z-index: 9;
+    /* z-index: 9; */
     top: 18px;
     right: 18px;
     display: flex;
@@ -161,6 +161,7 @@ img {
 .action:hover {
     color: white;
     background-color: #f79837;
+    cursor: pointer;
 }
 
 .action:not(.wishList) {
@@ -192,7 +193,7 @@ img {
     bottom: 20px;
     left: 0;
     right: 0;
-    z-index: 11;
+    /* z-index: 11; */
     margin: auto;
     font-weight: 600;
     visibility: hidden;

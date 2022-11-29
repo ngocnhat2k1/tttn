@@ -42,13 +42,13 @@ function LoginArea() {
                             <h3>Login</h3>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="email">Username or email
+                                    <label htmlFor="email">Email
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        placeholder="Username or Email"
+                                        placeholder="Email"
                                         {...register("email", { required: true, minLength: 3 })}
                                     />
                                     {errors["email"] && (

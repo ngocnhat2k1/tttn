@@ -14,6 +14,7 @@ import AccountEdit from "./pages/AccountEdit";
 import Wishlist from "./pages/Wishlist";
 import AddressEdit from "./pages/AddressEdit";
 import NotFound from "./components/NotFound";
+import "./components/ModalATag/Modal.css"
 
 function App() {
 
