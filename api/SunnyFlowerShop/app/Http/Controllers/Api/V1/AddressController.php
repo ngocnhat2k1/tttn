@@ -29,7 +29,7 @@ class AddressController extends Controller
         if (!$address->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "This use hasn't created any address yet"
+                "errors" => "Người dùng chưa tạo địa chỉ nào."
             ]);
         }
 
@@ -62,7 +62,7 @@ class AddressController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address is already existed"
+                "errors" => "Địa chỉ đã tồn tại."
             ]);
         }
 
@@ -73,7 +73,7 @@ class AddressController extends Controller
         if (empty($data->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -81,7 +81,7 @@ class AddressController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Created Address successfully"
+            "message" => "Tạo địa chỉ thành công."
         ]);
     }
 
@@ -109,7 +109,7 @@ class AddressController extends Controller
             // if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong, Address ID doesn't exist"
+                "errors" => "Địa chỉ không tồn tại."
             ]);
         }
 
@@ -144,7 +144,7 @@ class AddressController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong, Address_id is invalid"
+                "errors" => "Địa chỉ ID không hợp lệ."
             ]);
         }
 
@@ -162,7 +162,7 @@ class AddressController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address is already associated with this account"
+                "errors" => "Địa chỉ đã được liên kết với tài khoản này."
             ]);
         }
 
@@ -180,13 +180,13 @@ class AddressController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             'success' => true,
-            "message" => "Updated address successfully"
+            "message" => "Cập nhật thông tin địa chỉ thành công."
         ]);
     }
 
@@ -212,7 +212,7 @@ class AddressController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong, Address ID is invalid"
+                "errors" => "Địa chỉ không tồn tại."
             ]);
         }
 
@@ -227,13 +227,13 @@ class AddressController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => true,
-                "message" => "Deleted address successfully"
+                "message" => "Xóa địa chỉ thành công."
             ]);
         }
 
         return response()->json([
             "success" => false,
-            "errors" => "An unexpected error has occurred"
+            "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
         ]);
     }
 }

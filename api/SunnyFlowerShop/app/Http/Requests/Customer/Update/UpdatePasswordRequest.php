@@ -28,6 +28,10 @@ class UpdatePasswordRequest extends FormRequest
     public function rules()
     {
         return [
+            "oldPassword" => [
+                "required",
+                "string",
+            ],
             "password" => [
                 "required",
                 "string",

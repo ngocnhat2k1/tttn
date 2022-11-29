@@ -42,14 +42,14 @@ class AdminController extends Controller
         if ($userCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Username was taken, Please choose another one"
+                "errors" => "Username đã tồn tại, vui lòng chọn tên khác."
             ]);
         }
 
         if ($emailCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Email was taken, Please choose another one"
+                "errors" => "Email đã được sử dụng, vui lòng sử dụng email khác."
             ]);
         }
 
@@ -61,13 +61,13 @@ class AdminController extends Controller
         if (empty($data->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Created new Admin account successfully"
+            "message" => "Tạo tài khoản Admin mới thành công."
         ]);
     }
 
@@ -112,14 +112,14 @@ class AdminController extends Controller
         if ($userCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Username was taken, Please choose another one"
+                "errors" => "Username đã tồn tại, vui lòng chọn tên khác."
             ]);
         }
 
         if ($emailCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Email was taken, Please choose another one"
+                "errors" => "Email đã được sử dụng, vui lòng sử dụng email khác."
             ]);
         }
 
@@ -135,13 +135,13 @@ class AdminController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated Admin ID = " . $admin->id . " successfully"
+            "message" => "Cập nhật thành công thông tin Tài khoản Admin có ID = " . $admin->id
         ]);
     }
 
@@ -157,7 +157,7 @@ class AdminController extends Controller
         if ($admin->level === 1) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't delete Super Admin account"
+                "errors" => "Không thể xóa tài khoản Super Admin."
             ]);
         }
 
@@ -175,7 +175,7 @@ class AdminController extends Controller
 
         return response()->json([
             "success" => false,
-            "message" => "Successfully deleted Admin account ID = " . $admin->id
+            "message" => "Xóa thành công tài khoản Admin có ID = " . $admin->id
         ]);
     }
 }

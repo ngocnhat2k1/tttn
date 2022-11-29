@@ -27,7 +27,7 @@ class CategoryController extends Controller
         if ($categories === 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "There is no categories existed in database"
+                "errors" => "Danh sách danh mục sản phẩm hiện đang trống."
             ]);
         }
 
@@ -49,7 +49,7 @@ class CategoryController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category has already existed, please change category name"
+                "errors" => "Danh mục sản phẩm đã tồn tại, vui lòng sử dụng tên khác."
             ]);
         }
 
@@ -58,13 +58,13 @@ class CategoryController extends Controller
         if (!$result) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected errors has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Created new Category successfully"
+            "message" => "Tạo thành công danh mục sản phẩm mới."
         ]);
     }
 
@@ -81,7 +81,7 @@ class CategoryController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category ID is invalid"
+                "errors" => "Danh mục sản phẩm không tồn tại."
             ]);
         }
 
@@ -112,7 +112,7 @@ class CategoryController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't update with invalid Category ID"
+                "errors" => "Danh mục sản phẩm không tồn tại."
             ]);
         }
 
@@ -122,7 +122,7 @@ class CategoryController extends Controller
         if ($check) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category has already existed, please change category name"
+                "errors" => "Danh mục sản phẩm đã tồn tại, vui lòng sử dụng tên khác."
             ]);
         }
 
@@ -131,13 +131,13 @@ class CategoryController extends Controller
         if (empty($update)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Updated Category with ID = " . $request->id . " successfully"
+            "message" => "Cập nhật thành công Danh mục sản phẩm có ID = " . $request->id
         ]);
     }
 
@@ -154,7 +154,7 @@ class CategoryController extends Controller
         if (!$category->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't delete Category with Invalid Category ID"
+                "errors" => "Danh mục sản phẩm không tồn tại."
             ]);
         }
 
@@ -162,8 +162,12 @@ class CategoryController extends Controller
         $category_product = DB::table("category_product")
             ->where("category_id", "=", $request->id);
 
-        if ($category_product->exists()) {            
-            $category_product->delete(); // Need to check delete state
+        if ($category_product->exists()) {
+            // $category_product->delete(); // Need to check delete state
+            return response()->json([
+                "success" => false,
+                "errors" => "Không thể xóa Danh mục đang được liên kết với sản phẩm."
+            ]);
         }
 
         $delete = $category->delete();
@@ -172,13 +176,13 @@ class CategoryController extends Controller
         if (empty($delete)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "messagee" => "Deleted category successfully"
+            "messagee" => "Xóa danh mục sản phẩm thành công."
         ]);
     }
 }

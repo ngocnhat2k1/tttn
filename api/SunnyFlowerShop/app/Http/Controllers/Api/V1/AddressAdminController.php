@@ -25,7 +25,7 @@ class AddressAdminController extends Controller
         if (empty($count)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address list is empty"
+                "errors" => "Danh sách địa chỉ đang trống."
             ]);
         }
 
@@ -41,7 +41,7 @@ class AddressAdminController extends Controller
         if (!$customer->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Address has some invalid information, please double check database before displaying"
+                "errors" => "Địa chỉ có vài thông tin không hợp lệ, xin vui lòng kiểm tra lại trước khi tiến hành hiển thị."
             ]);
         }
         
@@ -74,7 +74,7 @@ class AddressAdminController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully Deleted Address with Address ID = " . $address->id
+            "message" => "Xóa thành công địa chỉ với địa chỉ ID = " . $address->id
         ]);
     }
 }

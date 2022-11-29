@@ -55,7 +55,7 @@ class AdminAuthController extends Controller
     public function dashboardOop(GetAdminBasicRequest $request)
     {
         if (Order::get()->count() === 0) {
-            $display_recent_orders = "There is no any Recent Orders";
+            $display_recent_orders = "Không có mã giảm giá nào được thực hiện gần đây.";
         } else {
             $recent_orders = Order::orderBy('created_at', 'DESC')->take(10)->get(); // Take top 10 orders are created ordered by "created_at" in descending order
             $display_recent_orders = new OrderListCollection($recent_orders);
@@ -81,7 +81,7 @@ class AdminAuthController extends Controller
         if ($admin && $superAdmin) {
             return response()->json([
                 "success" => false,
-                "errors" => "Admin and Super Admin account have already created"
+                "errors" => "Tài khoản Admin và Super Admin đã được tạo."
             ]);
         }
 
@@ -105,7 +105,7 @@ class AdminAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Created Admin and Super Admin account successfully"
+            "message" => "Tạo tài khoản Admin và Super Admin thành công."
         ]);
     }
 
@@ -114,12 +114,12 @@ class AdminAuthController extends Controller
         if (!Auth::guard("admin")->attempt(['email' => $request->email, 'password' => $request->password])) {
             return response()->json([
                 "success" => false,
-                "errors" => "Invalid credential"
+                "errors" => "Email hoặc mật khẩu không hợp lệ."
             ]);
         }
 
         // Set to Vietnam timezone
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        // date_default_timezone_set('Asia/Ho_Chi_Minh');
 
         $admin = AdminAuth::where("email", "=", $request->email)->firstOrFail();
 
@@ -146,7 +146,7 @@ class AdminAuthController extends Controller
         if (empty($check)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Something went wrong"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -160,6 +160,7 @@ class AdminAuthController extends Controller
         return response()->json([
             "success" => true,
             // "token_type" => "Encrypted",
+            "token_type" => "Bearer",
             "token" => $token,
             // "encryptedToken" => $token_encrypt,
             "data" => [
@@ -183,7 +184,7 @@ class AdminAuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Log out successfully"
+            "message" => "Đăng xuất thành công."
         ]);
     }
 
@@ -198,14 +199,14 @@ class AdminAuthController extends Controller
         if ($userCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Username was taken, Please choose another one"
+                "errors" => "Tên người dùng đã được dùng, vui lòng sử dụng tên khác."
             ]);
         }
 
         if ($emailCheck) {
             return response()->json([
                 "success" => false,
-                "errors" => "Email was taken, Please choose another one"
+                "errors" => "Email đã được sử dụng, vui lòng dùng email khác."
             ]);
         }
 
@@ -217,7 +218,7 @@ class AdminAuthController extends Controller
             if ($check) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Email has already been used"
+                    "errors" => "Email đã được sử dụng."
                 ]);
             }
         }
@@ -244,13 +245,13 @@ class AdminAuthController extends Controller
         if (!$check) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error had occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Change admin information successfully"
+            "message" => "Cập nhật thông tin Admin thành công."
         ]);
     }
 
@@ -259,10 +260,26 @@ class AdminAuthController extends Controller
     {
         $admin = Admin::where("id", "=", $request->user()->id)->first();
 
+        // Check old Password
+        if (!Hash::check($request->oldPassword, $admin->password)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Mật khẩu cũ không chính xác."
+            ]);
+        }
+
         if (Hash::check($request->password, $admin->password)) {
             return response()->json([
                 "success" => false,
-                "errors" => "Can't replace password with the same old one"
+                "errors" => "Mật khẩu mới không thể giống với mật khẩu cũ."
+            ]);
+        }
+
+        // Check confirm password and password are the same or not
+        if ($request->password !== $request->confirmPassword) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Mật khẩu không khớp."
             ]);
         }
 
@@ -272,13 +289,13 @@ class AdminAuthController extends Controller
         if (empty($result)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully changed password"
+            "message" => "Cập nhật mật khẩu thành công."
         ]);
     }
 
@@ -318,7 +335,7 @@ class AdminAuthController extends Controller
         if ($token === null) {
             return response()->json([
                 "success" => false,
-                "errors" => "No token found"
+                "errors" => "Không tìm thấy token."
             ]);
         }
 
@@ -340,13 +357,13 @@ class AdminAuthController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Uploaded avatar successfully"
+            "message" => "Cập nhật ảnh đại diện của Admin thành công."
         ]);
     }
 
@@ -361,13 +378,13 @@ class AdminAuthController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "Remove avatar successfully"
+            "message" => "Xóa ảnh đại diện thành công."
         ]);
     }
 }

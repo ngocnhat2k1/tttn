@@ -140,14 +140,14 @@ class ProductController extends Controller
         if ($check_existed) {
             return response()->json([
                 'success' => false,
-                'errors' => "Product is already existed"
+                'errors' => "Tên sản phẩm đã tồn tại."
             ]);
         }
 
         if (!$check_existed_category) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category ID is invalid"
+                "errors" => "Tên danh mục sản phẩm không hợp lệ."
             ]);
         }
 
@@ -160,7 +160,7 @@ class ProductController extends Controller
         if (empty($data->id)) {
             return response()->json([
                 "success" => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xẩy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -182,7 +182,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            "message" => "Successfully created product"
+            "message" => "Tạo sản phẩm thành công."
         ]);
     }
 
@@ -216,7 +216,7 @@ class ProductController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Something went wrong"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
                 ]);
             }
 
@@ -242,7 +242,7 @@ class ProductController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Added " . $count . " products to database successfully"
+            "message" => "Đã thêm thành công " . $count . " sản phẩm."
         ]);
     }
 
@@ -326,7 +326,7 @@ class ProductController extends Controller
         if (empty($product)) {
             return response()->json([
                 'success' => false,
-                'errors' => "Can't update product with invalid id"
+                'errors' => "ID Sản phẩm không hợp lệ."
             ]);
         }
 
@@ -336,7 +336,7 @@ class ProductController extends Controller
         if (!$check_existed_category) {
             return response()->json([
                 "success" => false,
-                "errors" => "Category ID is invalid"
+                "errors" => "ID Danh mục sản phẩm không hợp lệ."
             ]);
         }
 
@@ -344,7 +344,7 @@ class ProductController extends Controller
         if ($check_existed) {
             return response()->json([
                 'success' => false,
-                'errors' => "Product is already existed"
+                'errors' => "Tên sản phẩm đã tồn tại."
             ]);
         }
 
@@ -359,7 +359,7 @@ class ProductController extends Controller
         if (!$result) {
             return response()->json([
                 'success' => false,
-                "errors" => "An unexpected error has occurred"
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
             ]);
         }
 
@@ -367,6 +367,13 @@ class ProductController extends Controller
         $product->categories()->detach();
 
         $product->categories()->attach($request->categoryId);
+
+        // Check product status
+        if ($data['status'] === 0) { // if new status product is 0, then proceed to delete product out of "customer_product_cart"
+            DB::table("customer_product_cart")
+                ->where("product_id", "=", $product->id)
+                ->delete();
+        }
 
         // Checking all categories that product has to decide to attach new categories or skip
         // for ($i = 0; $i < sizeof($request['category']); $i++) {
@@ -378,7 +385,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            "message" => "Updated product successfully"
+            "message" => "Cập nhật thông tin sản phẩm thành công."
         ]);
     }
 
@@ -390,14 +397,14 @@ class ProductController extends Controller
      */
 
     // This is SOFT DELETE not permanent delete
-    public function destroy(DeleteAdminBasicRequest $request, $productId)
+    public function destroy(DeleteAdminBasicRequest $request)
     {
-        $data = Product::find($productId);
+        $data = Product::find($request->id);
 
         if (empty($data)) {
             return response()->json([
                 'success' => false,
-                'errors' => "Product can not be deleted"
+                'errors' => "ID Sản phẩm không hợp lệ."
             ]);
         }
 
@@ -409,25 +416,29 @@ class ProductController extends Controller
             if ($data->deleted_at !== null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Product with ID = " . $productId . " has already been (Soft) deleted"
+                    "errors" => "Sản phẩm với ID = " . $request->id . " đã được xóa."
                 ]);
             }
 
             $data->{"deleted_at"} = 1;
-
             $result = $data->save();
 
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
                 ]);
             }
+
+            // Delete product out of "customer_product_cart"
+            DB::table("customer_product_cart")
+                ->where("product_id", "=", $data->id)
+                ->delete();
 
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully hide this product with ID = " . $productId
+                    'errors' => "Xóa thành công với sản phẩm có ID = " . $request->id
                 ]
             );
 
@@ -437,7 +448,7 @@ class ProductController extends Controller
             if ($data->deleted_at === null) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "Product with ID = " . $productId . " has already been (Soft) deleted"
+                    "errors" => "Sản phẩm với ID = " . $request->id . " đã được hoàn tác xóa."
                 ]);
             }
 
@@ -448,14 +459,14 @@ class ProductController extends Controller
             if (!$result) {
                 return response()->json([
                     "success" => false,
-                    "errors" => "An unexpected error has occurred"
+                    "errors" => "Đã có lỗi xảy ra trong quá trình vận hành."
                 ]);
             }
 
             return response()->json(
                 [
                     'success' => true,
-                    'errors' => "Sucessfully reverse deleted_at value for product with ID = " . $productId
+                    'errors' => "Đã hoàn tác việc xóa thành công với sản phẩm có ID = " . $request->id
                 ]
             );
         }
@@ -473,11 +484,11 @@ class ProductController extends Controller
 
         // If state is 1, then display is "deleted"
         if ((int) $request->state === 1) {
-            $display = "deleted";
+            $display = "xóa";
         }
         // If state is 0, then display is "reversed deleted"
         else {
-            $display = "reversed deleted";
+            $display = "hoàn tác việc xóa";
         }
 
         for ($i = 0; $i < sizeof($products); $i++) {
@@ -529,49 +540,31 @@ class ProductController extends Controller
         if ($invalid_count !== 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "There are " . $invalid_count . " products with Invalid ID. These IDs are: " . implode(", ", $invalid_product_id_array)
+                "errors" => "Có tổng cộng " . $invalid_count . " sản phẩm có ID không hợp lệ. Các ID đó là: " . implode(", ", $invalid_product_id_array)
             ]);
         }
 
         if ($errors_count !== 0) {
             return response()->json([
                 "success" => false,
-                "errors" => "There are " . $errors_count . " errors have found during delete progression. Products ID have caused these errors are: " . implode(", ", $errors_product_id_array)
+                "errors" => "Có tổng cộng " . $errors_count . " lỗi xảy ra trong quá trình xóa sản phẩm. Những ID sản phẩm sau gây ra vấn đề: " . implode(", ", $errors_product_id_array)
             ]);
         }
 
         return response()->json([
             "success" => true,
-            "message" => "There are " . $count . " products has got " . $display
+            "message" => "Có tổng cộng " . $count . " sản phẩm đã được " . $display
         ]);
     }
 
-    public function destroyCategory(DeleteAdminBasicRequest $request, Category $category, Product $product)
+    public function changeCategory(DeleteAdminBasicRequest $request, Category $category, Product $product)
     {
-        $count = DB::table("category_product")
-            ->where("product_id", "=", $product->id)
-            ->get()
-            ->count();
-
-        if ($count === 1) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Can't delete all categories from product (remain category left from this product: 1)"
-            ]);
-        }
-
-        $result = $product->categories()->detach($category);
-
-        if (empty($result)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Invalid Category ID"
-            ]);
-        }
+        $product->categories()->detach();
+        $product->categories()->attach($category->id);
 
         return response()->json([
             "success" => true,
-            "message" => "Category has successfully been removed from product"
+            "message" => "Danh mục đã được đổi thành công."
         ]);
     }
 }
