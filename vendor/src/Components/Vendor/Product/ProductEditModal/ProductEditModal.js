@@ -13,14 +13,16 @@ const ProductEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
     const [productName, setPoductName] = useState('')
     const [price, setPrice] = useState('')
-    const [precentSale, setPrecentSale] = useState('')
+    const [percentSale, setPercentSale] = useState('')
     const [quantity, setQuantity] = useState('');
     const [img, setImg] = useState('');
     const [status, setStatus] = useState('')
     const [listCategories, setListCategories] = useState([]);
     const [listCategoriesOfProduct, setListCategoriesOfProduct] = useState([])
     const [description, setDescription] = useState('')
-    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    const productInsessicon = sessionStorage.getItem("product");
+    const [isChange, setIsChange] = useState(false)
     const toggleModal = () => {
         setModal(!modal);
         axios
@@ -32,14 +34,17 @@ const ProductEditModal = ({ idDetail }) => {
             .then((response) => {
                 console.log(response.data.data)
                 reset(response.data.data)
+                sessionStorage.setItem("product", JSON.stringify(response.data.data))
                 setPoductName(response.data.data.name);
                 setPrice(response.data.data.price)
-                setPrecentSale(response.data.data.precentSale)
+                setPercentSale(response.data.data.precentSale)
                 setQuantity(response.data.data.quantity)
                 setImg(response.data.data.img)
                 setListCategoriesOfProduct(response.data.data.categories)
                 setDescription(response.data.data.description)
-
+            })
+            .catch(err => {
+                console.log(err)
             });
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories`, {
@@ -50,7 +55,11 @@ const ProductEditModal = ({ idDetail }) => {
             .then((response) => {
                 setListCategories(response.data.data)
             })
+            .catch(err => {
+
+            })
     };
+
     const closeModal = () => {
         setModal(!modal);
     }
@@ -60,21 +69,26 @@ const ProductEditModal = ({ idDetail }) => {
         document.body.classList.remove('active-modal')
     }
 
+    if (productName === productInsessicon.name) {
+        console.log('đúng')
+    }
+
     const onSubmit = (data) => {
         const payload = {
             ...data,
             img: img,
         }
-        console.log(payload)
+        let { category, deletedAt, id, quality, ...rest } = payload
+        console.log(rest)
         axios
-            .put(`http://127.0.0.1:8000/api/v1/products/${idDetail}/edit`, payload, {
+            .put(`http://127.0.0.1:8000/api/v1/products/${idDetail}/edit`, rest, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`
                 },
             })
             .then((response) => {
                 alert(response.data.success);
-                console.log(response.data.success);
+                console.log(response.data);
                 if (response.data.success === true) {
                     window.location.href = 'http://localhost:4000/all-product';
                 }
@@ -84,6 +98,7 @@ const ProductEditModal = ({ idDetail }) => {
                 console.log(error);
             });
     }
+
     const handleImage = (e) => {
         const file = e.target.files[0];
 
@@ -122,7 +137,14 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="text"
                                             className="form-control"
                                             id="name"
-                                            {...register('name', { onChange: (e) => { setPoductName(e.target.value) } })} />
+                                            {...register('name', {
+                                                onChange: (e) => {
+                                                    setPoductName(e.target.value)
+                                                    if (productName == JSON.parse(productInsessicon).name) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -131,7 +153,14 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="price"
-                                            {...register('price', { onChange: (e) => { setPrice(e.target.value) } })} />
+                                            {...register('price', {
+                                                onChange: (e) => {
+                                                    setPrice(e.target.value)
+                                                    if (price == JSON.parse(productInsessicon).price) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -140,7 +169,14 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="percentSale"
-                                            {...register('percentSale', { onChange: (e) => { setPrecentSale(e.target.value) } })} />
+                                            {...register('percentSale', {
+                                                onChange: (e) => {
+                                                    setPercentSale(e.target.value)
+                                                    if (percentSale == JSON.parse(productInsessicon).percentSale) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -164,28 +200,23 @@ const ProductEditModal = ({ idDetail }) => {
                                         </select>
                                     </div>
                                 </Col>
-                                <Col lg={12}>
+                                <Col lg={6}>
                                     <div className='fotm-group'>
                                         <label htmlFor="categoryId ">Caterory</label>
                                         <Row>
-                                            {listCategories.map((category) => {
-                                                return (
-                                                    <Col lg={4} key={category.id}>
-                                                        <div className='checkbox_group'>
-                                                            <>
-                                                                < input
-                                                                    id='categoryId '
-                                                                    type='radio'
-                                                                    value={category.id}
-                                                                    className='check_box'
-                                                                    {...register("categoryId ", {})}
-                                                                />
-                                                                < p> {category.name}</p>
-                                                            </>
-                                                        </div>
-                                                    </Col>
-                                                )
-                                            })}
+                                            <select
+                                                id="categoryId"
+                                                {...register("categoryId",)}>
+                                                {listCategories.map((category) => {
+                                                    return (
+                                                        <option
+                                                            key={category.id}
+                                                            value={category.id}
+                                                            id="categoryId"
+                                                        >{category.name}</option>
+                                                    )
+                                                })}
+                                            </select>
                                         </Row>
                                     </div>
                                 </Col>
@@ -203,12 +234,10 @@ const ProductEditModal = ({ idDetail }) => {
                                 </Col>
                             </Row>
                             <div className="btn_right_table">
-                                <button className="theme-btn-one bg-black btn_sm">Save</button>
+                                {isChange ? <button className="theme-btn-one bg-black btn_sm">Save</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Save</button>}
                             </div>
                         </form>
-
                         <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
-
                     </div>
                 </div>
             )

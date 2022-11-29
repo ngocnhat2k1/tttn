@@ -14,6 +14,7 @@ import Category from './Category/Category';
 import Voucher from './Voucher/Voucher';
 import AddCategory from './AddCategory/AddCategory';
 import AddVoucher from './AddVoucher/AddVoucher';
+import FeedBack from './FeedBack/FeedBack';
 
 
 const VendorArea = () => {
@@ -34,6 +35,8 @@ const VendorArea = () => {
                         <Route path='/vendor-voucher' element={<Voucher />} />
                         <Route path='/add-category' element={<AddCategory />} />
                         <Route path='/add-voucher' element={<AddVoucher />} />
+                        <Route path='/feedback' element={<FeedBack />} />
+
                     </Routes>
                 </Row>
             </Container>

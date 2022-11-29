@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // ***** Admin ***** \\
 Route::get("/admin/setup", [AdminAuthController::class, "setup"]);
 Route::post("/admin/login", [AdminAuthController::class, "login"]);
-Route::post("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
+Route::get("/admin/retrieveToken", [AdminAuthController::class, "retrieveToken"]);
 Route::middleware("auth:sanctum")->group(function () {
 
     // Route for admin
@@ -244,11 +244,11 @@ Route::post("/forgotPassword", [ForgotPasswordController::class, "forgot"]);
 Route::post("/checkCode", [ForgotPasswordController::class, "checkCode"]);
 Route::post("/resetPassword", [ForgotPasswordController::class, "reset"]);
 // Route::post("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
-Route::post("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
+Route::get("/retrieveToken", [UserAuthController::class, "retrieveToken"]); // Decrypt token to authenticate function
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => "user"], function () {
-        
+
 
         // View profile
         Route::get("/userInfo", [UserAuthController::class, "userInfo"]);
