@@ -31,19 +31,19 @@ function CustomerDashboard() {
                 <Col lg={4} md={4} sm={6} xs={12}>
                     <div className={`pt-4 ${styles.dashboardTopBox}`}>
                         <h2>{totalOrders}</h2>
-                        <h4>Total Orders</h4>
+                        <h4>Tổng số đơn</h4>
                     </div>
                 </Col>
                 <Col lg={4} md={4} sm={6} xs={12}>
                     <div className={`pt-4 ${styles.dashboardTopBox}`}>
                         <h2>{ordersCompleted}</h2>
-                        <h4>Total Delivery</h4>
+                        <h4>Tổng số đơn hoàn thành</h4>
                     </div>
                 </Col>
                 <Col lg={4} md={4} sm={6} xs={12}>
                     <div className={`pt-4 ${styles.dashboardTopBox}`}>
                         <h2>{orderPending}</h2>
-                        <h4>Total Pending</h4>
+                        <h4>Tổng số đơn đang chờ</h4>
                     </div>
                 </Col>
             </Row>

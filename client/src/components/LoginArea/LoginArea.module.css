@@ -36,11 +36,11 @@
 .createAccount {
     color: #f79837;
     text-decoration: none;
+}
 
-    &:hover {
-        cursor: pointer;
-        color: #f79837;
-    }
+.createAccount:hover {
+    cursor: pointer;
+    color: #f79837;
 }
 
 .loginSubmit button {
@@ -54,12 +54,12 @@
     border-radius: 0;
     padding: 16px 35px;
     border: none;
+}
 
-    &:hover {
-        cursor: pointer;
-        background-color: #262626;
-        color: #fff;
-    }
+.loginSubmit button:hover {
+    cursor: pointer;
+    background-color: #262626;
+    color: #fff;
 }
 
 .rememberArea {

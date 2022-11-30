@@ -31,12 +31,12 @@ function ListProduct(prop) {
                                 </Link>
                             </td>
                             <td className={styles.productPrice}>
-                                {formatter.format(product.price * ((100 - product.precentSale) / 100))}
+                                {formatter.format(product.price * ((100 - product.percentSale) / 100))}
                             </td>
                             <td className={styles.productQuantity}>
                                 <input type="number" defaultValue={product.quantity} min="1" max="5" />
                             </td>
-                            <td className={styles.productTotal}>{formatter.format(product.price * ((100 - product.precentSale) / 100) * product.quantity)}</td>
+                            <td className={styles.productTotal}>{formatter.format(product.price * ((100 - product.percentSale) / 100) * product.quantity)}</td>
                             <td className={styles.productRemove} onClick={handleDeleteProduct}><FaTrashAlt /></td>
                         </tr>
                     )
