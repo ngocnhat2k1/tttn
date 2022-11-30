@@ -41,7 +41,7 @@ function CustomerAddress() {
                                     {address.ward}, {address.city}
                                 </p>
                                 <p>Mobile: {address.phoneReceiver}</p>
-                                <Link to={`/address-edit/id=${address.id}`} className='theme-btn-one bg-black btn_sm mt-4'>Edit Address</Link>
+                                <Link to={`/address-edit/${address.id}`} className='theme-btn-one bg-black btn_sm mt-4'>Edit Address</Link>
                             </div>
                         </div>
                     </Col>

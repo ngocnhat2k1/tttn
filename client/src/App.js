@@ -44,7 +44,9 @@ function App() {
             </Route>
             <Route path="/account-edit" element={<AccountEdit />}>
             </Route>
-            <Route path="/address-edit/*" element={<AddressEdit />}>
+            <Route path="/address-edit" element={<NotFound />}>
+            </Route>
+            <Route path="/address-edit/:id" element={<AddressEdit />}>
             </Route>
             <Route path="*" element={<NotFound />}>
             </Route>

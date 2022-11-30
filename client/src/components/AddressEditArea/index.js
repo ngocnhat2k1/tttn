@@ -9,28 +9,18 @@ import 'react-phone-number-input/style.css';
 import '../RegisterArea/PhoneInput.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
+import { FaRegCheckCircle, FaTimesCircle } from 'react-icons/fa'
 
-function AddressEditArea({ id, stt }) {
-    console.log(stt);
+function AddressEditArea() {
 
-    const [lastName, setLastName] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [streetName, setStreetName] = useState('');
-    const [district, setDistrict] = useState('');
-    const [ward, setWard] = useState('');
-    const [city, setCity] = useState('');
+    const { id } = useParams();
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [errors, setError] = useState({
-        firstName: false,
-        lastName: false,
-        streetName: false,
-        district: false,
-        ward: false,
-        city: false,
-        phoneNumber: false
-    });
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState('');
+    const [modal, setModal] = useState(false);
+    const { register, handleSubmit, watch, formState: { errors }, control, reset } = useForm();
 
     useEffect(() => {
         axios
@@ -39,56 +29,52 @@ function AddressEditArea({ id, stt }) {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
-            .then((response) => {
-                console.log(response)
+            .then(response => {
                 if (response.data.success) {
-                    setLastName(response.data.data.lastName)
-                    setFirstName(response.data.data.firstName)
-                    setStreetName(response.data.data.streetName)
-                    setDistrict(response.data.data.district)
-                    setWard(response.data.data.ward)
-                    setCity(response.data.data.city)
+                    reset(response.data.data);
                     setPhoneNumber(response.data.data.phoneReceiver)
                 }
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
             });
-    }, [id]);
+    }, []);
 
-    const {
-        control
-    } = useForm();
-
-    const handleValidate = (value) => {
-        const isValid = isValidPhoneNumber(value);
-        return isValid
+    const closeModal = () => {
+        setModal(!modal);
     }
 
-    const handleUpdateName = () => {
-        if (firstName === '' || firstName.length < 2 || firstName.length > 50) {
-            setError((prevState) => ({
-                ...prevState,
-                firstName: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                firstName: false,
-            }));
-        }
+    const onSubmit = (data) => {
+        let { id, customerId, ...rest } = data;
 
-        if (lastName === '' || lastName.length < 2 || firstName.length > 50) {
-            setError((prevState) => ({
-                ...prevState,
-                lastName: true,
-            }));
-        } else {
-            setError((prevState) => ({
-                ...prevState,
-                lastName: false,
-            }));
-        }
+        axios
+            .put(`http://localhost:8000/api/user/address/update/${id}`, rest,
+                {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('token')}`,
+                    }
+                },
+            )
+            .then(response => {
+                if (response.data.success) {
+                    setMessage(response.data.message)
+                    setSuccess(response.data.success)
+                    setModal(!modal)
+                } else {
+                    setMessage(response.data.errors)
+                    setSuccess(response.data.success)
+                    setModal(!modal)
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    if (modal) {
+        document.body.classList.add('active-modal')
+    } else {
+        document.body.classList.remove('active-modal')
     }
 
     return (
@@ -97,121 +83,122 @@ function AddressEditArea({ id, stt }) {
                 <Row>
                     <Col lg={6}>
                         <div className={styles.backBtn}>
-                            <Link to='/my-account/customer-address'><FaArrowLeft /> Back to Dashboard</Link>
+                            <Link to='/my-account/customer-address'><FaArrowLeft /> Trở về trang cá nhân</Link>
                         </div>
                     </Col>
                 </Row>
                 <Row>
                     <Col lg={{ span: 6, offset: 3 }} md={12} sm={12} xs={12}>
                         <div className={styles.addressForm}>
-                            <h2>Shipping Address #{stt + 1}</h2>
-                            <form>
+                            <h2>Shipping Address</h2>
+                            <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="firstName">
-                                        First Name Receiver
+                                    <label htmlFor="firstNameReceiver">
+                                        Họ người nhận
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={firstName}
-                                        onChange={e => setFirstName(e.target.value)}
-                                        required
-                                    />
-                                    {errors["firstName"] && (
-                                        <p className="checkInput">Invalid First Name</p>
+                                        {...register("firstNameReceiver", { required: true, minLength: 2, maxLength: 100 })} />
+                                    {errors.firstNameReceiver && errors.firstNameReceiver.type === "required" && (
+                                        <p className="checkInput">Họ không được để trống</p>
                                     )}
-                                    <label htmlFor="lastName">
-                                        Last Name Receiver
+                                    {errors.firstNameReceiver && errors.firstNameReceiver.type === "minLength" && (
+                                        <p className="checkInput">Họ phải có ít nhất 2 ký tự</p>
+                                    )}
+                                    {errors.firstNameReceiver && errors.firstNameReceiver.type === "maxLength" && (
+                                        <p className="checkInput">Họ chỉ được nhiều nhất 100 ký tự</p>
+                                    )}
+                                    <label htmlFor="lastNameReceiver">
+                                        Tên người nhận
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={lastName}
-                                        onChange={e => setLastName(e.target.value)}
-                                        required
-                                    />
-                                    {errors["lastName"] && (
-                                        <p className="checkInput">Invalid Last Name</p>
+                                        {...register("lastNameReceiver", { required: true, minLength: 2, maxLength: 100 })} />
+                                    {errors.lastNameReceiver && errors.lastNameReceiver.type === "required" && (
+                                        <p className="checkInput">Tên không được để trống</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdateName}>Update Name Receiver</button>
-                                </div>
-                                <div className={styles.formGroup}>
+                                    {errors.lastNameReceiver && errors.lastNameReceiver.type === "minLength" && (
+                                        <p className="checkInput">Tên phải có ít nhất 2 ký tự</p>
+                                    )}
+                                    {errors.lastNameReceiver && errors.lastNameReceiver.type === "maxLength" && (
+                                        <p className="checkInput">Tên chỉ được nhiều nhất 100 ký tự</p>
+                                    )}
                                     <label htmlFor="streetName">
-                                        Street name
+                                        Tên đường
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={streetName}
-                                        onChange={e => setStreetName(e.target.value)}
-                                        required
-                                    />
-                                    {errors["streetName"] && (
-                                        <p className="checkInput">Invalid street name.</p>
+                                        {...register("streetName", { required: true, minLength: 2 })} />
+                                    {errors.streetName && errors.streetName.type === "required" && (
+                                        <p className="checkInput">Tên đường không được để trống</p>
                                     )}
-                                    <label htmlFor="district">
-                                        District
-                                    </label>
+                                    {errors.streetName && errors.streetName.type === "minLength" && (
+                                        <p className="checkInput">Tên đường phải có ít nhất 2 ký tự</p>
+                                    )}
+                                    <label htmlFor="district">Quận / Huyện</label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={district}
-                                        onChange={e => setDistrict(e.target.value)}
-                                        required
-                                    />
-                                    {errors["district"] && (
-                                        <p className="checkInput">Invalid district</p>
+                                        {...register("district", { required: true })} />
+                                    {errors.district && errors.district.type === "required" && (
+                                        <p className="checkInput">Quận / Huyện không được để trống</p>
                                     )}
                                     <label htmlFor="ward">
-                                        Ward
+                                        Phường / Xã
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={ward}
-                                        onChange={e => setWard(e.target.value)}
-                                        required
-                                    />
-                                    {errors["ward"] && (
-                                        <p className="checkInput">Invalid ward</p>
+                                        {...register("ward", { required: true })} />
+                                    {errors.ward && errors.ward.type === "required" && (
+                                        <p className="checkInput">Phường / Xã không được để trống</p>
                                     )}
                                     <label htmlFor="city">
-                                        City
+                                        Tỉnh / Thành phố
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        value={city}
-                                        onChange={e => setCity(e.target.value)}
-                                        required
-                                    />
-                                    {errors["city"] && (
-                                        <p className="checkInput">Invalid City</p>
+                                        {...register("city", { required: true })} />
+                                    {errors.city && errors.city.type === "required" && (
+                                        <p className="checkInput">Phường / Xã không được để trống</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdateName}>Update Address</button>
-                                </div>
-                                <div className={styles.formGroup}>
                                     <Controller
-                                        name="phoneNumber"
+                                        name="phoneReceiver"
                                         control={control}
                                         rules={{
-                                            validate: (value) => handleValidate(value)
+                                            validate: (value) => isValidPhoneNumber(value.toString())
                                         }}
                                         render={({ field: { onChange, value } }) => (
                                             <PhoneInput
-                                                value={value}
+                                                value={phoneNumber.toString()}
                                                 onChange={onChange}
                                                 defaultCountry="VN"
-                                                id="phoneNumber"
-                                                placeholder="Phone"
-                                                required
-                                            />
-                                        )}
-                                    />
-                                    {errors["phoneNumber"] && (
-                                        <p className="checkInput">Invalid Phone!</p>
+                                                id="phoneReceiver" />)} />
+                                    {errors["phoneReceiver"] && (
+                                        <p className="checkInput">Số điện thoại không đúng định dạng</p>
                                     )}
-                                    <button type="button" className='theme-btn-one bg-black btn_sm' onClick={handleUpdateName}>Update phone number</button>
+                                    <button type='submit' className='theme-btn-one bg-black btn_sm'>Cập nhật địa chỉ giao hàng</button>
+
+                                    {modal && (
+                                        <div className="modal">
+                                            <div onClick={closeModal} className="overlay"></div>
+                                            <div className="modal-content">
+                                                <div>
+                                                    {success === true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
+                                                </div>
+                                                <h2 className="title_modal">Cập nhật mật khẩu {success ? 'thành công' : 'thất bại'}</h2>
+                                                <p className='p_modal'>{message}</p>
+                                                <div className='divClose'>
+                                                    <button className="close close-modal" onClick={closeModal}>OK</button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </form>
                         </div>
