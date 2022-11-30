@@ -11,22 +11,26 @@ function AddressEdit() {
 
     const [listAddress, setListAddress] = useState([]);
 
-    // useEffect(() => {
-    //     axios
-    //         .get(`http://localhost:8000/api/retrieveToken`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${Cookies.get('token')}`,
-    //             },
-    //         })
-    //         .then((response) => {
-    //             if (!response.data.success) {
-    //                 window.location.href = 'http://localhost:3000/login';
-    //             }
-    //         })
-    //         .catch(function (error) {
-    //             console.log(error);
-    //         });
-    // }, []);
+    useEffect(() => {
+        if (Cookies.get('token')) {
+            axios
+                .get(`http://localhost:8000/api/retrieveToken`, {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('token')}`,
+                    },
+                })
+                .then((response) => {
+                    if (!response.data.success) {
+                        window.location.href = 'http://localhost:3000/login';
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+            window.location.href = 'http://localhost:3000/login';
+        }
+    }, []);
 
     useEffect(() => {
         axios
@@ -48,14 +52,7 @@ function AddressEdit() {
     return (
         <>
             <CommonBanner namePage="Address Info Edit" />
-            <Routes>
-                {listAddress.leng !== 0 &&
-                    listAddress.map((address, index) => {
-                        return (
-                            <Route key={index} path={`/id=${address.id}`} element={<AddressEditArea id={address.id} stt={index}/>}></Route>
-                        )
-                    })}
-            </Routes>
+            <AddressEditArea />
         </>
     )
 };
