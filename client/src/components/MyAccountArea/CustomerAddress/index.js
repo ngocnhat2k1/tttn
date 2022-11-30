@@ -31,7 +31,7 @@ function CustomerAddress() {
                 return (
                     <Col lg={6} key={index}>
                         <div className={styles.myaccountContent}>
-                            <h4 className={styles.title}>Shipping Address {index + 1}</h4>
+                            <h4 className={styles.title}>Địa chỉ giao hàng {index + 1}</h4>
                             <div className={styles.shippingAddress}>
                                 <h5>
                                     <strong>{address.nameReceiver}</strong>
@@ -40,8 +40,8 @@ function CustomerAddress() {
                                     {address.streetName}, {address.district}<br />
                                     {address.ward}, {address.city}
                                 </p>
-                                <p>Mobile: {address.phoneReceiver}</p>
-                                <Link to={`/address-edit/${address.id}`} className='theme-btn-one bg-black btn_sm mt-4'>Edit Address</Link>
+                                <p>Số điện thoại: {address.phoneReceiver}</p>
+                                <Link to={`/address-edit/${address.id}`} className='theme-btn-one bg-black btn_sm mt-4'>Cập nhật địa chỉ</Link>
                             </div>
                         </div>
                     </Col>

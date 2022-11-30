@@ -14,7 +14,7 @@ function CommonBanner(prop) {
                             <h2>{prop.namePage}</h2>
                             <ul>
                                 <li>
-                                    <Link to="/">Home</Link>
+                                    <Link to="/">Trang chủ</Link>
                                 </li>
                                 <li className={styles.slash}>/</li>
                                 <li className={styles.active}>{prop.namePage}</li>

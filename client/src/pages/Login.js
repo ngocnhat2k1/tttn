@@ -26,7 +26,7 @@ function Login() {
 
   return (
     <>
-      <CommonBanner namePage="Login" />
+      <CommonBanner namePage="Đăng nhập" />
       <LoginArea />
     </>
   )
