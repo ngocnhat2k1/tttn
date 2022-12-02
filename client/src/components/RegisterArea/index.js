@@ -2,30 +2,48 @@ import styles from './RegisterArea.module.scss'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import axios from '../../service/axiosClient';
+import { FaRegCheckCircle, FaTimesCircle } from 'react-icons/fa'
+import { useState } from 'react'
+import "../ModalATag/Modal.css"
 
 function RegisterArea() {
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState('');
+    const [modal, setModal] = useState(false);
+
     const {
         register,
         handleSubmit,
-        formState: { errors },
-        control,
+        formState: { errors }
     } = useForm();
+
+    const closeModal = () => {
+        if (success) {
+            setModal(!modal);
+            window.location.href = 'http://localhost:3000/login';
+        } else {
+            setModal(!modal);
+        }
+    }
 
     const onSubmit = (data) => {
         axios
             .post('http://localhost:8000/api/register', data)
-            .then(function (response) {
-                console.log("1", response.data.success)
+            .then(response => {
+                console.log(response.data)
                 if (response.data.success) {
-                    alert('Success')
+                    setMessage(response.data.message);
+                    setSuccess(response.data.success);
+                    setModal(!modal);
                 } else {
-                    console.log("2", response.data.errors)
-                    alert('Fail!');
+                    setMessage(response.data.errors);
+                    setSuccess(response.data.success);
+                    setModal(!modal);
                 }
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
             });
     };
@@ -36,34 +54,46 @@ function RegisterArea() {
                 <Row>
                     <Col lg={{ span: 6, offset: 3 }} md={12} sm={12} xs={12}>
                         <div className={styles.accountForm}>
-                            <h3>Register</h3>
+                            <h3>Đăng ký</h3>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="firstName">First Name
+                                    <label htmlFor="firstName">Họ
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        placeholder="First name"
-                                        {...register("firstName", { required: true, minLength: 2 })}
+                                        placeholder="VD: Lê Quốc"
+                                        {...register("firstName", { required: true, minLength: 2, maxLength: 50 })}
                                     />
-                                    {errors["firstName"] && (
-                                        <p className="checkInput">Invalid First Name!</p>
+                                    {errors.firstName && errors.firstName.type === "required" && (
+                                        <p className="checkInput">Họ không được để trống</p>
+                                    )}
+                                    {errors.firstName && errors.firstName.type === "minLength" && (
+                                        <p className="checkInput">Họ phải có ít nhất 2 ký tự</p>
+                                    )}
+                                    {errors.firstName && errors.firstName.type === "maxLength" && (
+                                        <p className="checkInput">Họ chỉ được tối đa 50 ký tự</p>
                                     )}
                                 </div>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="lastName">Last Name
+                                    <label htmlFor="lastName">Tên
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        placeholder="Last name"
-                                        {...register("lastName", { required: true, minLength: 2 })}
+                                        placeholder="VD: Bảo"
+                                        {...register("lastName", { required: true, minLength: 2, maxLength: 50 })}
                                     />
-                                    {errors["lastName"] && (
-                                        <p className="checkInput">Invalid Last Name!</p>
+                                    {errors.lastName && errors.lastName.type === "required" && (
+                                        <p className="checkInput">Tên không được để trống</p>
+                                    )}
+                                    {errors.lastName && errors.lastName.type === "minLength" && (
+                                        <p className="checkInput">Tên phải có ít nhất 2 ký tự</p>
+                                    )}
+                                    {errors.lastName && errors.lastName.type === "maxLength" && (
+                                        <p className="checkInput">Tên chỉ được tối đa 50 ký tự</p>
                                     )}
                                 </div>
                                 <div className={styles.defaultFormBox}>
@@ -73,43 +103,74 @@ function RegisterArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
-                                        placeholder="Email"
+                                        placeholder="VD: lqbao240101@gmail.com"
                                         {...register("email", { required: true, pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i })}
                                     />
-                                    {errors["email"] && (
-                                        <p className="checkInput">Invalid Email!</p>
+                                    {errors.email && errors.email.type === "required" && (
+                                        <p className="checkInput">Email không được để trống</p>
+                                    )}
+                                    {errors.email && errors.email.type === "pattern" && (
+                                        <p className="checkInput">Email không hợp lệ</p>
                                     )}
                                 </div>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="password">Password
+                                    <label htmlFor="password">Mật khẩu
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="Mật khẩu"
                                         {...register("password", { required: true, minLength: 6, maxLength: 24 })}
                                     />
-                                    {errors["password"] && (
-                                        <p className="checkInput">Password must be at least 6 characters and max 24 characters long</p>
+                                    {errors.password && errors.password.type === "required" && (
+                                        <p className="checkInput">Mật khẩu không được để trống</p>
+                                    )}
+                                    {errors.password && errors.password.type === "minLength" && (
+                                        <p className="checkInput">Mật khẩu phải có ít nhất 6 ký tự</p>
+                                    )}
+                                    {errors.password && errors.password.type === "maxLength" && (
+                                        <p className="checkInput">Mật khẩu chỉ được tối đa 24 ký tự</p>
                                     )}
                                 </div>
                                 <div className={styles.defaultFormBox}>
-                                    <label htmlFor="confirmPassword">Confirm Password
+                                    <label htmlFor="confirmPassword">Xác nhận mật khẩu
                                         <span className="text-danger">*</span>
                                     </label>
                                     <input
                                         className="FormInput"
                                         type="password"
-                                        placeholder="Confirm Password"
+                                        placeholder="Xác nhận mật khẩu"
                                         {...register("confirmPassword", { required: true, minLength: 6, maxLength: 24 })}
                                     />
-                                    {errors["confirmPassword"] && (
-                                        <p className="checkInput">Those passwords didn't match. Try again.</p>
+                                    {errors.confirmPassword && errors.confirmPassword.type === "required" && (
+                                        <p className="checkInput">Xác nhận mật khẩu không được để trống</p>
+                                    )}
+                                    {errors.confirmPassword && errors.confirmPassword.type === "minLength" && (
+                                        <p className="checkInput">Xác nhận mật khẩu phải có ít nhất 6 ký tự</p>
+                                    )}
+                                    {errors.confirmPassword && errors.confirmPassword.type === "maxLength" && (
+                                        <p className="checkInput">Xác nhận mật khẩu chỉ được tối đa 24 ký tự</p>
                                     )}
                                 </div>
                                 <div className={styles.registerSubmit}>
-                                    <button type="submit">REGISTER</button>
+                                    <button type="submit">ĐĂNG KÝ</button>
+
+                                    {modal && (
+                                        <div className="modal">
+                                            <div onClick={closeModal} className="overlay"></div>
+                                            <div className="modal-content">
+                                                <div>
+                                                    {success === true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
+                                                </div>
+                                                <h2 className="title_modal">Đăng ký {success ? 'thành công' : 'thất bại'}</h2>
+                                                <p className='p_modal'>{message}</p>
+                                                <div className='divClose'>
+                                                    <button className="close close-modal" onClick={closeModal}>OK</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </form>
                         </div>

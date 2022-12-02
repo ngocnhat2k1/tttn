@@ -1,12 +1,12 @@
-import { useEffect} from 'react';
+import { useEffect, useState } from 'react';
 import '../App.css';
 import Cookies from 'js-cookie';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CommonBanner from '../components/CommonBanner';
-import AddressEditArea from '../components/AddressEditArea';
+import CreateAddressArea from '../components/CreateAddressArea';
 import axios from 'axios';
 
-function AddressEdit() {
+function AddressCreate() {
 
     useEffect(() => {
         if (Cookies.get('token')) {
@@ -31,10 +31,10 @@ function AddressEdit() {
 
     return (
         <>
-            <CommonBanner namePage="Cập nhật địa chỉ" />
-            <AddressEditArea />
+            <CommonBanner namePage="Thêm địa chỉ" />
+            <CreateAddressArea />
         </>
     )
 };
 
-export default AddressEdit;
+export default AddressCreate;

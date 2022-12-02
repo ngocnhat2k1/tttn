@@ -10,6 +10,7 @@ import ListProduct from './ListProduct';
 
 function WishlistArea() {
     const [listWishlist, setListWishlist] = useState([]);
+    const [check, setCheck] = useState(0);
 
     useEffect(() => {
         axios
@@ -20,6 +21,7 @@ function WishlistArea() {
             })
             .then((response) => {
                 setListWishlist(response.data.data);
+                setCheck(check + 1);
             })
             .catch(function (error) {
                 console.log(error);
@@ -28,8 +30,8 @@ function WishlistArea() {
 
     return (
         <>
-            {listWishlist.length === 0 && <EmptyWishlist />}
-            {listWishlist.length !== 0 &&
+            {listWishlist.length === 0 && check > 0 && <EmptyWishlist />}
+            {listWishlist.length !== 0 && check > 0 &&
                 <section id={styles.wishlistArea} className='ptb100'>
                     <Container>
                         <Row>
@@ -39,12 +41,12 @@ function WishlistArea() {
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th className={styles.productThumb}>Image</th>
-                                                    <th className={styles.productName}>Product</th>
-                                                    <th className={styles.productPrice}>Price</th>
-                                                    <th className={styles.productStock}>Stock Status</th>
-                                                    <th className={styles.productAddCart}>Add to cart</th>
-                                                    <th className={styles.productRemove}>Remove</th>
+                                                    <th className={styles.productThumb}>Hình ảnh</th>
+                                                    <th className={styles.productName}>Sản phẩm</th>
+                                                    <th className={styles.productPrice}>Giá tiền</th>
+                                                    <th className={styles.productStock}>Tình trạng trong kho</th>
+                                                    <th className={styles.productAddCart}>Thêm vào giỏ hàng</th>
+                                                    <th className={styles.productRemove}>Bỏ khỏi giỏ hàng</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
