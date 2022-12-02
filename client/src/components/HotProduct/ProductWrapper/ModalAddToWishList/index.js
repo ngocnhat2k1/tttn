@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import "../../../ModalATag/Modal.css"
 import { FaRegHeart, FaRegCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import styles from "../../ProductWrapper/ProductWrapper.module.css"
