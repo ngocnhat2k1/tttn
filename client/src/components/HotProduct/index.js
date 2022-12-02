@@ -6,7 +6,7 @@ import ProductWrapper from './ProductWrapper';
 import { useState } from 'react';
 
 function HotProduct() {
-    const [unit, setUnit] = useState('New Arrival');
+    const [unit, setUnit] = useState('Mới nhập');
 
     return (
         <section className="pb100">
@@ -23,10 +23,10 @@ function HotProduct() {
                     <Col lg={12}>
                         <div>
                             <ul className={styles.navTabs}>
-                                <li className={unit === "New Arrival" ? styles.tabOnClick : ''} onClick={() => setUnit('New Arrival')}>NEW ARRIVAL</li>
+                                <li className={unit === "Mới nhập" ? styles.tabOnClick : ''} onClick={() => setUnit('Mới nhập')}>MỚI NHẬP</li>
                                 {/* <li className={unit === "Trending" ? styles.tabOnClick : ''} onClick={() => setUnit('Trending')}>TRENDING</li> */}
-                                <li className={unit === "Best Sellers" ? styles.tabOnClick : ''} onClick={() => setUnit('Best Sellers')}>BEST SELLERS</li>
-                                <li className={unit === "On Sell" ? styles.tabOnClick : ''} onClick={() => setUnit('On Sell')}>ON SELL</li>
+                                <li className={unit === "Bán chạy" ? styles.tabOnClick : ''} onClick={() => setUnit('Bán chạy')}>BÁN CHẠY</li>
+                                <li className={unit === "Giảm giá" ? styles.tabOnClick : ''} onClick={() => setUnit('Giảm giá')}>GIẢM GIÁ</li>
                             </ul>
                         </div>
                     </Col>

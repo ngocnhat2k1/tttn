@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import axios from '../../../service/axiosClient'
 import Cookies from 'js-cookie';
-import MessageModal from './MessageModal/index'
 
 function CustomerAccountDetails() {
 
@@ -39,8 +38,8 @@ function CustomerAccountDetails() {
     return (
         <div className={styles.myaccountContent}>
             <div className={`justify-content-between mt-3 d-flex align-items-center`}>
-                <h4 className={styles.title}>Account details</h4>
-                <Link to="/account-edit" className='theme-btn-one bg-black btn_sm'>UPDATE ACCOUNT</Link>
+                <h4 className={styles.title}>Chi tiết tài khoản</h4>
+                <Link to="/account-edit" className='theme-btn-one bg-black btn_sm'>Cập nhật tài khoản</Link>
             </div>
             <div >
                 <div className={styles.accountDetailsForm}>
@@ -49,18 +48,17 @@ function CustomerAccountDetails() {
                             <img src={avatar} alt="img" />
                         </div>
                         <div className={styles.defaultFormBox}>
-                            <label>First Name</label>
+                            <label>Họ</label>
                             <input type="text" name="first-name" value={firstName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
-                            <label>Last Name</label>
+                            <label>Tên</label>
                             <input type="text" name="last-name" value={lastName} className='form-control' disabled />
                         </div>
                         <div className={styles.defaultFormBox}>
                             <label>Email</label>
                             <input type="text" name="email-name" value={email} className='form-control' disabled />
                         </div>
-                        <MessageModal subsc={subscribe} />
                     </form>
                 </div>
             </div>

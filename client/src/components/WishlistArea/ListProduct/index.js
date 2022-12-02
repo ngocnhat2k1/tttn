@@ -13,22 +13,18 @@ function ListProduct(prop) {
         setListWishlist(prop.list);
     }, [prop.list])
 
-    const handleDeleteProduct = () => {
-
-    }
-
     return (
         <>
             {listWishlist.map((product, index) => {
                 return (
                     <tr key={index}>
                         <td className={styles.productThumb}>
-                            <Link>
+                            <Link to={`/shop/${product.id}`}>
                                 <img src={product.img} alt="img" />
                             </Link>
                         </td>
                         <td className={styles.productName}>
-                            <Link>
+                            <Link to={`/shop/${product.id}`}>
                                 {product.name}
                             </Link>
                         </td>
@@ -36,14 +32,13 @@ function ListProduct(prop) {
                             {formatter.format(product.price * ((100 - product.percentSale) / 100))}
                         </td>
                         <td className={styles.productStock}>
-                            <h6>{product.status === 1 ? 'In stock' : 'Out of stock'}</h6>
+                            <h6>{product.status === 1 ? 'Còn hàng' : 'Hết hàng'}</h6>
                         </td>
                         <td className={styles.productAddcart}>
-                            {/* <button type="button" className='theme-btn-one btn-black-overlay btn_sm' onClick={() => handleAddToCart(product.id)}>ADD TO CART</button> */}
-                            <ModalNotifyAdd nameBtn='ADD TO CART' productId={product.id}/>
+                            <ModalNotifyAdd nameBtn='THÊM VÀO GIỎ HÀNG' productId={product.id} />
                         </td>
-                        <td className={styles.productRemove} onClick={handleDeleteProduct}>
-                            <ModalConfirm icon={<FaTrashAlt />} productId={product.id}/>
+                        <td className={styles.productRemove}>
+                            <ModalConfirm icon={<FaTrashAlt />} productId={product.id} />
                         </td>
                     </tr>
                 )

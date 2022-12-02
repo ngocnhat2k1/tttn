@@ -27,7 +27,7 @@ function Cart() {
 
   return (
     <>
-      <CommonBanner namePage="Cart" />
+      <CommonBanner namePage="Giỏ hàng" />
       <CartArea />
     </>
   )

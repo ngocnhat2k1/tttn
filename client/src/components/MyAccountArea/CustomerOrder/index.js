@@ -4,16 +4,16 @@ import ListOrder from './ListOrder';
 function CustomerOrder() {
     return (
         <div className={styles.myaccountContent}>
-            <h4 className={styles.title}>Orders</h4>
+            <h4 className={styles.title}>Đơn hàng</h4>
             <div className={`${styles.tableResponsive} ${styles.tablePage}`}>
                 <table>
                     <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Total</th>
-                            <th>Action</th>
+                            <th>Mã đơn</th>
+                            <th>Ngày đặt</th>
+                            <th>Tình trạng</th>
+                            <th>Tổng tiền</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>

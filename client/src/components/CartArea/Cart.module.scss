@@ -187,3 +187,25 @@
 .border {
     border-top: 1px solid #ededed;
 }
+
+.plusMinusInput {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plusMinusInput button{
+    background: #000;
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 6px;
+    position: relative;
+    border: none;
+}
+
+.tablePage table tbody tr td.productQuantity input {
+    margin: 0 8px;
+}

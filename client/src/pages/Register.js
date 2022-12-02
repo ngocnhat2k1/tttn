@@ -25,7 +25,7 @@ function Register() {
 
     return (
         <>
-          <CommonBanner namePage="Register"/>
+          <CommonBanner namePage="Đăng ký"/>
           <RegisterArea />
         </>
     )

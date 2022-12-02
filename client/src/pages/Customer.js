@@ -27,7 +27,7 @@ function Customer() {
 
   return (
     <>
-      <CommonBanner namePage="Customer Dashboard" />
+      <CommonBanner namePage="Trang cá nhân" />
       <MyAccountArea />
     </>
   )

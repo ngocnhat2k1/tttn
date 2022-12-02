@@ -13,9 +13,8 @@ function EmptyCart() {
                     <Col lg={{ span: 6, offset: 3 }} md={{ span: 6, offset: 3 }} sm={12} xs={12}>
                         <div className={styles.emptyCartArea}>
                             <img src={EmptyCartImage} alt="Hình giỏ hàng rỗng" />
-                            <h2>YOUR CART IS EMPTY</h2>
-                            <h3>Sorry Mate... No Item Found Inside Your Cart!</h3>
-                            <Link className='btn_md btn-black-overlay btn' to="/shop">Continue Shopping</Link>
+                            <h2>Giỏ hàng không có sản phẩm nào</h2>
+                            <Link className='btn_md btn-black-overlay btn' to="/shop">Tiếp tục mua hàng</Link>
                         </div>
                     </Col>
                 </Row>
