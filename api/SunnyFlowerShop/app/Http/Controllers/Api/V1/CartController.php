@@ -67,7 +67,7 @@ class CartController extends Controller
             for ($j = 0; $j < sizeof($categories); $j++) {
                 $category = Category::where("id", "=", $categories[$j]->category_id)
                     ->first();
-                
+
                 $arr[$i]['categories'][$j]['id'] = $category->id;
                 $arr[$i]['categories'][$j]['name'] = $category->name;
             }
@@ -77,7 +77,7 @@ class CartController extends Controller
         // return $customer;
         return $arr;
     }
-    
+
     public function index(GetCustomerBasicRequest $request)
     {
         $check = DB::table("customer_product_cart")
@@ -90,20 +90,20 @@ class CartController extends Controller
                 "errors" => "Giỏ hàng hiện đang trống."
             ]);
         }
-        
+
         $arr = $this->generateProductsArray($request);
 
         // if state is "all" then return all
         if ($request->state === "all") {
             return [
-                "total" => sizeof ($arr),
+                "total" => sizeof($arr),
                 "data" => $arr
             ];
         }
 
         $new_arr = $this->paginator($arr, $request);
         return [
-            "total" => sizeof ($arr),
+            "total" => sizeof($arr),
             "data" => $new_arr
         ];
     }
@@ -199,16 +199,28 @@ class CartController extends Controller
             ]);
         }
 
+        $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
+
+        $check = $data->where("product_id", "=", $product->id)->exists();
+
+        // Check total quantity of product has exceeded quantity limit (10 quantity per product in cart)
+        if ($check) {
+            $productQuantity = $data->where("product_id", "=", $product->id)->first();
+
+            if ($productQuantity->quantity >= 10) {
+                return response()->json([
+                    "success" => false,
+                    "message" => "Một sản phẩm trong giỏ hàng chỉ được thêm tối đa 10 số lượng trên 1 sản phẩm."
+                ]);
+            }
+        }
+
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 "success" => false,
                 "errors" => "Số lượng sản phẩm đã gần hết, vui lòng giảm số lượng sản phẩm trước khi thêm vào giỏ hàng."
             ]);
         }
-
-        $data = DB::table("customer_product_cart")->where("customer_id", "=", $customer->id);
-
-        $check = $data->where("product_id", "=", $product->id)->exists();
 
         if (empty($check)) {
             $customer->customer_product_cart()->attach($product, [
@@ -410,6 +422,30 @@ class CartController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Sản phẩm có ID = " . $request->id . " đã được xóa khỏi giỏ hàng."
+        ]);
+    }
+
+    public function empty(GetCustomerBasicRequest $request)
+    {
+        $products_in_cart = DB::table("customer_product_cart")
+            ->where("customer_id", "=", $request->user()->id)
+            ->get()
+            ->count();
+
+        if ($products_in_cart === 0) {
+            return response()->json([
+                "success" => false,
+                "messasge" => "Giỏ hàng hiện đang trống."
+            ]);
+        }
+
+        $customer = Customer::find($request->user()->id);
+
+        $customer->customer_product_cart()->detach();
+
+        return response()->json([
+            "success" => true,
+            "message" => "Làm trống giỏ hàng thành công."
         ]);
     }
 }

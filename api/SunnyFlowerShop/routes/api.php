@@ -268,6 +268,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
         Route::post("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
         Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
+        Route::delete("/cart/empty", [CartController::class, "empty"]); // {id} is product_id
 
         // Create-Review-Cancel Order function
         Route::get("/order", [OrderController::class, "index"]); // Show all order from current login user
