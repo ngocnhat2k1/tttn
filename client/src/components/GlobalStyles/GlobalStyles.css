@@ -126,5 +126,8 @@ table {
 
 .colorFail {
     color: red !important;
+}
 
+.textRight {
+    text-align: right !important;
 }

@@ -10,14 +10,9 @@ const ModalAddToCart = ({ productId }) => {
     const [success, setSuccess] = useState('');
 
     const handleAddToCart = (productId) => {
-        console.log(1);
-        const payload = {
-            productId: productId,
-            quantity: 1
-        }
 
         axios
-            .post(`http://localhost:8000/api/user/cart/add`, payload, {
+            .post(`http://localhost:8000/api/user/cart/add/${productId}`, [], {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },

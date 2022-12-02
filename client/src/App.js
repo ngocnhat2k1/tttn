@@ -15,6 +15,7 @@ import Wishlist from "./pages/Wishlist";
 import AddressEdit from "./pages/AddressEdit";
 import NotFound from "./components/NotFound";
 import "./components/ModalATag/Modal.css"
+import AddressCreate from "./pages/AddressCreate";
 
 function App() {
 
@@ -43,6 +44,8 @@ function App() {
             <Route path="/order-complete" element={<OrderComplete />}>
             </Route>
             <Route path="/account-edit" element={<AccountEdit />}>
+            </Route>
+            <Route path="/address-create" element={<AddressCreate />}>
             </Route>
             <Route path="/address-edit" element={<NotFound />}>
             </Route>

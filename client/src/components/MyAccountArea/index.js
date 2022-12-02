@@ -9,6 +9,7 @@ import CustomerDashboard from './CustomerDashboard';
 import CustomerAddress from './CustomerAddress';
 import CustomerAccountDetails from './CustomerAccountDetails';
 import { useState } from 'react';
+import NotFound from '../NotFound';
 
 function MyAccountArea() {
     const [tab, setTab] = useState("Dashboard");
@@ -22,16 +23,16 @@ function MyAccountArea() {
                             <ul role="tablist" className={`flex-column nav`}>
                                 <li>
                                     <Link to="/my-account" className={tab === "Dashboard" ? styles.active : ""} onClick={() => setTab("Dashboard")}>
-                                        <FaTachometerAlt /> DASHBOARD
+                                        <FaTachometerAlt /> THỐNG KÊ
                                     </Link>
                                     <Link to="/my-account/customer-order" className={tab === "Orders" ? styles.active : ""}  onClick={() => setTab("Orders")}>
-                                        <FaCartArrowDown className=''/> ORDERS
+                                        <FaCartArrowDown className=''/> ĐƠN HÀNG
                                     </Link>
                                     <Link to="/my-account/customer-address" className={tab === "Addresses" ? styles.active : ""} onClick={() => setTab("Addresses")}>
-                                        <FaMapMarkerAlt className=''/> ADDRESSES
+                                        <FaMapMarkerAlt className=''/> ĐỊA CHỈ GIAO HÀNG
                                     </Link>
                                     <Link to="/my-account/customer-account-details" className={tab === "AccountDetails" ? styles.active : ""} onClick={() => setTab("AccountDetails")}>
-                                        <FaUserAlt className=''/> ACCOUNT DETAILS
+                                        <FaUserAlt className=''/> CHI TIẾT TÀI KHOẢN
                                     </Link>
                                 </li>
                             </ul>
@@ -43,6 +44,7 @@ function MyAccountArea() {
                             <Route path="/customer-order" element={<CustomerOrder />}></Route>
                             <Route path="/customer-address" element={<CustomerAddress />}></Route>
                             <Route path="/customer-account-details" element={<CustomerAccountDetails />}></Route>
+                            <Route path="/*" element={<NotFound />}></Route>
                         </Routes>
                     </Col>
                 </Row>

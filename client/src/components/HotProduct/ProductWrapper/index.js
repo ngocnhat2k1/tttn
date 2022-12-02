@@ -57,11 +57,11 @@ function ProductWrapper({ unit }) {
     }, [])
 
     useEffect(() => {
-        if (unit === "New Arrival") {
+        if (unit === "Mới nhập") {
             setList(listNewArrival);
-        } else if (unit === "On Sell") {
+        } else if (unit === "Giảm giá") {
             setList(listOnSell);
-        } else if (unit === "Best Sellers") {
+        } else if (unit === "Bán chạy") {
             setList(listBestSellers)
         }
         //  else if (unit === "Trending") {
@@ -82,9 +82,9 @@ function ProductWrapper({ unit }) {
                                 <span className={styles.badges}>
                                     <span
                                         className={
-                                            unit === "New Arrival" ? styles.new : unit === "Best Sellers" ? styles.best : unit === "Trending" ? styles.trending : styles.sale
+                                            unit === "Mới nhập" ? styles.new : unit === "Bán chạy" ? styles.best : unit === "Trending" ? styles.trending : styles.sale
                                         }>
-                                        {unit === "On Sell" ? product.percentSale + "% OFF" : unit}</span>
+                                        {unit === "Giảm giá" ? "Giảm " + product.percentSale + "%" : unit}</span>
                                 </span>
                                 <div className={styles.actions}>
                                     <ModalAddToWishList productId={product.id} />

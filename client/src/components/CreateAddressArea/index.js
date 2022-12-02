@@ -1,4 +1,4 @@
-import styles from './AddressEditArea.module.css';
+import styles from "../AddressEditArea/AddressEditArea.module.css"
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,36 +9,17 @@ import 'react-phone-number-input/style.css';
 import '../RegisterArea/PhoneInput.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FaRegCheckCircle, FaTimesCircle } from 'react-icons/fa'
 
-function AddressEditArea() {
+function CreateAddressArea() {
 
-    const { id } = useParams();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState('');
     const [modal, setModal] = useState(false);
     const { register, handleSubmit, watch, formState: { errors }, control, reset } = useForm();
-
-    useEffect(() => {
-        axios
-            .get(`http://localhost:8000/api/user/address/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            })
-            .then(response => {
-                if (response.data.success) {
-                    reset(response.data.data);
-                    setPhoneNumber(response.data.data.phoneReceiver)
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }, []);
 
     const closeModal = () => {
         setModal(!modal);
@@ -48,7 +29,7 @@ function AddressEditArea() {
         let { id, customerId, ...rest } = data;
 
         axios
-            .put(`http://localhost:8000/api/user/address/update/${id}`, rest,
+            .post(`http://localhost:8000/api/user/address/create`, rest,
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('token')}`,
@@ -56,6 +37,7 @@ function AddressEditArea() {
                 },
             )
             .then(response => {
+                console.log(response)
                 if (response.data.success) {
                     setMessage(response.data.message)
                     setSuccess(response.data.success)
@@ -71,12 +53,6 @@ function AddressEditArea() {
             })
     }
 
-    if (modal) {
-        document.body.classList.add('active-modal')
-    } else {
-        document.body.classList.remove('active-modal')
-    }
-
     return (
         <section id={styles.addressEdit} className='ptb100'>
             <Container>
@@ -90,7 +66,7 @@ function AddressEditArea() {
                 <Row>
                     <Col lg={{ span: 6, offset: 3 }} md={12} sm={12} xs={12}>
                         <div className={styles.addressForm}>
-                            <h2>Địa chỉ giao hàng</h2>
+                            <h2>Thêm địa chỉ giao hàng mới</h2>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className={styles.formGroup}>
                                     <label htmlFor="firstNameReceiver">
@@ -99,6 +75,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: Lê Quốc"
                                         {...register("firstNameReceiver", { required: true, minLength: 2, maxLength: 100 })} />
                                     {errors.firstNameReceiver && errors.firstNameReceiver.type === "required" && (
                                         <p className="checkInput">Họ không được để trống</p>
@@ -115,6 +92,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: Bảo"
                                         {...register("lastNameReceiver", { required: true, minLength: 2, maxLength: 100 })} />
                                     {errors.lastNameReceiver && errors.lastNameReceiver.type === "required" && (
                                         <p className="checkInput">Tên không được để trống</p>
@@ -131,6 +109,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: Tô Ký"
                                         {...register("streetName", { required: true, minLength: 2 })} />
                                     {errors.streetName && errors.streetName.type === "required" && (
                                         <p className="checkInput">Tên đường không được để trống</p>
@@ -142,6 +121,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: 12"
                                         {...register("district", { required: true })} />
                                     {errors.district && errors.district.type === "required" && (
                                         <p className="checkInput">Quận / Huyện không được để trống</p>
@@ -152,6 +132,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: Tân Chánh Hiệp"
                                         {...register("ward", { required: true })} />
                                     {errors.ward && errors.ward.type === "required" && (
                                         <p className="checkInput">Phường / Xã không được để trống</p>
@@ -162,6 +143,7 @@ function AddressEditArea() {
                                     <input
                                         className="FormInput"
                                         type="text"
+                                        placeholder="VD: Hồ Chí Minh"
                                         {...register("city", { required: true })} />
                                     {errors.city && errors.city.type === "required" && (
                                         <p className="checkInput">Phường / Xã không được để trống</p>
@@ -177,11 +159,12 @@ function AddressEditArea() {
                                                 value={phoneNumber.toString()}
                                                 onChange={onChange}
                                                 defaultCountry="VN"
+                                                placeholder="VD: 0969710601"
                                                 id="phoneReceiver" />)} />
                                     {errors["phoneReceiver"] && (
                                         <p className="checkInput">Số điện thoại không đúng định dạng</p>
                                     )}
-                                    <button type='submit' className='theme-btn-one bg-black btn_sm'>Cập nhật địa chỉ giao hàng</button>
+                                    <button type='submit' className='theme-btn-one bg-black btn_sm'>Thêm địa chỉ giao hàng</button>
 
                                     {modal && (
                                         <div className="modal">
@@ -190,7 +173,7 @@ function AddressEditArea() {
                                                 <div>
                                                     {success === true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                                                 </div>
-                                                <h2 className="title_modal">Cập nhật {success ? 'thành công' : 'thất bại'}</h2>
+                                                <h2 className="title_modal">Thêm địa chỉ {success ? 'thành công' : 'thất bại'}</h2>
                                                 <p className='p_modal'>{message}</p>
                                                 <div className='divClose'>
                                                     <button className="close close-modal" onClick={closeModal}>OK</button>
@@ -209,4 +192,4 @@ function AddressEditArea() {
     )
 }
 
-export default AddressEditArea;
+export default CreateAddressArea;
