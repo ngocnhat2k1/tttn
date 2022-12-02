@@ -5,25 +5,31 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
+import ModalConfirm from "../../ModalConfirm/ModalConfirm";
 import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const CategoryEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
     const [categoryName, setcategoryName] = useState('')
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const categoryInsessicon = sessionStorage.getItem("category");
+    const [isChange, setIsChange] = useState(false)
+    const [success, setSuccess] = useState("")
+    const [message, setMessage] = useState('')
+    const [notify, setNotify] = useState(false)
+    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
     const toggleModal = () => {
         setModal(!modal);
-        console.log(idDetail)
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories/${idDetail}`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
             })
-
             .then((response) => {
-                setcategoryName(response.data.name);
+                console.log(response.data)
+                reset(response.data.data)
+                sessionStorage.setItem("category", JSON.stringify(response.data.data))
             });
     };
     const closeModal = () => {
@@ -36,19 +42,24 @@ const CategoryEditModal = ({ idDetail }) => {
     }
 
     const onSubmit = (data) => {
-        console.log(data)
+        const payload = data
+        let { categoryId, createdAt, updatedAt, ...rest } = payload
+        console.log("rest", rest)
         axios
-            .put(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/update`, data, {
+            .put(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/update`, rest, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`
                 },
             })
             .then((response) => {
-                alert(response.data.success);
-                console.log(response.data.error);
-                if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/vendor-category';
+                setSuccess(response.data.success)
+                if (success) {
+                    setMessage(response.data.message)
+                } else {
+                    setMessage(response.data.errors)
                 }
+                setNotify(true)
+
             })
             .catch(function (error) {
                 alert(error);
@@ -76,13 +87,19 @@ const CategoryEditModal = ({ idDetail }) => {
                                         <input type="text"
                                             className="form-control"
                                             id="name"
-                                            value={categoryName}
-                                            {...register('name', { required: true, onChange: onChangeName })} />
+                                            {...register('name', {
+                                                onChange: (e) => {
+                                                    setcategoryName(e.target.value)
+                                                    if (categoryName !== JSON.parse(categoryInsessicon).name) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })} />
                                     </div>
                                 </Col>
                             </Row>
                             <div className="btn_right_table">
-                                <button className="theme-btn-one bg-black btn_sm">Save</button>
+                                {isChange ? <button className="theme-btn-one bg-black btn_sm">Save</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Save</button>}
                             </div>
                         </form>
 
@@ -92,6 +109,9 @@ const CategoryEditModal = ({ idDetail }) => {
                 </div>
             )
             }
+            {notify && (
+                <ModalConfirm message={message} success={success} />
+            )}
         </>
     )
 }

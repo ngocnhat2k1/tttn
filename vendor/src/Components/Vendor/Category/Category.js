@@ -36,8 +36,6 @@ const Category = () => {
                                             <tr>
                                                 <th scope="col">ID</th>
                                                 <th scope="col">Name</th>
-                                                {/* <th scope="col">Full Name</th>
-                                        <th scope="col">Email</th> */}
                                                 <th scope="col">Edit</th>
                                             </tr>
                                         </thead>
@@ -45,41 +43,6 @@ const Category = () => {
                                             <ListCategories currentCategory={data} />
                                         </tbody>
                                     </table>
-                                    {/* {page !== 1 ?
-                                        < Col lg={12}>
-                                            <ul className={styles.pagination}>
-                                                {page > 1 && <li className={styles.pageItem}>
-                                                    <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
-                                                </li>}
-                                                {page === lastPage && <li className={styles.pageItem}>
-                                                    <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
-                                                </li>}
-                                                {page === lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
-                                                    <Link className={styles.pageLink}>...</Link>
-                                                </li>}
-                                                {page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${prevPage}`} className={styles.pageLink}>{page - 1}</Link></li>}
-
-                                                <li className={`${styles.pageItem} ${styles.active}`}>
-                                                    <Link to={`?page=${page}`} className={styles.pageLink}>{page}</Link>
-                                                </li>
-                                                {page !== lastPage && <li className={styles.pageItem}>
-                                                    <Link to={`?page=${nextPage}`} className={styles.pageLink}>{page + 1}</Link>
-                                                </li>}
-                                                {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>}
-                                                {page !== lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
-                                                    <Link className={styles.pageLink}>...</Link>
-                                                </li>}
-                                                {page !== lastPage && <li className={styles.pageItem}>
-                                                    <Link to={`?page=${lastPage}`} className={styles.pageLink}>{lastPage}</Link>
-                                                </li>}
-                                                {page !== lastPage && <li className={styles.pageItem}>
-                                                    <Link to={`?page=${nextPage}`} className={styles.pageLink}>»</Link>
-                                                </li>}
-                                            </ul>
-                                        </Col> : <div>
-                                        </div>} */}
-
-
                                 </div>
                             </div>
                         </Col>

@@ -16,7 +16,7 @@ function TabList() {
                         <Link
                             onClick={() => setActive('/')}
                             className={`${isActive === "/" ? 'active_tablist' : ' '} `}
-                            to="/"> <i> <FaTachometerAlt color='black' /></i> Chung </Link>
+                            to="/"> <i> <FaTachometerAlt color='black' /></i> Tổng Quan </Link>
                     </li>
                     <li>
                         <Link

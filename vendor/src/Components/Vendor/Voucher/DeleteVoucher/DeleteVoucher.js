@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash, FaTimes } from 'react-icons/fa'
+import { FaTrash, FaTimes, FaRegCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
@@ -8,6 +8,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const DeleteVoucher = ({ idDetail, nameDetail }) => {
     const [modal, setModal] = useState(false);
+    const [success, setSuccess] = useState("")
+    const [message, setMessage] = useState('')
+    const [notify, setNotify] = useState(false)
     const { handleSubmit, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
@@ -17,7 +20,10 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
     } else {
         document.body.classList.remove('active-modal')
     }
-
+    const closeNotify = () => {
+        setNotify(!notify);
+        window.location.reload(false)
+    }
     const onSubmit = (data) => {
         setModal(!modal);
         axios
@@ -28,11 +34,14 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
                     },
                 },)
             .then((response) => {
+                setSuccess(response.data.success)
+                if (response.data.success) {
+                    setMessage(response.data.errors)
+                } else {
+                    setMessage(response.data.message)
+                }
 
-                // alert(response.data.success);
-                window.location.reload(false)
-                console.log('kkhi da bam')
-
+                setNotify(true)
             })
             .catch(function (error) {
                 alert(error);
@@ -43,26 +52,39 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
     return (
         <>
             <FaTrash onClick={toggleModal} className="btn-modal"></FaTrash>
-            {
-                modal && (
-                    <div className="modal">
-                        <div onClick={toggleModal} className="overlay"></div>
-                        <div className="modal-content">
-                            <h2 className="title_modal">Confirm delete Voucher <p>{nameDetail}</p></h2>
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <div className="btn_right_table">
-
-                                    <button className="theme-btn-one bg-black btn_sm">Delete </button>
-
-                                </div>
-                            </form>
-
-                            <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
-
+            {modal && (
+                <div className="modal">
+                    <div onClick={toggleModal} className="overlay"></div>
+                    <div className="modal-content">
+                        <h2 className="title_modal">Confirm delete Voucher <p>{nameDetail}</p></h2>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="btn_right_table">
+                                <button className="theme-btn-one bg-black btn_sm">Delete </button>
+                            </div>
+                        </form>
+                        <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
+                    </div>
+                </div>
+            )
+            }
+            {notify && (
+                <div className="modal">
+                    <div onClick={closeNotify} className="overlay"></div>
+                    <div className="modal-content">
+                        <div>
+                            {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
+                        </div>
+                        <h2 className="title_modal">Delete {success ? 'Successful' : 'Failed'}</h2>
+                        <p className='p_modal'>{message}</p>
+                        <div className="btn_right_table">
+                            <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Close </button>
+                        </div>
+                        <div className='divClose'>
+                            <button className="close close-modal" onClick={closeNotify}><FaTimes /></button>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )}
         </>
     )
 }

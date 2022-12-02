@@ -1,8 +1,16 @@
 import React from 'react'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
+import ListFeedBack from './ListFeedBack/ListFeedBack';
+import { Link, useSearchParams } from 'react-router-dom';
+import usePaginate from '../../Hook/usePagination/usePaginate';
 
 const FeedBack = () => {
+    const [searchParams] = useSearchParams();
+    const { data, page, nextPage, prevPage, lastPage } = usePaginate(
+        "http://127.0.0.1:8000/api/v1/feedbacks",
+        searchParams
+    );
     return (
         <Col sm={12} md={12} lg={9}>
             <div className='tab-content dashboard_content'>
@@ -18,15 +26,11 @@ const FeedBack = () => {
                                                 <th scope='col'>Tên Khách Hàng</th>
                                                 <th scope='col'>Tên Sản Phẩm</th>
                                                 <th scope='col'>Nội Dung</th>
-                                                <th scope='col'>Phone Receiver</th>
-                                                <th scope='col'>Address</th>
-                                                <th scope='col'>Status</th>
-                                                <th scope='col'>Price</th>
-                                                <th scope='col'>Action</th>
+                                                <th scope='col'>Thời gian</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {/* <ListOrder currentOrder={data.data} /> */}
+                                            <ListFeedBack currentFeedBack={data} />
 
                                         </tbody>
                                     </table>

@@ -35,17 +35,17 @@ function TopHeaderRightAuth({ user }) {
         <div className={styles.divRight}>
             <ul className={styles.rightList}>
                 <li className={styles.account}>
-                    <img src={user.defaultAvatar} alt="avatar" />{user.userName}
+                    <img src={user.avatar ? user.avatar : user.defaultAvatar} alt="avatar" />{user.userName}
                     <FaAngleDown fontSize={12} />
                     <ul className={styles.dropDown}>
                         <li>
-                            <Link to="/my-account"><FaTachometerAlt /> Dashboard</Link>
+                            <Link to="/my-account"><FaTachometerAlt />Tổng Quan</Link>
                         </li>
                         <li>
-                            <Link to="/my-account/customer-order"><FaCubes /> My Orders</Link>
+                            <Link to="/changeInformation"><FaCubes />Đổi Thông Tin</Link>
                         </li>
                         <li>
-                            <button onClick={handleLogout}><FaSignOutAlt /> Log out</button>
+                            <button onClick={handleLogout}><FaSignOutAlt />Đăng xuất</button>
                         </li>
                     </ul>
                 </li>
