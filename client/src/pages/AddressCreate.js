@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import '../App.css';
 import Cookies from 'js-cookie';
 import 'bootstrap/dist/css/bootstrap.min.css';
