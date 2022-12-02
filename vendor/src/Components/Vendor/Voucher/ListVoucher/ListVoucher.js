@@ -19,10 +19,10 @@ const ListVoucher = ({ currentVoucher }) => {
                         {Voucher.deleted === 1 ? <td>Deleted</td> : <td>Availability</td>}
                         <td>
                             <div className='edit_icon'>
-                                <VoucherEditModal idDetail={Voucher.id} />
+                                <VoucherEditModal idDetail={Voucher.voucherId} />
                             </div>
                             <div className='edit_icon'>
-                                <DeleteVoucher idDetail={Voucher.id} nameDetail={Voucher.name} />
+                                <DeleteVoucher idDetail={Voucher.voucherId} nameDetail={Voucher.name} />
                             </div>
                         </td>
 

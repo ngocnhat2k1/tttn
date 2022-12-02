@@ -55,3 +55,26 @@ input[type=number] {
     -moz-appearance: textfield;
     /* Firefox */
 }
+
+.btnNo {
+    background-color: black !important;
+    color: white;
+}
+
+.btnYes {
+    background-color: red !important;
+    color: white;
+}
+
+.svgQuestion {
+    color: #f79837 !important;
+}
+
+.colorSuccess {
+    color: #28a745 !important;
+}
+
+.colorFail {
+    color: red !important;
+
+}

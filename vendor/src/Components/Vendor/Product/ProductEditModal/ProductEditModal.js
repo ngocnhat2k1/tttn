@@ -7,16 +7,18 @@ import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
 import "../../Modal.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ModalConfirm from "../../ModalConfirm/ModalConfirm";
 
 const ProductEditModal = ({ idDetail }) => {
-    const [isChecked, setIsChecked] = useState(true)
     const [modal, setModal] = useState(false);
     const [productName, setPoductName] = useState('')
     const [price, setPrice] = useState('')
     const [percentSale, setPercentSale] = useState('')
     const [quantity, setQuantity] = useState('');
     const [img, setImg] = useState('');
-    const [status, setStatus] = useState('')
+    const [success, setSuccess] = useState("")
+    const [message, setMessage] = useState('')
+    const [notify, setNotify] = useState(false)
     const [listCategories, setListCategories] = useState([]);
     const [listCategoriesOfProduct, setListCategoriesOfProduct] = useState([])
     const [description, setDescription] = useState('')
@@ -32,7 +34,6 @@ const ProductEditModal = ({ idDetail }) => {
                 },
             })
             .then((response) => {
-                console.log(response.data.data)
                 reset(response.data.data)
                 sessionStorage.setItem("product", JSON.stringify(response.data.data))
                 setPoductName(response.data.data.name);
@@ -69,17 +70,12 @@ const ProductEditModal = ({ idDetail }) => {
         document.body.classList.remove('active-modal')
     }
 
-    if (productName === productInsessicon.name) {
-        console.log('đúng')
-    }
-
     const onSubmit = (data) => {
         const payload = {
             ...data,
             img: img,
         }
         let { category, deletedAt, id, quality, ...rest } = payload
-        console.log(rest)
         axios
             .put(`http://127.0.0.1:8000/api/v1/products/${idDetail}/edit`, rest, {
                 headers: {
@@ -87,11 +83,9 @@ const ProductEditModal = ({ idDetail }) => {
                 },
             })
             .then((response) => {
-                alert(response.data.success);
-                console.log(response.data);
-                if (response.data.success === true) {
-                    window.location.href = 'http://localhost:4000/all-product';
-                }
+                setSuccess(response.data.success)
+                setMessage(response.data.message)
+                setNotify(true)
             })
             .catch(function (error) {
                 alert(error);
@@ -185,7 +179,14 @@ const ProductEditModal = ({ idDetail }) => {
                                         <input type="number"
                                             className="form-control"
                                             id="quantity"
-                                            {...register('quantity', { onChange: (e) => { setQuantity(e.target.value) } })} />
+                                            {...register('quantity', {
+                                                onChange: (e) => {
+                                                    setPercentSale(e.target.value)
+                                                    if (quantity == JSON.parse(productInsessicon).quantity) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })} />
                                     </div>
                                 </Col>
                                 <Col lg={6}>
@@ -228,7 +229,14 @@ const ProductEditModal = ({ idDetail }) => {
                                             rows="4" cols=""
                                             className='form-control'
                                             spellCheck="false"
-                                            {...register("description", { onChange: (e) => { setDescription(e.target.value) } })}
+                                            {...register("description", {
+                                                onChange: (e) => {
+                                                    setPercentSale(e.target.value)
+                                                    if (description == JSON.parse(productInsessicon).description) {
+                                                        setIsChange(true)
+                                                    }
+                                                }
+                                            })}
                                         ></textarea>
                                     </div>
                                 </Col>
@@ -242,6 +250,9 @@ const ProductEditModal = ({ idDetail }) => {
                 </div>
             )
             }
+            {notify && (
+                <ModalConfirm success={success} message={message} />
+            )}
         </>
     )
 }

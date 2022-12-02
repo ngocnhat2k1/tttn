@@ -1,0 +1,123 @@
+#accountEdit {
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.backBtn {
+    text-align: left;
+    margin-bottom: 60px;
+}
+
+.backBtn a {
+    font-size: 16px;
+    color: #f79837;
+    font-weight: 500;
+}
+
+.back_btn a svg {
+    margin-right: 10px;
+}
+
+.accountThumd {
+    text-align: center;
+    position: relative;
+
+}
+
+.accountThumbImg {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    /* margin: 0 auto; */
+}
+
+.accountThumd img {
+    object-fit: cover;
+    border-radius: 50%;
+    max-width: 100%;
+    height: 100%;
+}
+
+.fixedIcon {
+    position: absolute;
+    background: #fff;
+    bottom: 6%;
+    right: 10%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    -webkit-transform: translate(-4px, -7px);
+    transform: translate(-4px, -7px);
+    box-shadow: 4px 6px 13px 0 rgb(0 0 0 / 19%);
+}
+
+.fixedIcon input {
+    opacity: 0;
+    position: absolute;
+    max-width: 30px;
+}
+
+.accountThumd h4 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    padding-top: 25px;
+    padding-bottom: 5px;
+}
+
+.accountSetting {
+    text-align: left;
+    padding-left: 60px;
+}
+
+.accountSettingHeading {
+    padding-bottom: 20px;
+}
+
+.accountSettingHeading h2 {
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+.accountSettingHeading p {
+    font-size: 16px;
+    line-height: 24px;
+    color: #777c87;
+    font-weight: 400;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 0;
+}
+
+.accountEditForm .formGroup {
+    margin-bottom: 40px;
+}
+
+.accountEditForm .formGroup label {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.accountEditForm input {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.accountEditForm input:last-child {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.accountEditForm button {
+    margin-bottom: 30px
+}
+
+.accountEditForm p {
+    margin-top: 0px;
+    margin-bottom: 10px
+}
+
+.textCenter {
+    text-align: center !important;
+}

@@ -70,7 +70,6 @@ const Voucher = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {console.log(data.data)}
                                             <ListVoucher currentVoucher={data.data} />
                                         </tbody>
                                     </table>
