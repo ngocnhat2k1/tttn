@@ -7,6 +7,7 @@ import { formatter } from '../../../utils/utils';
 import { useEffect, useState } from 'react';
 import ModalAddToWishList from './ModalAddToWishList';
 import ModalAddToCart from './ModalAddToCart';
+import ModalDetailProduct from '../../ModalDetailProduct';
 
 function ProductWrapper({ unit }) {
 
@@ -15,6 +16,7 @@ function ProductWrapper({ unit }) {
     const [listBestSellers, setListBestSellers] = useState([]);
     const [listOnSell, setListOnSell] = useState([]);
     const [list, setList] = useState([]);
+    const [show, setShow] = useState(false);
 
     useEffect(() => {
         axios
@@ -88,9 +90,10 @@ function ProductWrapper({ unit }) {
                                 </span>
                                 <div className={styles.actions}>
                                     <ModalAddToWishList productId={product.id} />
-                                    <a className={`${styles.action}`} title="Quickview">
+                                    {/* <a className={`${styles.action}`} title="Quickview">
                                         <FaExpand />
-                                    </a>
+                                    </a> */}
+                                    <ModalDetailProduct productId={product.id}/>
                                 </div>
                                 <ModalAddToCart productId={product.id} />
                             </div>

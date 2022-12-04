@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\DB;
 class FeedBackController extends Controller
 {
     // **** Feedback **** \\
-    public function paginator($arr, $request)
+    public function paginator($arr, $request, $number_per_page)
     {
         $total = count($arr);
-        $per_page = 10;
+        $per_page = $number_per_page;
         $current_page = $request->input("page") ?? 1;
 
         $starting_point = ($current_page * $per_page) - $per_page;
@@ -70,17 +70,63 @@ class FeedBackController extends Controller
             //     $data[0]['products'][$j]['categories'][$k]['name']= $category->name;
             // }
 
-            
-            $data[$j]['quality'] = $customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->quality;
-            $data[$j]['rating'] = QualityStatusEnum::getQualityAttribute($data[$j]['quality']);
+
+            // $data[$j]['quality'] = $customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->quality;
+            // $data[$j]['rating'] = QualityStatusEnum::getQualityAttribute($data[$j]['quality']);
             $data[$j]['comment'] = $customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->comment;
             $data[$j]['createdAt'] = date_format($customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->created_at, "d/m/Y H:i:s");
             $data[$j]['updatedAt'] = date_format($customer_product_feedback[0]['customer_product_feedback'][$j]['pivot']->updated_at, "d/m/Y H:i:s");
         }
 
-        return $this->paginator($data, $request);
+        return $this->paginator($data, $request, 10);
     }
 
+    // View all feedback attach selected product
+    public function feedbacksProduct(GetCustomerBasicRequest $request)
+    {
+        // $request->id is Feedback ID in customer_product_feedback table
+        $customer = Customer::find($request->user()->id);
+        $queryProduct = Product::where("id", "=", $request->id);
+
+        if (!$queryProduct->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Sản phẩm không tồn tại."
+            ]);
+        }
+
+        $product = $queryProduct->first();
+
+        $query = DB::table("customer_product_feedback")
+            ->where("customer_id", "=", $customer->id)
+            ->where("product_id", "=", $product->id);
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Phản hồi của sản phẩm không tồn tại."
+            ]);
+        }
+
+        $data = $query->get();
+        $arr = [];
+        
+        for ($i = 0; $i < sizeof($data); $i++) {
+            $arr[$i]['id'] = $data[$i]->id;
+            $arr[$i]['productId'] = $product->id;
+            $arr[$i]['name'] = $product->name;
+            $arr[$i]['img'] = $product->img;
+            // $arr[$i]['quality'] = $data[$i]->quality;
+            // $arr[$i]['rating'] = QualityStatusEnum::getQualityAttribute($data[$i]->quality);
+            $arr[$i]['comment'] = $data[$i]->comment;
+            $arr[$i]['createdAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->created_at));
+            $arr[$i]['updatedAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->updated_at));
+        }
+
+        return $this->paginator($arr, $request, 5);
+    }
+
+    // View feedback detail
     public function feedbackDetail(GetCustomerBasicRequest $request)
     {
         // $request->id is Feedback ID in customer_product_feedback table
@@ -92,7 +138,7 @@ class FeedBackController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Phản hồi sản phẩm không tồn tại."
+                "errors" => "Phản hồi không tồn tại."
             ]);
         }
 
@@ -118,8 +164,8 @@ class FeedBackController extends Controller
             "productId" => $product->id,
             "productName" => $product->name,
             "img" => $product->img,
-            "quality" => $customer_product_feedback->pivot->quality,
-            "rating" => QualityStatusEnum::getQualityAttribute($customer_product_feedback->pivot->quality),
+            // "quality" => $customer_product_feedback->pivot->quality,
+            // "rating" => QualityStatusEnum::getQualityAttribute($customer_product_feedback->pivot->quality),
             "comment" => $customer_product_feedback->pivot->comment,
             "createdAt" => date_format($customer_product_feedback->pivot->created_at, "d/m/Y H:i:s"),
             "updatedAt" => date_format($customer_product_feedback->pivot->updated_at, "d/m/Y H:i:s"),
@@ -141,16 +187,16 @@ class FeedBackController extends Controller
 
         for ($i = 0; $i < sizeof($orders_customers); $i++) {
             $product = Product::find($request->product_id);
-            // $check = DB::table("order_product")
-            //     ->where("order_id", "=", $orders_customers[$i]->id)
-            //     ->where("product_id", "=", $product->id)
-            //     ->exists();
+            $check = DB::table("order_product")
+                ->where("order_id", "=", $orders_customers[$i]->id)
+                ->where("product_id", "=", $product->id)
+                ->exists();
 
-            // if (!$check) continue;
+            if (!$check) continue;
             // Can't do a foreach loop to check value in pivot table for some reason. It can't check null value
 
             $customer->customer_product_feedback()->attach($product, [
-                "quality" => $request->quality,
+                // "quality" => $request->quality,
                 "comment" => $request->comment,
             ]);
 
@@ -179,7 +225,7 @@ class FeedBackController extends Controller
         $result = $customer->customer_product_feedback()
             ->wherePivot("id", "=", $request->id)
             ->updateExistingPivot($product, [
-                "quality" => $request->quality,
+                // "quality" => $request->quality,
                 "comment" => $request->comment,
             ]);
 

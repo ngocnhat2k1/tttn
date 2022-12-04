@@ -290,6 +290,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)
         Route::get("/feedback/{id}", [FeedBackController::class, "feedbackDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
+        Route::get("feedback/product/{id}", [FeedBackController::class, "feedbacksProduct"]);
         // Route::get("/feedback/product/{id}", [FeedBackController::class, "feedbackProductDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
         Route::post("/feedback/create", [FeedBackController::class, "storeFeedBack"]); // Create new feedback for a specific proudct
         Route::put("/feedback/update/{id}", [FeedBackController::class, "updateFeedBack"]); // {id} is feedback_id; Update existed feedback of a specific product

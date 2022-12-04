@@ -3,6 +3,7 @@
 namespace App\Http\Resources\V1;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class ProductDetailResource extends JsonResource
 {
@@ -14,6 +15,17 @@ class ProductDetailResource extends JsonResource
      */
     public function toArray($request)
     {
+        // attach category to products (if product doesn't have category)
+        $categoryCount = DB::table("category_product")
+            ->where("product_id", "=", $this->id);
+
+        if ($categoryCount->get()->count() === 0) {
+            $categoriesId = null;
+        }
+        else {
+            $categoriesId = $this->categories[0]->id;
+        }
+
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -25,7 +37,7 @@ class ProductDetailResource extends JsonResource
             "quality" => $this->quality,
             "status" => $this->status,
             "deletedAt" => $this->deleted_at,
-            "categoryId" =>$this->categories[0]->id
+            "categoryId" => $categoriesId
         ];
     }
 }
