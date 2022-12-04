@@ -87,7 +87,7 @@ const DetailProduct = () => {
     }
     useEffect(() => {
         axios
-            .get(`http://127.0.0.1:8000/api/user/feedback/${productId}`, {
+            .get(`http://127.0.0.1:8000/api/user/feedback/product/${productId}`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -126,21 +126,38 @@ const DetailProduct = () => {
         }
         console.log(payload)
         axios
-            .post(`http://127.0.0.1:8000/api/user/feedback/create`, payload, {
+            .get(`http://localhost:8000/api/retrieveToken`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
             .then((response) => {
-
-                if (!response.data.success) {
-                    navigate("/login")
+                if (response.data.success) {
+                    axios
+                        .post(`http://127.0.0.1:8000/api/user/feedback/create`, payload, {
+                            headers: {
+                                Authorization: `Bearer ${Cookies.get('token')}`,
+                            },
+                        })
+                        .then((response) => {
+                            if (!response.data.success) {
+                                setMessage(response.data.message)
+                                setSuccess(response.data.success)
+                            } else {
+                                setMessage(response.data.message)
+                                setSuccess(response.data.success)
+                            }
+                        })
                 } else {
-                    setMessage(response.data.message)
-                    setSuccess(response.data.success)
+                    navigate("/login")
                 }
-                window.location.reload(false)
             })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+
+
     }
     return (
         <>
