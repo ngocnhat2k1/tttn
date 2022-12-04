@@ -24,7 +24,7 @@ class CustomerSeeder extends Seeder
             ->hasAttached(
                 Product::factory()->count(10),
                 [
-                    'quality' => rand(1, 5),
+                    // 'quality' => rand(1, 5),
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s"),
                 ],
@@ -48,7 +48,7 @@ class CustomerSeeder extends Seeder
             ->hasAttached(
                 Product::factory()->count(5),
                 [
-                    'quality' => rand(1, 5),
+                    // 'quality' => rand(1, 5),
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s"),
                 ],
