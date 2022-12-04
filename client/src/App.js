@@ -16,6 +16,7 @@ import AddressEdit from "./pages/AddressEdit";
 import NotFound from "./components/NotFound";
 import "./components/ModalATag/Modal.css"
 import AddressCreate from "./pages/AddressCreate";
+import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
 
 function App() {
 
@@ -28,6 +29,8 @@ function App() {
             <Route path="/" element={<Home />}>
             </Route>
             <Route path="/shop" element={<Shop />}>
+            </Route>
+            <Route path="/shop/:productId" element={<DetailProduct />}>
             </Route>
             <Route path="/login" element={<Login />}>
             </Route>
