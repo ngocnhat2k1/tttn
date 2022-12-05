@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
 use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
 use App\Http\Requests\Admin\Update\UpdateOrderCustomerRequest;
 use App\Http\Resources\V1\OrderListCollection;
-use App\Http\Resources\V1\ProductDetailResource;
 use App\Mail\OrderDeliveredNotify;
 use App\Mail\OrderDeliveredState;
 use App\Models\Customer;
@@ -15,6 +14,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class OrderCustomerController extends Controller
@@ -53,7 +53,7 @@ class OrderCustomerController extends Controller
 
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
-            
+
             $voucher_data = [
                 "voucherId" => $voucher->voucher_id,
                 "percent" => $voucher->percent,
@@ -61,15 +61,31 @@ class OrderCustomerController extends Controller
                 "expiredDate" => $voucher->expired_date,
                 "deleted" => $voucher->deleted,
             ];
-        }
-        else {
+        } else {
             $voucher_data = null;
         }
 
         // Create product array
         $pivot_table = Order::find($order->id);
 
-        $data["products"] = $pivot_table->products;
+        $products = $pivot_table->products;
+        $productsInOrder = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $productsInOrder[$i]['id'] = $products[$i]->id;
+            $productsInOrder[$i]['name'] = $products[$i]->name;
+            $productsInOrder[$i]['description'] = $products[$i]->description;
+            $productsInOrder[$i]['price'] = $products[$i]->price;
+            $productsInOrder[$i]['percentSale'] = $products[$i]->percent_sale;
+            $productsInOrder[$i]['img'] = $products[$i]->img;
+
+            $productQuantity = DB::table("order_product")
+                ->where("product_id", "=", $products[$i]->id)
+                ->where("order_id", "=", $data->id)
+                ->first();
+
+            $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
+        }
 
         return response()->json([
             "success" => true,
@@ -97,7 +113,7 @@ class OrderCustomerController extends Controller
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
-                "products" => ProductDetailResource::collection($data->products)
+                "products" => $productsInOrder
             ]
         ]);
     }
@@ -179,7 +195,8 @@ class OrderCustomerController extends Controller
     }
 
     public function updateStatus(Request $request, Customer $customer, Order $order)
-    {return($request->user());
+    {
+        return ($request->user());
         /** Update current status of order
          * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
          * Status can only be changed from "Confirmed" to "Completed", no reverse allow
@@ -264,7 +281,7 @@ class OrderCustomerController extends Controller
         $userName = $customer->first_name . " " . $customer->last_name;
         $priceOrder = $order->total_price;
         $idDelivery = $order->id_delivery;
-        
+
         // If state is 1, then Send Notify to customer that Order has been delivered
         if ((int) $request->state === 1) {
             $title = "Đơn hàng đã được giao thành công";

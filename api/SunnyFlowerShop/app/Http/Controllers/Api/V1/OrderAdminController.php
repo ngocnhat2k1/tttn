@@ -14,11 +14,13 @@ use App\Models\Order;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class OrderAdminController extends Controller
 {
     /** ADMIN FUNCTIONs */
-    public function paginator($arr, $request) {
+    public function paginator($arr, $request)
+    {
         $total = count($arr);
         $per_page = 12;
         $current_page = $request->input("page") ?? 1;
@@ -86,27 +88,51 @@ class OrderAdminController extends Controller
     public function show(GetAdminBasicRequest $request, Order $order)
     {
         // Check existence of Customer and Order via Customer ID and Order ID
-        $order["products"] = $order->products;
-
         $voucher_query = Voucher::where("id", "=", $order->voucher_id);
         $customer_query = Customer::where("id", "=", $order->customer_id);
-        
+
         if (!$voucher_query->exists() || !$customer_query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Đơn hàng có vài thông tin không hợp lệ, vui lòng kiểm tra lại trước khi cho phép hiển thị trên màn hình."
-            ]);
+            if ($order->voucher_id !== null) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Đơn hàng có vài thông tin không hợp lệ, vui lòng kiểm tra lại trước khi cho phép hiển thị trên màn hình."
+                ]);
+            }
         }
 
-        $order['voucher'] = $voucher_query->first();
+        if ($order->voucher_id !== null) {
+            $voucher = $voucher_query->first();
+            $order['voucher'] = new VoucherDetailResource($voucher);
+        } else {
+            $order['voucher'] = null;
+        }
         $order['customer'] = $customer_query->first();
+
+        $products = $order->products;
+        $productsInOrder = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $productsInOrder[$i]['id'] = $products[$i]->id;
+            $productsInOrder[$i]['name'] = $products[$i]->name;
+            $productsInOrder[$i]['description'] = $products[$i]->description;
+            $productsInOrder[$i]['price'] = $products[$i]->price;
+            $productsInOrder[$i]['percentSale'] = $products[$i]->percent_sale;
+            $productsInOrder[$i]['img'] = $products[$i]->img;
+
+            $productQuantity = DB::table("order_product")
+                ->where("product_id", "=", $products[$i]->id)
+                ->where("order_id", "=", $order->id)
+                ->first();
+
+            $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
+        }
 
         return response()->json([
             "success" => true,
             "data" => [
                 "order" => [
                     "customer" => new CustomerOverviewResource($order->customer),
-                    "voucher" => new VoucherDetailResource($order->voucher), 
+                    "voucher" => $order->voucher,
                     "orderId" => $order->id,
                     "idDelivery" => $order->id_delivery,
                     "dateOrder" => $order->date_order,
@@ -117,7 +143,7 @@ class OrderAdminController extends Controller
                     "status" => $order->status,
                     "paidType" => $order->paid_type,
                     "deletedBy" => $order->deleted_by,
-                    "products" => ProductDetailResource::collection($order->products)
+                    "products" => $productsInOrder
                 ]
             ]
         ]);
@@ -126,8 +152,73 @@ class OrderAdminController extends Controller
 
         // return response()->json([
         //     "success" => true,
-            // "data" => new OrderDetailResource($order)
+        // "data" => new OrderDetailResource($order)
         // ]);
+    }
+
+    public function showViaIdDelivery(GetAdminBasicRequest $request)
+    {
+        // Check existence of Customer and Order via Customer ID and Order ID
+        $order_query = Order::where("id_delivery", "=", $request->id);
+        // $customer_query = Customer::where("id", "=", $order->customer_id);
+
+        if (!$order_query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Đơn hàng không tồn tại."
+            ]);
+        }
+
+        $order = $order_query->first();
+        $customer_query = Customer::where("id", "=", $order->customer_id)->first();
+
+        if ($order->voucher_id !== null) {
+            $voucher = Voucher::where("id", "=", $order->voucher_id)->first();
+            $order['voucher'] = new VoucherDetailResource($voucher);
+        } else {
+            $order['voucher'] = null;
+        }
+        $order['customer'] = $customer_query->first();
+
+        $products = $order->products;
+        $productsInOrder = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $productsInOrder[$i]['id'] = $products[$i]->id;
+            $productsInOrder[$i]['name'] = $products[$i]->name;
+            $productsInOrder[$i]['description'] = $products[$i]->description;
+            $productsInOrder[$i]['price'] = $products[$i]->price;
+            $productsInOrder[$i]['percentSale'] = $products[$i]->percent_sale;
+            $productsInOrder[$i]['img'] = $products[$i]->img;
+
+            $productQuantity = DB::table("order_product")
+                ->where("product_id", "=", $products[$i]->id)
+                ->where("order_id", "=", $order->id)
+                ->first();
+
+            $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
+        }
+
+        return response()->json([
+            "success" => true,
+            "data" => [
+                "order" => [
+                    "customer" => new CustomerOverviewResource($order->customer),
+                    "voucher" => $order->voucher,
+                    "orderId" => $order->id,
+                    "idDelivery" => $order->id_delivery,
+                    "dateOrder" => $order->date_order,
+                    "address" => $order->address,
+                    "nameReceiver" => $order->name_receiver,
+                    "phoneReceiver" => $order->phone_receiver,
+                    "totalPrice" => $order->total_price,
+                    "status" => $order->status,
+                    "paidType" => $order->paid_type,
+                    "deletedBy" => $order->deleted_by,
+                    "products" => $productsInOrder
+                ]
+            ]
+        ]);
     }
 
     public function updateStatus(UpdateOrderCustomerStatus $request, Order $order)
