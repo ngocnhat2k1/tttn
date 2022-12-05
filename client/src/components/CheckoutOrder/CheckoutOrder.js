@@ -47,16 +47,19 @@ const CheckoutOrder = () => {
         setModal(!modal);
     }
 
+    const PlaceOrder = () => {
 
-    const PlaceOrder = (data) => {
+        const today = new Date();
         const payload = {
             phoneReceiver: phoneReceiver,
             nameReceiver: nameReceiver,
-            voucherId: voucherId,
+            dateOrder: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds(),
+            voucherCode: "",
             totalPrice: totalPriceCart - (percent * totalPriceCart / 100),
-            address: street + ' ' + ward + ' ' + district + ' ' + province
+            address: street + ', ' + ward + ', ' + district + ', ' + province,
+            paidType: 0
         }
-        console.log('chạy do on click')
+        console.log(payload)
         axios
             .post(`http://127.0.0.1:8000/api/user/order/placeorder`, payload, {
                 headers: {
@@ -93,7 +96,6 @@ const CheckoutOrder = () => {
     const [couter, setcouter] = useState(0)
     useEffect(() => {
         listProduct.map((product) => {
-            console.log(product.percentSale)
             if (couter < 1) {
                 settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
                 setcouter(couter + 1)
@@ -106,21 +108,20 @@ const CheckoutOrder = () => {
     };
     const onSubmit2 = (data) => {
         axios
-            .post(`http://localhost:8000/voucher/check`, data, {
+            .post(`http://127.0.0.1:8000/api/user/voucherCheck`, data, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
             .then((response) => {
-                setMessage(response.data.success)
+                setMessage(response.data.message)
                 setSuccess(response.data.success)
                 if (response.data.success) {
-                    setvoucherId(response.data._id)
-                    setpercent(response.data.percent)
+                    setvoucherId(response.data.id)
+                    setpercent(response.data.data.percent)
                 }
             })
     }
-
 
     return (
         <section id='checkout' className='ptb-100'>
@@ -217,7 +218,7 @@ const CheckoutOrder = () => {
                                         <input
                                             type="text"
                                             placeholder="Coupon code"
-                                            {...register2("name")}
+                                            {...register2("voucherCode")}
                                         />
                                         <AccountEditModal message={message} success={success} nameBtn='Apply coupon' />
                                     </form>
@@ -240,11 +241,9 @@ const CheckoutOrder = () => {
                                             return (
                                                 <tr key={index}>
                                                     <td>{product.name}<span className="product-qty"> X {product.quantity}</span></td>
-                                                    <td>{formatter.format((product.price * ((100 - product.percent_sale) / 100)) * product.quantity)}</td>
-                                                </tr>
-                                            )
+                                                    <td>{formatter.format((product.price * ((100 - product.percentSale) / 100)) * product.quantity)}</td>
+                                                </tr>)
                                         })}
-
                                     </tbody>
                                     <tfoot>
                                         <tr>
@@ -276,13 +275,11 @@ const CheckoutOrder = () => {
                                             <div className='divClose'>
                                                 <button className="close close-modal" onClick={closeModal}>OK</button>
                                             </div>
-
                                         </div>
                                     </div>
                                 )}
                             </div>
                         </div>
-
                     </Col>
                 </Row>
             </div>
