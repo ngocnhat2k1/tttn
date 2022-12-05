@@ -7,6 +7,7 @@ use App\Http\Resources\V1\CategoryListResource;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -16,10 +17,10 @@ use Illuminate\Support\Facades\DB;
 class ProductQueryController extends Controller
 {
     // Use for Paginate
-    public function paginator($arr, $request)
+    public function paginator($arr, $request, $amount)
     {
         $total = count($arr);
-        $per_page = 8;
+        $per_page = $amount;
         $current_page = $request->input("page") ?? 1;
 
         $starting_point = ($current_page * $per_page) - $per_page;
@@ -248,7 +249,7 @@ class ProductQueryController extends Controller
             }
         }
 
-        return $this->paginator($arr, $request);
+        return $this->paginator($arr, $request, 8);
     }
 
     public function show(Request $request)
@@ -331,7 +332,7 @@ class ProductQueryController extends Controller
                 }
             }
         }
-        return new ProductListCollection($this->paginator($data, $request));
+        return new ProductListCollection($this->paginator($data, $request, 8));
     }
 
     // Use for searching bar
@@ -364,7 +365,7 @@ class ProductQueryController extends Controller
                         $index++;
                     }
                 }
-                return new ProductListCollection($this->paginator($data, $request));
+                return new ProductListCollection($this->paginator($data, $request, 8));
             }
 
             return response()->json([
@@ -439,5 +440,54 @@ class ProductQueryController extends Controller
         $categories = Category::all();
 
         return CategoryListResource::collection($categories);
+    }
+
+    // View all feedback attach selected product
+    public function feedbacksProduct(Request $request)
+    {
+        // $request->id is Feedback ID in customer_product_feedback table
+        $queryProduct = Product::where("id", "=", $request->id);
+
+        if (!$queryProduct->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Sản phẩm không tồn tại."
+            ]);
+        }
+
+        $product = $queryProduct->first();
+
+        $query = DB::table("customer_product_feedback")
+            ->where("product_id", "=", $product->id);
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Phản hồi của sản phẩm không tồn tại."
+            ]);
+        }
+
+        $data = $query->get();
+        $arr = [];
+        
+        for ($i = 0; $i < sizeof($data); $i++) {
+            $customer = Customer::find($data[$i]->customer_id);
+
+            if ($customer->disabled !== null) continue; // If customer is disabled then skip
+
+            $arr[$i]['customerId'] = $customer->id;
+            $arr[$i]['firstName'] = $customer->first_name;
+            $arr[$i]['lastName'] = $customer->last_name;
+            $arr[$i]['avatar'] = $customer->avatar;
+            $arr[$i]['defaultAvatar'] = $customer->default_avatar;
+
+            // $arr[$i]['quality'] = $data[$i]->quality;
+            // $arr[$i]['rating'] = QualityStatusEnum::getQualityAttribute($data[$i]->quality);
+            $arr[$i]['comment'] = $data[$i]->comment;
+            $arr[$i]['createdAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->created_at));
+            $arr[$i]['updatedAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->updated_at));
+        }
+
+        return $this->paginator($arr, $request, 5);
     }
 }
