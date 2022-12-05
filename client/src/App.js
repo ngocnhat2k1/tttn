@@ -19,6 +19,7 @@ import AddressCreate from "./pages/AddressCreate";
 import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
 import CheckoutOrderPage from "./pages/CheckoutOrderPage";
 import OrderCompleteArea from "./components/OrderCompleteArea";
+import OrderDetail from "./pages/OrderDetail";
 
 
 function App() {
@@ -43,6 +44,8 @@ function App() {
             <Route path="/address-create" element={<AddressCreate />} />
             <Route path="/address-edit" element={<NotFound />} />
             <Route path="/address-edit/:id" element={<AddressEdit />} />
+            <Route path="/order-detail" element={<NotFound />} />
+            <Route path="/order-detail/:id" element={<OrderDetail />} />
             <Route path="/checkout-order/" element={<CheckoutOrderPage />} />
             <Route path="/order-completed" element={<OrderCompleteArea />} />
             <Route path="*" element={<NotFound />}>
