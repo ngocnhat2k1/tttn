@@ -279,6 +279,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/order/placeorderPaypal", [CheckoutPaypalController::class, "store"]); // Placeorder
         Route::get("/order/{id}/payment", [CheckoutController::class, "redirect"])->name("redirect.page");
 
+        Route::post("/voucherCheck", [VoucherCustomerController::class, "checkVoucher"]);
+
         // After payment completed
         Route::get(
             "/order/payment?partnerCode={partnerCode}&orderId={orderId}&requestId={requestId}&amount={amount}&orderInfo={orderInfo}&orderType={orderType}&transId={transId}&resultCode={resultCode}&message={message}&payType={payType}&responseTime={responseTime}&extraData={extraData}&signature={signature}",
