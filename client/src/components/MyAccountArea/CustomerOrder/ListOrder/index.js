@@ -3,6 +3,7 @@ import { formatter } from '../../../../utils/utils';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom'
 
 function ListOrder() {
 
@@ -30,16 +31,17 @@ function ListOrder() {
             {listOrder.map((order, index) => {
                 return (
                     <tr key={index}>
-                        <td>{index + 1}</td>
+                        <td>{order.idDelivery}</td>
                         <td>{order.dateOrder}</td>
-                        <td>
+                        <td>{order.nameReceiver}</td>
+                        <td className={styles.status}>
                             <span className={`${styles.badge}
                         ${order.deletedBy !== null ? styles.badgeCanceled : order.status === 0 ? styles.badgePending : styles.badgeCompleted}`}>
                                 {order.deletedBy !== null ? 'Cancelled' : order.status === 0 ? 'Pending' : order.status === 1 ? 'Confirm' : 'Completed'}</span>
                         </td>
                         <td>{formatter.format(order.totalPrice)}</td>
-                        <td>
-                            <a className={styles.view} href="">View</a>
+                        <td className={styles.action}>
+                            <Link className={styles.view} to={`/order-detail/${order.id}`}>View</Link>
                         </td>
                     </tr>
                 )
