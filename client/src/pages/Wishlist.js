@@ -27,7 +27,7 @@ function Wishlist() {
 
   return (
     <>
-      <CommonBanner namePage="Wishlist" />
+      <CommonBanner namePage="Yêu thích" />
       <WishlistArea />
     </>
   )

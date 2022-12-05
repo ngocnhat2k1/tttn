@@ -18,7 +18,7 @@ function CustomerAddress() {
                 },
             })
             .then(response => {
-                    setListAddress(response.data.data);
+                setListAddress(response.data.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -34,7 +34,7 @@ function CustomerAddress() {
                     </Link>
                 </h4>
             </Col>
-            {listAddress.map((address, index) => {
+            {listAddress && listAddress.map((address, index) => {
                 return (
                     <Col lg={6} key={index}>
                         <div className={styles.myaccountContent}>

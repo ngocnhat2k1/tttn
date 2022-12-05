@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import styles from './OfferCountdown.module.scss'
+import { Link } from 'react-router-dom'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -12,7 +13,7 @@ function OfferCountdown() {
     const [timeSeconds, setSeconds] = useState('00');
 
     let interval = useRef();
-    
+
     const startCountDown = () => {
         const countDownDate = new Date('October 1, 2022 00:00:00').getTime();
 
@@ -53,24 +54,24 @@ function OfferCountdown() {
                                 <div>
                                     <ul>
                                         <li>
-                                            <span>{timeDays}</span> days
+                                            <span>{timeDays}</span> Ngày
                                         </li>
                                         <li>
-                                            <span>{timeHours}</span> Hours
+                                            <span>{timeHours}</span> Giờ
                                         </li>
                                         <li>
-                                            <span>{timeMinutes}</span> Minutes
+                                            <span>{timeMinutes}</span> Phút
                                         </li>
                                         <li>
-                                            <span>{timeSeconds}</span> Seconds
+                                            <span>{timeSeconds}</span> Giây
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                             <div className={styles.offerTimeText}>
-                                <h2>20% OFF FOR ALL T-SHIRT COLLECTION</h2>
+                                <h2>GIẢM GIÁ ĐẾN 40% CHO NHỮNG SẢN PHẨM MỚI</h2>
                                 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro quisquam, odit assumenda sit modi commodi esse necessitatibus temporibus aperiam veritatis eveniet!</p>
-                                <a href="">VIEW MORE</a>
+                                <Link to='/shop'>XEM THÊM</Link>
                             </div>
                         </div>
                     </Col>

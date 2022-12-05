@@ -13,26 +13,36 @@ import NotFound from '../NotFound';
 
 function MyAccountArea() {
     const [tab, setTab] = useState("Dashboard");
+    const duongdan = window.location.pathname
+    const [isActive, setActive] = useState(duongdan)
 
     return (
-        <section id='myAccountArea' className='ptb100 prl50'>
+        <section id='myAccountArea' className='ptb100 prl30'>
             <Container fluid>
                 <Row>
                     <Col sm={12} md={12} lg={3}>
                         <div className={styles.tabButton}>
                             <ul role="tablist" className={`flex-column nav`}>
                                 <li>
-                                    <Link to="/my-account" className={tab === "Dashboard" ? styles.active : ""} onClick={() => setTab("Dashboard")}>
+                                    <Link to="/my-account"
+                                        onClick={() => setActive('/my-account')}
+                                        className={`${isActive === "/my-account" ? styles.active : ' '} `}>
                                         <FaTachometerAlt /> THỐNG KÊ
                                     </Link>
-                                    <Link to="/my-account/customer-order" className={tab === "Orders" ? styles.active : ""}  onClick={() => setTab("Orders")}>
-                                        <FaCartArrowDown className=''/> ĐƠN HÀNG
+                                    <Link to="/my-account/customer-order"
+                                        onClick={() => setActive('/my-account/customer-order')}
+                                        className={`${isActive === "/my-account/customer-order" ? styles.active : ' '} `}>
+                                        <FaCartArrowDown className='' /> ĐƠN HÀNG
                                     </Link>
-                                    <Link to="/my-account/customer-address" className={tab === "Addresses" ? styles.active : ""} onClick={() => setTab("Addresses")}>
-                                        <FaMapMarkerAlt className=''/> ĐỊA CHỈ GIAO HÀNG
+                                    <Link to="/my-account/customer-address"
+                                        onClick={() => setActive('/my-account/customer-address')}
+                                        className={`${isActive === "/my-account/customer-address" ? styles.active : ' '} `}>
+                                        <FaMapMarkerAlt className='' /> ĐỊA CHỈ GIAO HÀNG
                                     </Link>
-                                    <Link to="/my-account/customer-account-details" className={tab === "AccountDetails" ? styles.active : ""} onClick={() => setTab("AccountDetails")}>
-                                        <FaUserAlt className=''/> CHI TIẾT TÀI KHOẢN
+                                    <Link to="/my-account/customer-account-details"
+                                        onClick={() => setActive('/my-account/customer-account-details')}
+                                        className={`${isActive === "/my-account/customer-account-details" ? styles.active : ' '} `} >
+                                        <FaUserAlt className='' /> CHI TIẾT TÀI KHOẢN
                                     </Link>
                                 </li>
                             </ul>
@@ -49,7 +59,7 @@ function MyAccountArea() {
                     </Col>
                 </Row>
             </Container>
-        </section>
+        </section >
     )
 }
 

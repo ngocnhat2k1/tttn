@@ -11,12 +11,12 @@ function TrendingIntroduction() {
                 <Row>
                     <Col lg={{ span: 4, offset: 4 }} md={12} sm={12} xs={12}>
                         <div className={styles.trendingText}>
-                            <h5>TRENDING</h5>
-                            <h2>New Fashion</h2>
+                            <h5>THỊNH HÀNH</h5>
+                            <h2>SẢN PHẨM MỚI</h2>
                             <p>
-                                Consectetur adipisicing elit. Dolores nisi distinctio magni, iure deserunt doloribus optio
+                                Những sản phẩm mới luôn được cập nhật để phù hợp hơn với xu hướng của giới trẻ hiện nay
                             </p>
-                            <Link to="">Shop Now</Link>
+                            <Link to="/shop">Xem thêm</Link>
                         </div>
                     </Col>
                 </Row>
