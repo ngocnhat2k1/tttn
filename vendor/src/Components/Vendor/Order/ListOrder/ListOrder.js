@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatter } from '../../../../until/FormatterVND'
 import ActionOrder from '../ActionOrder/ActionOrder'
 
 const ListOrder = ({ currentOrder }) => {
@@ -15,9 +16,9 @@ const ListOrder = ({ currentOrder }) => {
                         <td>{Order.phoneReceiver}</td>
                         <td>{Order.address}</td>
                         <td>
-                            {Order.deletedBy ? <span className='Cancelled'>Cancelled</span> : Order.status === 0 ? <span className='Pending'>Pending</span> : Order.status === 1 ? <span className='Confirmed'>Confirm</span> : <span className='Completed'>Completed</span>}
+                            {Order.deletedBy ? <span className='Cancelled'>Đã huỷ</span> : Order.status === 0 ? <span className='Pending'>Đang xử lí</span> : Order.status === 1 ? <span className='Confirmed'>Đã xác nhận</span> : <span className='Completed'>Đã hoàn thành</span>}
                         </td>
-                        <td>{Order.price}₫</td>
+                        <td>{formatter.format(Order.price)}</td>
                         <td><ActionOrder idOrder={Order.orderId} idCustomer={Order.customerId} /> </td>
                     </tr>
                 )

@@ -105,15 +105,16 @@ const CheckoutOrder = () => {
                 },
             })
             .then((response) => {
+                console.log(response.data)
                 setMessage(response.data.message)
                 setSuccess(response.data.success)
                 if (response.data.success) {
-                    setvoucherId(response.data.id)
+                    setvoucherId(response.data.data.name)
                     setpercent(response.data.data.percent)
                 }
             })
     }
-
+    console.log(voucherId)
     return (
         <>
             {!listProduct && check > 0 && <EmptyCart />}

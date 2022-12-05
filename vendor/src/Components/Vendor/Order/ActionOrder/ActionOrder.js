@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import formatDate from '../../../../until/formatDateTime';
+import { formatter } from '../../../../until/FormatterVND';
 
 const ActionOrder = ({ idOrder, idCustomer }) => {
     const [modal, setModal] = useState(false);
@@ -14,10 +14,10 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
     const [createdAt, setCreatedAt] = useState('')
     const [email, setEmail] = useState('')
     const [totalPrice, settotalPrice] = useState('')
+    const [discount, setDiscount] = useState(0)
     const [listProducts, setListProducts] = useState([])
     const [address, setAddress] = useState('')
     const [deletedBy, setDeletedBy] = useState()
-    const [totalPriceCart, settotalPriceCart] = useState(0)
     const [state, setState] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
@@ -30,6 +30,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
 
             .then((response) => {
+                console.log(response.data)
                 setIdDelivery(response.data.data.order.idDelivery)
                 setCreatedAt(response.data.data.order.createdAt)
                 settotalPrice(response.data.data.order.totalPrice)
@@ -37,6 +38,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                 setEmail(response.data.data.customer.email)
                 setState(response.data.data.order.status)
                 setAddress(response.data.data.order.address)
+                setDiscount(response.data.data.product)
                 setDeletedBy(response.data.data.order.deleted_by)
             });
     };
@@ -54,6 +56,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
             .then((response) => {
                 alert(response.data.message)
+                window.location.reload(false)
             })
     }
     const handleCancel = () => {
@@ -65,6 +68,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
             .then((response) => {
                 alert(response.data.success)
+                window.location.reload(false)
             })
             .catch((err) => { console.log(err) })
 
@@ -74,15 +78,15 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
     } else {
         document.body.classList.remove('active-modal')
     }
-    const [couter, setcouter] = useState(0)
-    useEffect(() => {
-        listProducts.map((product) => {
-            if (couter < 1) {
-                settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
-                setcouter(couter + 1)
-            }
-        })
-    }, [listProducts])
+    // const [couter, setcouter] = useState(0)
+    // useEffect(() => {
+    //     listProducts.map((product) => {
+    //         if (couter < 1) {
+    //             settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
+    //             setcouter(couter + 1)
+    //         }
+    //     })
+    // }, [listProducts])
     return (
         <div><FaListAlt onClick={toggleModal} />
             {modal && (
@@ -94,7 +98,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                 <div className='detail-header'>
                                     <Row className='header-conten'>
                                         <h4>
-                                            Detail Order {idDelivery}
+                                            Chi tiết đơn hàng {idDelivery}
                                         </h4>
                                     </Row>
                                     <Row>
@@ -102,14 +106,14 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                             <div className='detail-bottom'>
                                                 <ul>
                                                     <li>
-                                                        <span>Issue Date: </span>
+                                                        <span>Ngày đặt hàng: </span>
                                                         <h6>{createdAt}</h6>
                                                     </li>
                                                 </ul>
 
                                                 <ul>
                                                     <li>
-                                                        <span>Address: </span>
+                                                        <span>Địa chỉ: </span>
                                                         <h6>{address}</h6>
                                                     </li>
                                                 </ul>
@@ -125,8 +129,8 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                                 </ul>
                                                 <ul>
                                                     <li>
-                                                        <span>Status: </span>
-                                                        {deletedBy ? <h6 className='Cancelled'>Cancelled</h6> : state === 0 ? <h6 className='Pending'>Pending</h6> : state === 1 ? <h6 className='Confirmed'>Confirm</h6> : <h6 className='Completed'>Completed</h6>}
+                                                        <span>Trạng thái: </span>
+                                                        {deletedBy ? <h6 className='Cancelled'>Đã Huỷ</h6> : state === 0 ? <h6 className='Pending'>Đang xử lí</h6> : state === 1 ? <h6 className='Confirmed'>Đã xác nhận</h6> : <h6 className='Completed'>Đã hoàn thành</h6>}
                                                     </li>
                                                 </ul>
                                             </div>
@@ -138,22 +142,23 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                         <thead>
                                             <tr>
                                                 <th scope='col'>#</th>
-                                                <th scope='col'>Product</th>
-                                                <th scope='col'>PRICE</th>
-                                                <th scope='col'>Quantity</th>
-                                                <th scope='col'>TOTAL</th>
+                                                <th scope='col'>Sản Phẩm</th>
+                                                <th scope='col'>Giá</th>
+                                                <th scope='col'>Số Lượng</th>
+                                                <th scope='col'>Giảm giá</th>
+                                                <th scope='col'>Tổng</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {listProducts.map((product) => {
-                                                console.log(product)
                                                 return (
                                                     <tr key={product.id} className="align-middle">
                                                         <th scope='col' className='img_product_order'><img src={product.img} alt="img" /></th>
                                                         <th scope='col'>{product.name}</th>
-                                                        <th scope='col'>{product.price}</th>
+                                                        <th scope='col'>{formatter.format(product.price)}</th>
                                                         <th scope='col'>{product.quantity}</th>
-                                                        <th scope='col'>{product.price * product.quantity}</th>
+                                                        <th scope='col'>{product.percentSale}%</th>
+                                                        <th scope='col'>{formatter.format((product.price * (1 - (product.percentSale / 100))) * product.quantity)}</th>
                                                     </tr>
                                                 )
                                             })}
@@ -162,17 +167,23 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                             <tr>
                                                 <td colSpan={2}></td>
                                                 <td colSpan={1}></td>
-                                                <td className='font-bold text-dark' colSpan={2}>Total</td>
-                                                <td className='font-bold text-theme'>{totalPriceCart}</td>
+                                                <td className='font-bold text-dark' colSpan={2}>Tổng</td>
+                                                <td className='font-bold text-theme'>{formatter.format(totalPrice)}</td>
                                             </tr>
+                                            {discount ? <tr>
+                                                <td colSpan={2}></td>
+                                                <td colSpan={1}></td>
+                                                <td className='font-bold text-dark' colSpan={2}>Voucher</td>
+                                                <td className='font-bold text-theme'>-{discount}%</td>
+                                            </tr> : ""}
                                         </tfoot>
                                     </table>
                                     <div className='detail-footer text-right'>
-                                        {deletedBy ? "" : state === 2 ? "" : <p>Which state would you like to change?</p>}
+                                        {deletedBy ? "" : state === 2 ? "" : <p>Bạn muốn thay đổi trạng thái nào?</p>}
                                         <div className='buttons'>
-                                            {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Confirm</button> : state === 1 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Complete</button> : ""}
+                                            {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Xác nhậN</button> : state === 1 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Hoàn thành</button> : ""}
 
-                                            {deletedBy ? "" : state === 2 ? '' : <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Cancel</button>}
+                                            {deletedBy ? "" : state === 2 ? '' : <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Huỷ</button>}
                                         </div>
                                     </div>
                                     <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
