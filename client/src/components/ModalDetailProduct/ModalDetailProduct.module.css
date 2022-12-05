@@ -1,0 +1,20 @@
+.modalContent {
+    border: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: 0.3rem;
+    outline: 0;
+}
+
+.modalBody {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+}
