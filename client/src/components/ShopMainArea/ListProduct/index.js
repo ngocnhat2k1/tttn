@@ -1,6 +1,7 @@
 import styles from './ListProduct.module.scss'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row'
+import { Link } from 'react-router-dom'
 import { FaRegHeart, FaExpand } from "react-icons/fa";
 import { formatter } from '../../../utils/utils'
 
@@ -12,9 +13,9 @@ function ListProduct({ currentItems }) {
                     <Col lg={4} md={4} sm={6} xs={12} key={product.id}>
                         <div className={styles.productWrapper}>
                             <div className={styles.thumb}>
-                                <a href="" className={styles.image}>
+                                <Link to={`/shop/${product.id}`} className={styles.image}>
                                     <img src={product.image} alt={product.name} />
-                                </a>
+                                </Link>
                                 <span className={styles.badges}>
                                     <span
                                         className={

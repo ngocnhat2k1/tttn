@@ -95,28 +95,7 @@ function ShopMainArea() {
                                     </label>
                                 </form>
                             </div>
-                            <div className={styles.shopSidebarBoxed}>
-                                <h4>Gender</h4>
-                                <form>
-                                    <label className={styles.boxed}>ALL
-                                        <input type="radio" name="radio"
-                                            checked={gender === "ALL" ? true : false}
-                                            onChange={() => setGender("ALL")}
-                                        />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                    <label className={styles.boxed}>Boy
-                                        <input type="radio" name="radio" checked={gender === "Boy" ? true : false}
-                                            onChange={() => setGender("Boy")} />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                    <label className={styles.boxed}>Girl
-                                        <input type="radio" name="radio" checked={gender === "Girl" ? true : false}
-                                            onChange={() => setGender("Girl")} />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                </form>
-                            </div>
+
                         </div>
                     </Col>
                     <Col lg={9}>
@@ -126,31 +105,28 @@ function ShopMainArea() {
                                 {page > 1 && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${prevPage}`} className={stylesPaginated.pageLink}>«</Link>
                                 </li>}
-                                {(page > 4) && <li className={stylesPaginated.pageItem}>
+                                {page === lastPage && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${1}`} className={stylesPaginated.pageLink}>1</Link>
                                 </li>}
-                                {(page > 4) && < li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
+                                {page === lastPage && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
                                     <Link className={stylesPaginated.pageLink}>...</Link>
                                 </li>}
-                                {page - 1 > 0 && <li className={stylesPaginated.pageItem}>
-                                    <Link to={`?page=${prevPage}`} className={stylesPaginated.pageLink}>{page - 1}</Link>
-                                </li>}
+                                {page - 1 > 0 && <li className={stylesPaginated.pageItem}><Link to={`?page=${prevPage}`} className={stylesPaginated.pageLink}>{page - 1}</Link></li>}
+
                                 <li className={`${stylesPaginated.pageItem} ${stylesPaginated.active}`}>
                                     <Link to={`?page=${page}`} className={stylesPaginated.pageLink}>{page}</Link>
                                 </li>
-                                {(page !== lastPage) && <li className={stylesPaginated.pageItem}>
-                                    <Link to={`?page=${page + 1}`} className={stylesPaginated.pageLink}>{page + 1}</Link>
+                                {page !== lastPage && <li className={stylesPaginated.pageItem}>
+                                    <Link to={`?page=${nextPage}`} className={stylesPaginated.pageLink}>{page + 1}</Link>
                                 </li>}
-                                {(page >= 2 && page < 4) && <li className={stylesPaginated.pageItem}>
-                                    <Link to={`?page=${page + 1}`} className={stylesPaginated.pageLink}>{page + 1}</Link>
-                                </li>}
-                                {(page !== lastPage) && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
+                                {page - 1 === 0 && <li className={stylesPaginated.pageItem}><Link to={`?page=${page + 2}`} className={stylesPaginated.pageLink}>{page + 2}</Link></li>}
+                                {page !== lastPage && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
                                     <Link className={stylesPaginated.pageLink}>...</Link>
                                 </li>}
-                                {(page !== lastPage) && <li className={stylesPaginated.pageItem}>
+                                {page !== lastPage && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${lastPage}`} className={stylesPaginated.pageLink}>{lastPage}</Link>
                                 </li>}
-                                {(page !== lastPage && page > 1) && <li className={stylesPaginated.pageItem}>
+                                {page !== lastPage && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${nextPage}`} className={stylesPaginated.pageLink}>»</Link>
                                 </li>}
                             </ul>
