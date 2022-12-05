@@ -38,11 +38,11 @@ class StoreFeedBackRequest extends FormRequest
                 "required",
                 "integer",
             ],
-            "quality" => [
-                "required",
-                "integer",
-                Rule::in(QualityStatusEnum::asArray()),
-            ],
+            // "quality" => [
+            //     "required",
+            //     "integer",
+            //     Rule::in(QualityStatusEnum::asArray()),
+            // ],
             "comment" => [
                 "required",
                 "string",

@@ -19,7 +19,6 @@ function ModalDetailProduct({ productId }) {
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
-
     const toggleModal = () => {
         axios.get(`http://127.0.0.1:8000/api/products/${productId}`)
             .then(response => {
