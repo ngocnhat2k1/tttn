@@ -144,6 +144,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::group(['prefix' => 'orders'], function () {
             Route::get("/", [OrderAdminController::class, "index"]);
             Route::get("/{order}", [OrderAdminController::class, "show"]);
+            Route::get("/idDelivery/{id}", [OrderAdminController::class, "showViaIdDelivery"]);
             Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
             Route::delete("/{order}/destroy={state}", [OrderAdminController::class, "destroy"]);
         });

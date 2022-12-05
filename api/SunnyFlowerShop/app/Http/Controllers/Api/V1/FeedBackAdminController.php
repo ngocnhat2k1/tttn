@@ -36,6 +36,13 @@ class FeedBackAdminController extends Controller
     {
         $customer_product_feedback = Customer::with("customer_product_feedback")->get();
 
+        if ($customer_product_feedback->count() === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Chưa phản hồi nào được tạo bởi người dùng."
+            ]);
+        }
+
         $data = [];
         $index = 0;
 
