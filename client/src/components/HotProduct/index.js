@@ -14,8 +14,8 @@ function HotProduct() {
                 <Row>
                     <Col lg={12}>
                         <div className={styles.Content}>
-                            <h2>HOT PRODUCTS</h2>
-                            <p>See What Everyone Is Shopping from Andshop E-Comerce</p>
+                            <h2>NỔI BẬT</h2>
+                            <p>Những sản phẩm nổi bật ở Hướng Dương Shop</p>
                         </div>
                     </Col>
                 </Row>

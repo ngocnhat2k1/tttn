@@ -7,7 +7,7 @@ import ContactArea from '../components/ContactArea';
 function Contact() {
   return (
     <>
-      <CommonBanner namePage="Contact" />
+      <CommonBanner namePage="Liên Hệ" />
       <ContactArea />
     </>
   )

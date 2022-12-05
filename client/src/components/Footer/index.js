@@ -77,10 +77,10 @@ function Footer() {
                             <div className={styles.divForm}>
                                 <form>
                                     <div>
-                                        <input className={styles.inputForm} type='email' placeholder='Your mail' name='EMAIL' />
+                                        <input className={styles.inputForm} type='email' placeholder='Nhập mail của bạn' name='EMAIL' />
                                     </div>
                                     <div>
-                                        <button className={styles.btnSendMail} type='submit' name='subscribe'>SEND MAIL</button>
+                                        <button className={styles.btnSendMail} type='submit' name='subscribe'>GỬI MAIL</button>
                                     </div>
                                 </form>
                             </div>

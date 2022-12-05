@@ -17,9 +17,9 @@ import NotFound from "./components/NotFound";
 import "./components/ModalATag/Modal.css"
 import AddressCreate from "./pages/AddressCreate";
 import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
+import OrderDetail from "./pages/OrderDetail";
 import CheckoutOrderPage from "./pages/CheckoutOrderPage";
 import OrderCompleteArea from "./components/OrderCompleteArea";
-
 
 function App() {
 

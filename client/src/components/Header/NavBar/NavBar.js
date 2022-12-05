@@ -8,7 +8,6 @@ import { HomeDropDown, FeatureDropDown, ShopDropDown, BlogDropDown, PagesDropDow
 import "./NavBar.css";
 import { Link, } from 'react-router-dom';
 import { FaHeart, FaShoppingBag, FaSearch } from "react-icons/fa";
-import DropDown from "./Dropdown.js";
 
 function NavBar() {
   const navRef = useRef();
@@ -33,18 +32,18 @@ function NavBar() {
               <li
                 className='nav-item'
               >
-                <Link to='./'>Home</Link>
+                <Link to='./'>Trang Chủ</Link>
               </li>
               <li
                 className='nav-item' >
-                <Link to='/Shop'>Shop</Link>
+                <Link to='/Shop'>Cửa Hàng</Link>
               </li>
 
               <li className='nav-item' >
-                <Link to='/contact'>Contact</Link>
+                <Link to='/contact'>Liên Hệ</Link>
               </li>
               <li className='nav-item' >
-                <Link to='./my-account'>Page</Link>
+                <Link to='./my-account'>Tổng Quan</Link>
               </li>
               <button
                 className='nav-btn nav-close-btn'

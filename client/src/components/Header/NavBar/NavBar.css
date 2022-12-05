@@ -82,15 +82,10 @@
     width: 20%;
 }
 
-
-
 .nav-item a {
     color: #000;
     font-size: 14px;
-    margin-right: 2rem;
-    padding: 6px 16px;
     border-radius: 5px;
-    font-family: "Poppins", sans-serif;
 }
 
 .nav-item a:hover {
@@ -159,7 +154,6 @@
         position: fixed;
         top: 0;
         left: 0;
-        height: 30%;
         width: 100%;
         display: flex;
         flex-direction: column;
@@ -170,6 +164,7 @@
         background-color: #24262B;
         transform: translatex(100%);
         z-index: 1000;
+        height: 50vh;
     }
 
     .responsive_nav {

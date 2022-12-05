@@ -101,7 +101,7 @@ function ShopMainArea() {
                                 </form>
                             </div>
                             <div className={styles.shopSidebarBoxed}>
-                                <h4>Product Categories</h4>
+                                <h4>Danh Mục Sản Phẩm</h4>
                                 <form>
                                     <label className={styles.boxed}>ALL
                                         <input type="radio" name="radio"

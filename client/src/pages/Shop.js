@@ -7,7 +7,7 @@ import ShopMainArea from '../components/ShopMainArea';
 function Shop() {
     return (
         <>
-            <CommonBanner namePage="Shop" />
+            <CommonBanner namePage="Cửa Hàng" />
             <ShopMainArea />
         </>
     )
