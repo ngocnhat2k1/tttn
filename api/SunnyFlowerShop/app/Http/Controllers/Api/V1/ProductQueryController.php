@@ -467,6 +467,13 @@ class ProductQueryController extends Controller
             ]);
         }
 
+        if ($query->get()->count() === 0) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Sản phẩm chưa có phản hồi." 
+            ]);
+        }
+
         $data = $query->get();
         $arr = [];
         

@@ -50,7 +50,6 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    // Can't check order id is existed in database for some
     public function show(GetCustomerBasicRequest $request)
     {
         // $check = Customer::find($request->user()->id);
@@ -86,7 +85,24 @@ class OrderController extends Controller
         // Create product array
         $pivot_table = $query->first();
 
-        $data["products"] = $pivot_table->products;
+        $products = $pivot_table->products;
+        $productsInOrder = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $productsInOrder[$i]['id'] = $products[$i]->id;
+            $productsInOrder[$i]['name'] = $products[$i]->name;
+            $productsInOrder[$i]['description'] = $products[$i]->description;
+            $productsInOrder[$i]['price'] = $products[$i]->price;
+            $productsInOrder[$i]['percentSale'] = $products[$i]->percent_sale;
+            $productsInOrder[$i]['img'] = $products[$i]->img;
+
+            $productQuantity = DB::table("order_product")
+                ->where("product_id", "=", $products[$i]->id)
+                ->where("order_id", "=", $data->id)
+                ->first();
+
+            $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
+        }
 
         return response()->json([
             "success" => true,
@@ -114,7 +130,7 @@ class OrderController extends Controller
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
-                "products" => ProductDetailResource::collection($data->products)
+                "products" => $productsInOrder
             ]
         ]);
     }
@@ -154,7 +170,24 @@ class OrderController extends Controller
         // Create product array
         $pivot_table = $query->first();
 
-        $data["products"] = $pivot_table->products;
+        $products = $pivot_table->products;
+        $productsInOrder = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $productsInOrder[$i]['id'] = $products[$i]->id;
+            $productsInOrder[$i]['name'] = $products[$i]->name;
+            $productsInOrder[$i]['description'] = $products[$i]->description;
+            $productsInOrder[$i]['price'] = $products[$i]->price;
+            $productsInOrder[$i]['percentSale'] = $products[$i]->percent_sale;
+            $productsInOrder[$i]['img'] = $products[$i]->img;
+
+            $productQuantity = DB::table("order_product")
+                ->where("product_id", "=", $products[$i]->id)
+                ->where("order_id", "=", $data->id)
+                ->first();
+
+            $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
+        }
 
         return response()->json([
             "success" => true,
@@ -182,7 +215,7 @@ class OrderController extends Controller
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
-                "products" => ProductDetailResource::collection($data->products)
+                "products" => $productsInOrder
             ]
         ]);
     }
