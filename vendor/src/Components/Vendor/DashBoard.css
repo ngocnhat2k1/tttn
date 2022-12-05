@@ -484,9 +484,6 @@ input[type="checkbox"]:checked:after {
     text-align: right !important;
 }
 
-/* .text-right {
-    text-align: center !important;
-} */
 
 .btn-black-overlay {
     background-color: #000;

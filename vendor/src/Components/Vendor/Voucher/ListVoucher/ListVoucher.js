@@ -16,7 +16,7 @@ const ListVoucher = ({ currentVoucher }) => {
                         <td>{Voucher.usage}</td>
                         <td>{Voucher.percent}</td>
                         <td>{Voucher.expiredDate}</td>
-                        {Voucher.deleted === 1 ? <td>Deleted</td> : <td>Availability</td>}
+                        {Voucher.deleted === 1 ? <td>Đã xoá</td> : <td>Khả dụng</td>}
                         <td>
                             <div className='edit_icon'>
                                 <VoucherEditModal idDetail={Voucher.voucherId} />

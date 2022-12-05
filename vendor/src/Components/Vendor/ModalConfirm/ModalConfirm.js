@@ -21,10 +21,10 @@ const ModalConfirm = ({ success, message }) => {
                     <div>
                         {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                     </div>
-                    <h2 className="title_modal">{success ? 'Successful' : 'Failed'}</h2>
+                    <h2 className="title_modal">{success ? 'Thành công' : 'Không thành công'}</h2>
                     <p className='p_modal'>{message}</p>
                     <div className="btn_right_table">
-                        <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Close </button>
+                        <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Đóng </button>
                     </div>
                     <div className='divClose'>
                         <button className="close close-modal" onClick={closeNotify}><FaTimes /></button>

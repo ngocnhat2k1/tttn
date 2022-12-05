@@ -105,10 +105,10 @@ function ShopMainArea() {
                                 {page > 1 && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${prevPage}`} className={stylesPaginated.pageLink}>«</Link>
                                 </li>}
-                                {page === lastPage && <li className={stylesPaginated.pageItem}>
+                                {(page === lastPage && lastPage > 3) && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${1}`} className={stylesPaginated.pageLink}>1</Link>
                                 </li>}
-                                {page === lastPage && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
+                                {(page === lastPage && lastPage > 3) && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
                                     <Link className={stylesPaginated.pageLink}>...</Link>
                                 </li>}
                                 {page - 1 > 0 && <li className={stylesPaginated.pageItem}><Link to={`?page=${prevPage}`} className={stylesPaginated.pageLink}>{page - 1}</Link></li>}
@@ -119,7 +119,7 @@ function ShopMainArea() {
                                 {page !== lastPage && <li className={stylesPaginated.pageItem}>
                                     <Link to={`?page=${nextPage}`} className={stylesPaginated.pageLink}>{page + 1}</Link>
                                 </li>}
-                                {page - 1 === 0 && <li className={stylesPaginated.pageItem}><Link to={`?page=${page + 2}`} className={stylesPaginated.pageLink}>{page + 2}</Link></li>}
+                                {/* {page - 1 === 0 && <li className={stylesPaginated.pageItem}><Link to={`?page=${page + 2}`} className={stylesPaginated.pageLink}>{page + 2}</Link></li>} */}
                                 {page !== lastPage && <li className={`${stylesPaginated.pageItem} ${stylesPaginated.disable}`}>
                                     <Link className={stylesPaginated.pageLink}>...</Link>
                                 </li>}

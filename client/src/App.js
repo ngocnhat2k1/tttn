@@ -17,6 +17,7 @@ import NotFound from "./components/NotFound";
 import "./components/ModalATag/Modal.css"
 import AddressCreate from "./pages/AddressCreate";
 import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
+import CheckoutOrderPage from "./pages/CheckoutOrderPage";
 
 function App() {
 
@@ -53,6 +54,8 @@ function App() {
             <Route path="/address-edit" element={<NotFound />}>
             </Route>
             <Route path="/address-edit/:id" element={<AddressEdit />}>
+            </Route>
+            <Route path="/checkout-order/" element={<CheckoutOrderPage />}>
             </Route>
             <Route path="*" element={<NotFound />}>
             </Route>

@@ -29,14 +29,17 @@ const Voucher = () => {
             })
 
             .then((response) => {
-                setData({
-                    data: response.data.data,
-                    total: response.data.total,
-                    page: response.data.meta.current_page,
-                    lastPage: response.data.meta.last_page,
-                    nextPage: response.data.meta.current_page + 1,
-                    prevPage: response.data.meta.current_page - 1,
-                });
+                console.log(response.data)
+                if (response.data.success === undefined) {
+                    setData({
+                        data: response.data.data,
+                        total: response.data.total,
+                        page: response.data.meta.current_page,
+                        lastPage: response.data.meta.last_page,
+                        nextPage: response.data.meta.current_page + 1,
+                        prevPage: response.data.meta.current_page - 1,
+                    });
+                }
             });
     }, [searchParams.toString()]);
     return (
@@ -61,12 +64,12 @@ const Voucher = () => {
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Usage</th>
-                                                <th scope="col">Percent Sale</th>
-                                                <th scope="col">Expired Date</th>
-                                                <th scope='col'>Status</th>
-                                                <th scope="col">Edit</th>
+                                                <th scope="col">Tên mã</th>
+                                                <th scope="col">Lượt sử dụng</th>
+                                                <th scope="col">Tỉ lệ giảm giá</th>
+                                                <th scope="col">Ngày hết hạn</th>
+                                                <th scope='col'>Trạng thái</th>
+                                                <th scope="col">Chỉnh sửa</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -78,10 +81,10 @@ const Voucher = () => {
                                             {data.page > 1 && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.prevPage}`} className={styles.pageLink}>«</Link>
                                             </li>}
-                                            {data.page > 4 && <li className={styles.pageItem}>
+                                            {(data.page === data.lastPage && data.lastPage > 3) && <li className={styles.pageItem}>
                                                 <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
                                             </li>}
-                                            {data.page > 4 && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {(data.page === data.lastPage && data.lastPage > 3) && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}
                                             {data.page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${data.prevPage}`} className={styles.pageLink}>{data.page - 1}</Link></li>}
@@ -92,7 +95,7 @@ const Voucher = () => {
                                             {data.page !== data.lastPage && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>{data.page + 1}</Link>
                                             </li>}
-                                            {data.page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${data.page + 2}`} className={styles.pageLink}>{data.page + 2}</Link></li>}
+                                            {/* {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>} */}
                                             {data.page !== data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}

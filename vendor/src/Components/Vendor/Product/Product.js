@@ -56,10 +56,10 @@ const Product = () => {
                                             {page > 1 && <li className={styles.pageItem}>
                                                 <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
                                             </li>}
-                                            {page === lastPage && <li className={styles.pageItem}>
+                                            {(page === lastPage && lastPage > 3) && <li className={styles.pageItem}>
                                                 <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
                                             </li>}
-                                            {page === lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {(page === lastPage && lastPage > 3) && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}
                                             {page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${prevPage}`} className={styles.pageLink}>{page - 1}</Link></li>}
@@ -70,7 +70,7 @@ const Product = () => {
                                             {page !== lastPage && <li className={styles.pageItem}>
                                                 <Link to={`?page=${nextPage}`} className={styles.pageLink}>{page + 1}</Link>
                                             </li>}
-                                            {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>}
+                                            {/* {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>} */}
                                             {page !== lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}

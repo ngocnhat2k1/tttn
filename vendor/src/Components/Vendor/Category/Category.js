@@ -24,10 +24,10 @@ const Category = () => {
                             <div className='vendors_profiles pt-4'>
                                 <div className='mb-2'>
                                     <h4>
-                                        All Categories
+                                        Tất cả danh mục
                                     </h4>
                                     <Link data-toggle="tab" className="theme-btn-one bg-black btn_sm add_prod_button" to="/add-category">
-                                        Add Category
+                                        Thêm danh mục
                                     </Link>
                                 </div>
                                 <div className='table-responsive'>
@@ -35,8 +35,8 @@ const Category = () => {
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Edit</th>
+                                                <th scope="col">Tên danh mục</th>
+                                                <th scope="col">Chỉnh sửa</th>
                                             </tr>
                                         </thead>
                                         <tbody>

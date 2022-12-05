@@ -9,7 +9,6 @@ import '../DashBoard.css'
 import ListOrder from './ListOrder/ListOrder';
 import styles from '../../Hook/usePagination/PaginatedItems.module.scss'
 
-
 const Order = () => {
     const [searchParams] = useSearchParams();
     const [data, setData] = useState({
@@ -29,18 +28,18 @@ const Order = () => {
             })
 
             .then((response) => {
-                setData({
-                    data: response.data.data,
-                    total: response.data.total,
-                    page: response.data.current_page,
-                    lastPage: response.data.last_page,
-                    nextPage: response.data.current_page + 1,
-                    prevPage: response.data.current_page - 1,
-                });
+                if (response.data.success === undefined) {
+                    setData({
+                        data: response.data.data,
+                        total: response.data.total,
+                        page: response.data.current_page,
+                        lastPage: response.data.last_page,
+                        nextPage: response.data.current_page + 1,
+                        prevPage: response.data.current_page - 1,
+                    });
+                }
             });
     }, [searchParams.toString()]);
-
-
 
     return (
         <Col sm={12} md={12} lg={9}>
@@ -54,14 +53,14 @@ const Order = () => {
                                     <table className='table pending_table'>
                                         <thead>
                                             <tr>
-                                                <th scope='col'>Order Id</th>
-                                                <th scope='col'>Name Customer</th>
-                                                <th scope='col'>Name Receiver</th>
-                                                <th scope='col'>Phone Receiver</th>
-                                                <th scope='col'>Address</th>
-                                                <th scope='col'>Status</th>
-                                                <th scope='col'>Price</th>
-                                                <th scope='col'>Action</th>
+                                                <th scope='col'>Mã đơn hàng</th>
+                                                <th scope='col'>Tên tài khoản</th>
+                                                <th scope='col'>Tên người nhận</th>
+                                                <th scope='col'>Số điện thoại người nhận</th>
+                                                <th scope='col'>Địa chỉ</th>
+                                                <th scope='col'>Trạng thái</th>
+                                                <th scope='col'>Giá</th>
+                                                <th scope='col'>Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -74,16 +73,10 @@ const Order = () => {
                                             {data.page > 1 && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.prevPage}`} className={styles.pageLink}>«</Link>
                                             </li>}
-                                            {data.page > 3 && <li className={styles.pageItem}>
+                                            {data.page > 4 && <li className={styles.pageItem}>
                                                 <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
                                             </li>}
-                                            {data.page > 3 && <li className={`${styles.pageItem} ${styles.disable}`}>
-                                                <Link className={styles.pageLink}>...</Link>
-                                            </li>}
-                                            {data.page === data.lastPage && <li className={styles.pageItem}>
-                                                <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
-                                            </li>}
-                                            {data.page === data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {data.page > 4 && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}
                                             {data.page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${data.prevPage}`} className={styles.pageLink}>{data.page - 1}</Link></li>}
@@ -104,9 +97,7 @@ const Order = () => {
                                             {data.page !== data.lastPage && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>»</Link>
                                             </li>}
-
                                         </ul>
-
                                     </Col>
                                 </div>
                             </div>

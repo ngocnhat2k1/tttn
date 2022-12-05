@@ -227,7 +227,7 @@ function CartArea() {
                                             <p className={styles.cartSubTotalDetail}>{formatter.format(totalPriceCart)}</p>
                                         </div>
                                         <div className={styles.checkoutBtn}>
-                                            <Link to="" className='theme-btn-one btn-black-overlay btn_sm'>Tiến hành thanh toán</Link>
+                                            <Link to="/checkout-order" className='theme-btn-one btn-black-overlay btn_sm'>Tiến hành thanh toán</Link>
                                         </div>
                                     </div>
                                 </div>
