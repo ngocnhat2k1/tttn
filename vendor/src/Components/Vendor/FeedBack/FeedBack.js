@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row'
 import ListFeedBack from './ListFeedBack/ListFeedBack';
 import { Link, useSearchParams } from 'react-router-dom';
 import usePaginate from '../../Hook/usePagination/usePaginate';
+import styles from '../../Hook/usePagination/PaginatedItems.module.scss'
 
 const FeedBack = () => {
     const [searchParams] = useSearchParams();
@@ -35,43 +36,35 @@ const FeedBack = () => {
                                         </tbody>
                                     </table>
                                     < Col lg={12}>
-                                        {/* <ul className={styles.pagination}>
-                                            {data.page > 1 && <li className={styles.pageItem}>
-                                                <Link to={`?page=${data.prevPage}`} className={styles.pageLink}>«</Link>
+                                        <ul className={styles.pagination}>
+                                            {page > 1 && <li className={styles.pageItem}>
+                                                <Link to={`?page=${prevPage}`} className={styles.pageLink}>«</Link>
                                             </li>}
-                                            {data.page > 3 && <li className={styles.pageItem}>
+                                            {(page === lastPage && lastPage > 3) && <li className={styles.pageItem}>
                                                 <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
                                             </li>}
-                                            {data.page > 3 && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {(page === lastPage && lastPage > 3) && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}
-                                            {data.page === data.lastPage && <li className={styles.pageItem}>
-                                                <Link to={`?page=${1}`} className={styles.pageLink}>1</Link>
-                                            </li>}
-                                            {data.page === data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
-                                                <Link className={styles.pageLink}>...</Link>
-                                            </li>}
-                                            {data.page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${data.prevPage}`} className={styles.pageLink}>{data.page - 1}</Link></li>}
+                                            {page - 1 > 0 && <li className={styles.pageItem}><Link to={`?page=${prevPage}`} className={styles.pageLink}>{page - 1}</Link></li>}
 
                                             <li className={`${styles.pageItem} ${styles.active}`}>
-                                                <Link to={`?page=${data.page}`} className={styles.pageLink}>{data.page}</Link>
+                                                <Link to={`?page=${page}`} className={styles.pageLink}>{page}</Link>
                                             </li>
-                                            {data.page !== data.lastPage && <li className={styles.pageItem}>
-                                                <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>{data.page + 1}</Link>
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>{page + 1}</Link>
                                             </li>}
-                                            {data.page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${data.page + 2}`} className={styles.pageLink}>{data.page + 2}</Link></li>}
-                                            {data.page !== data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {/* {page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${page + 2}`} className={styles.pageLink}>{page + 2}</Link></li>} */}
+                                            {page !== lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
                                             </li>}
-                                            {data.page !== data.lastPage && <li className={styles.pageItem}>
-                                                <Link to={`?page=${data.lastPage}`} className={styles.pageLink}>{data.lastPage}</Link>
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${lastPage}`} className={styles.pageLink}>{lastPage}</Link>
                                             </li>}
-                                            {data.page !== data.lastPage && <li className={styles.pageItem}>
-                                                <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>»</Link>
+                                            {page !== lastPage && <li className={styles.pageItem}>
+                                                <Link to={`?page=${nextPage}`} className={styles.pageLink}>»</Link>
                                             </li>}
-
-                                        </ul> */}
-
+                                        </ul>
                                     </Col>
                                 </div>
                             </div>

@@ -14,7 +14,7 @@ function ListProduct({ currentItems }) {
                         <div className={styles.productWrapper}>
                             <div className={styles.thumb}>
                                 <Link to={`/shop/${product.id}`} className={styles.image}>
-                                    <img src={product.image} alt={product.name} />
+                                    <img src={product.img} alt={product.name} />
                                 </Link>
                                 <span className={styles.badges}>
                                     <span

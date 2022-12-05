@@ -6,7 +6,6 @@ import '../DashBoard.css'
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Category from '../Category/Category';
 
 const AddProduct = () => {
     const [image, setImage] = useState('');
@@ -26,10 +25,8 @@ const AddProduct = () => {
                 setImage(Reader.result);
 
             }
-            console.log(Reader.result)
         };
     };
-    // get all categories   
     useEffect(() => {
         axios
             .get(`http://127.0.0.1:8000/api/v1/categories`, {
@@ -43,16 +40,10 @@ const AddProduct = () => {
     }, [])
 
     const onSubmit = data => {
-        const list = []
-
-        for (let i = 0; i < data.category.length; i++) {
-            list.push({ id: data.category[i] })
-        }
-        console.log(list)
         const payload = {
             ...data,
             img: image,
-            category: list
+            categoryId: data.categoryId
         }
         console.log("cái data", payload)
 
@@ -150,7 +141,7 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={12}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="Caterory">Caterory</label>
+                                                        <label htmlFor="categoryId">Caterory</label>
                                                         <Row>
                                                             {listCategories.map((category) => {
                                                                 return (
@@ -158,11 +149,11 @@ const AddProduct = () => {
                                                                     <Col lg={3} key={category.id}>
                                                                         <div className='checkbox_group'>
                                                                             <input
-                                                                                id='Caterory'
-                                                                                type='checkbox'
+                                                                                id='categoryId'
+                                                                                type='radio'
                                                                                 value={category.id}
                                                                                 className='check_box'
-                                                                                {...register("category")}
+                                                                                {...register("categoryId")}
                                                                             />
                                                                             <p>{category.name}</p>
                                                                         </div>

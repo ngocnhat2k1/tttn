@@ -484,9 +484,6 @@ input[type="checkbox"]:checked:after {
     text-align: right !important;
 }
 
-/* .text-right {
-    text-align: center !important;
-} */
 
 .btn-black-overlay {
     background-color: #000;
@@ -528,4 +525,9 @@ input[type="checkbox"]:checked:after {
 
 .detail-footer p {
     font-weight: bold;
+}
+
+.img_product_order img {
+    width: 70px;
+
 }

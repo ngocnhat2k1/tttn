@@ -30,7 +30,7 @@ function Vendor() {
     <GlobalStyles>
       <div className="App" style={{ padding: 0 }}>
         <Header />
-        <CommonBanner namePage={`Vendor`} />
+        <CommonBanner namePage={`Quản lý`} />
         <VendorArea />
         <Footer />
       </div>

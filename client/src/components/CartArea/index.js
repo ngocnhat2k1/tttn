@@ -38,12 +38,14 @@ function CartArea() {
     }, [loader]);
 
     useEffect(() => {
-        listProduct.map((product) => {
-            if (couter < 1) {
-                settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
-                setcouter(couter + 1)
-            }
-        })
+        if (listProduct) {
+            listProduct.map((product) => {
+                if (couter < 1) {
+                    settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
+                    setcouter(couter + 1)
+                }
+            })
+        }
     }, [listProduct])
 
     const handleDeleteProduct = (id) => {
@@ -120,8 +122,8 @@ function CartArea() {
 
     return (
         <>
-            {listProduct.length === 0 && check > 0 && <EmptyCart />}
-            {listProduct.length !== 0 && check > 0 &&
+            {!listProduct && check > 0 && <EmptyCart />}
+            {listProduct && check > 0 &&
                 <section id="cartArea" className='ptb100'>
                     <Container>
                         <Row>
@@ -227,7 +229,7 @@ function CartArea() {
                                             <p className={styles.cartSubTotalDetail}>{formatter.format(totalPriceCart)}</p>
                                         </div>
                                         <div className={styles.checkoutBtn}>
-                                            <Link to="" className='theme-btn-one btn-black-overlay btn_sm'>Tiến hành thanh toán</Link>
+                                            <Link to="/checkout-order" className='theme-btn-one btn-black-overlay btn_sm'>Tiến hành thanh toán</Link>
                                         </div>
                                     </div>
                                 </div>

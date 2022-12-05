@@ -28,14 +28,16 @@ const Users = () => {
             })
 
             .then((response) => {
-                setData({
-                    data: response.data.data,
-                    total: response.data.total,
-                    page: response.data.meta.current_page,
-                    lastPage: response.data.meta.last_page,
-                    nextPage: response.data.meta.current_page + 1,
-                    prevPage: response.data.meta.current_page - 1,
-                });
+                if (response.data.success === undefined) {
+                    setData({
+                        data: response.data.data,
+                        total: response.data.total,
+                        page: response.data.current_page,
+                        lastPage: response.data.last_page,
+                        nextPage: response.data.current_page + 1,
+                        prevPage: response.data.current_page - 1,
+                    });
+                }
             });
     }, [searchParams.toString()]);
     return (
@@ -50,11 +52,10 @@ const Users = () => {
                                 <thead>
                                     <tr>
                                         <th scope="col">ID</th>
-                                        <th scope="col">Avatar</th>
-                                        <th scope="col">Full Name</th>
+                                        <th scope="col">Ảnh đại diện</th>
+                                        <th scope="col">Họ và tên</th>
                                         <th scope="col">Email</th>
-                                        <th scope="col">Subscribed</th>
-                                        <th scope="col">Action</th>
+                                        <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -9,9 +9,9 @@ function TopHeaderRightDefault() {
                 <li>
                     <Link to="/login"><FaUser fontSize={12} /> Đăng nhập</Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link to="/register"><FaLock fontSize={12} /> Đăng kí</Link>
-                </li>
+                </li> */}
             </ul>
         </div>
     )

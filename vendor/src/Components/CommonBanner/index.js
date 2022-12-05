@@ -2,7 +2,7 @@ import styles from './CommonBanner.module.scss'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 function CommonBanner(prop) {
     return (
@@ -13,10 +13,8 @@ function CommonBanner(prop) {
                         <div className={styles.commonBannerText}>
                             <h2>{prop.namePage}</h2>
                             <ul>
-                                <li>
-                                    <Link to="/">Home</Link>
-                                </li>
-                                <li className={styles.slash}>/</li>
+
+                                {/* <li className={styles.slash}>/</li> */}
                                 <li className={styles.active}>{prop.namePage}</li>
                             </ul>
                         </div>
