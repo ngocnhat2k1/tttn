@@ -142,3 +142,27 @@ del {
     font-weight: 400;
     color: gray;
 }
+
+.btn-red-overlay {
+    background-color: red;
+    border: 2px solid red;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.btn-red-overlay:hover {
+    background-color: rgb(204, 63, 63);
+    border: 2px solid rgb(204, 63, 63);
+}
+
+.btn-blue-overlay {
+    background-color: #0E616E;
+    border: 2px solid #0E616E;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.btn-blue-overlay:hover {
+    background-color: #107f90;
+    border: 2px solid #107f90;
+}
