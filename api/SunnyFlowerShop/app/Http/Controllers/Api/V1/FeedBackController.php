@@ -81,51 +81,6 @@ class FeedBackController extends Controller
         return $this->paginator($data, $request, 10);
     }
 
-    // View all feedback attach selected product
-    public function feedbacksProduct(GetCustomerBasicRequest $request)
-    {
-        // $request->id is Feedback ID in customer_product_feedback table
-        $customer = Customer::find($request->user()->id);
-        $queryProduct = Product::where("id", "=", $request->id);
-
-        if (!$queryProduct->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Sản phẩm không tồn tại."
-            ]);
-        }
-
-        $product = $queryProduct->first();
-
-        $query = DB::table("customer_product_feedback")
-            ->where("customer_id", "=", $customer->id)
-            ->where("product_id", "=", $product->id);
-
-        if (!$query->exists()) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Phản hồi của sản phẩm không tồn tại."
-            ]);
-        }
-
-        $data = $query->get();
-        $arr = [];
-        
-        for ($i = 0; $i < sizeof($data); $i++) {
-            $arr[$i]['id'] = $data[$i]->id;
-            $arr[$i]['productId'] = $product->id;
-            $arr[$i]['name'] = $product->name;
-            $arr[$i]['img'] = $product->img;
-            // $arr[$i]['quality'] = $data[$i]->quality;
-            // $arr[$i]['rating'] = QualityStatusEnum::getQualityAttribute($data[$i]->quality);
-            $arr[$i]['comment'] = $data[$i]->comment;
-            $arr[$i]['createdAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->created_at));
-            $arr[$i]['updatedAt'] = date("d/m/Y H:i:s", strtotime($data[$i]->updated_at));
-        }
-
-        return $this->paginator($arr, $request, 5);
-    }
-
     // View feedback detail
     public function feedbackDetail(GetCustomerBasicRequest $request)
     {

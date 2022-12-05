@@ -227,6 +227,7 @@ Route::get('/products/{id}', [ProductQueryController::class, "show"]); // Show d
 Route::get('/products/categories/{filter}', [ProductQueryController::class, "filterProducts"]);// Show detail of a specific product
 Route::get('/products/filter/search={value}', [ProductQueryController::class, "searchProduct"])->name("filter.search"); // Show detail of a specific product
 Route::get('/products/topBar/search={value}', [ProductQueryController::class, "searchTopBar"]); // Show detail of a specific product
+Route::get("/feedback/product/{id}", [ProductQueryController::class, "feedbacksProduct"]);
 /** Query for products appearance in front page
  * Trending product
  * New products
@@ -273,9 +274,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // Create-Review-Cancel Order function
         Route::get("/order", [OrderController::class, "index"]); // Show all order from current login user
         Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
+        Route::get("/order/idDelivery/{id}", [OrderController::class, "showViaIdDelivery"]); // {id} is order_id; Show detail of order from current login user
         Route::post("/order/placeorder", [CheckoutController::class, "store"]); // Placeorder
         Route::post("/order/placeorderPaypal", [CheckoutPaypalController::class, "store"]); // Placeorder
         Route::get("/order/{id}/payment", [CheckoutController::class, "redirect"])->name("redirect.page");
+
+        Route::post("/voucherCheck", [VoucherCustomerController::class, "checkVoucher"]);
 
         // After payment completed
         Route::get(
@@ -290,7 +294,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)
         Route::get("/feedback/{id}", [FeedBackController::class, "feedbackDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
-        Route::get("feedback/product/{id}", [FeedBackController::class, "feedbacksProduct"]);
         // Route::get("/feedback/product/{id}", [FeedBackController::class, "feedbackProductDetail"]); // {id} is feedback_id; View detail feedback of a specific product from current login user
         Route::post("/feedback/create", [FeedBackController::class, "storeFeedBack"]); // Create new feedback for a specific proudct
         Route::put("/feedback/update/{id}", [FeedBackController::class, "updateFeedBack"]); // {id} is feedback_id; Update existed feedback of a specific product

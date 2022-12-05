@@ -84,7 +84,75 @@ class OrderController extends Controller
         }
 
         // Create product array
-        $pivot_table = Order::find($request->id);
+        $pivot_table = $query->first();
+
+        $data["products"] = $pivot_table->products;
+
+        return response()->json([
+            "success" => true,
+            "data" => [
+                "customer" => [
+                    "customerId" => $request->user()->id,
+                    "firstName" => $request->user()->first_name,
+                    "lastName" => $request->user()->last_name,
+                    "email" => $request->user()->email,
+                    "avatar" => $request->user()->avatar,
+                    "defaultAvatar" => $request->user()->default_avatar,
+                ],
+                "voucher" => $voucher_data,
+                "order" => [
+                    "id" => $data->id,
+                    "idDelivery" => $data->id_delivery,
+                    "dateOrder" => $data->date_order,
+                    "address" => $data->address,
+                    "nameReceiver" => $data->name_receiver,
+                    "phoneReceiver" => $data->phone_receiver,
+                    "totalPrice" => $data->total_price,
+                    "status" => $data->status,
+                    "paidType" => $data->paid_type,
+                    "deleted_by" => $data->deleted_by,
+                    "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
+                    "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
+                ],
+                "products" => ProductDetailResource::collection($data->products)
+            ]
+        ]);
+    }
+
+    public function showViaIdDelivery(GetCustomerBasicRequest $request)
+    {
+        // $check = Customer::find($request->user()->id);
+
+        // Check Order isExists
+        $query = Order::where("orders.id_delivery", "=", $request->id)
+            ->where("customer_id", "=", $request->user()->id);
+
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Đơn hàng không tồn tại."
+            ]);
+        }
+
+        $data = $query->first();
+
+        if ($data->voucher_id !== null) {
+            $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
+
+            $voucher_data = [
+                "voucherId" => $voucher->voucher_id,
+                "percent" => $voucher->percent,
+                "name" => $voucher->name,
+                "expiredDate" => $voucher->expired_date,
+                "deleted" => $voucher->deleted,
+            ];
+        } else {
+            $voucher_data = null;
+        }
+
+        // Create product array
+        $pivot_table = $query->first();
 
         $data["products"] = $pivot_table->products;
 
