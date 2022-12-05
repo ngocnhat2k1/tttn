@@ -34,10 +34,10 @@ class StoreOrderRequest extends FormRequest
                 "string",
                 "nullable"
             ],
-            "dateOrder" => [
-                "required",
-                "date_format:Y-m-d H:i:s",
-            ],
+            // "dateOrder" => [
+            //     "required",
+            //     "date_format:Y-m-d H:i:s",
+            // ],
             "address" => [
                 "required",
                 "string",
@@ -66,7 +66,7 @@ class StoreOrderRequest extends FormRequest
         }
         $this->merge([
             "id_delivery" => $this->idDelivery,
-            'date_order' => $this->dateOrder,
+            // 'date_order' => $this->dateOrder,
             'name_receiver' => $this->nameReceiver,
             'phone_receiver' => $this->phoneReceiver,
             'paid_type' => $this->paidType,
