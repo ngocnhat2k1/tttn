@@ -18,6 +18,7 @@ import "./components/ModalATag/Modal.css"
 import AddressCreate from "./pages/AddressCreate";
 import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
 import CheckoutOrderPage from "./pages/CheckoutOrderPage";
+import OrderCompleteArea from "./components/OrderCompleteArea";
 
 function App() {
 
@@ -27,36 +28,22 @@ function App() {
         <div className="App">
           <Header />
           <Routes>
-            <Route path="/" element={<Home />}>
-            </Route>
-            <Route path="/shop" element={<Shop />}>
-            </Route>
-            <Route path="/shop/:productId" element={<DetailProduct />}>
-            </Route>
-            <Route path="/login" element={<Login />}>
-            </Route>
-            <Route path="/register" element={<Register />}>
-            </Route>
-            <Route path="/my-account/*" element={<Customer />}>
-            </Route>
-            <Route path="/contact" element={<Contact />}>
-            </Route>
-            <Route path="/cart" element={<Cart />}>
-            </Route>
-            <Route path="/wishlist" element={<Wishlist />}>
-            </Route>
-            <Route path="/order-complete" element={<OrderComplete />}>
-            </Route>
-            <Route path="/account-edit" element={<AccountEdit />}>
-            </Route>
-            <Route path="/address-create" element={<AddressCreate />}>
-            </Route>
-            <Route path="/address-edit" element={<NotFound />}>
-            </Route>
-            <Route path="/address-edit/:id" element={<AddressEdit />}>
-            </Route>
-            <Route path="/checkout-order/" element={<CheckoutOrderPage />}>
-            </Route>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/shop/:productId" element={<DetailProduct />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/my-account/*" element={<Customer />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/order-complete" element={<OrderComplete />} />
+            <Route path="/account-edit" element={<AccountEdit />} />
+            <Route path="/address-create" element={<AddressCreate />} />
+            <Route path="/address-edit" element={<NotFound />} />
+            <Route path="/address-edit/:id" element={<AddressEdit />} />
+            <Route path="/checkout-order/" element={<CheckoutOrderPage />} />
+            <Route path="/order-completed" element={<OrderCompleteArea />} />
             <Route path="*" element={<NotFound />}>
             </Route>
           </Routes>

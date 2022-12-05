@@ -526,3 +526,8 @@ input[type="checkbox"]:checked:after {
 .detail-footer p {
     font-weight: bold;
 }
+
+.img_product_order img {
+    width: 70px;
+
+}

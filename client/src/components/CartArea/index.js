@@ -38,12 +38,14 @@ function CartArea() {
     }, [loader]);
 
     useEffect(() => {
-        listProduct.map((product) => {
-            if (couter < 1) {
-                settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
-                setcouter(couter + 1)
-            }
-        })
+        if (listProduct) {
+            listProduct.map((product) => {
+                if (couter < 1) {
+                    settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
+                    setcouter(couter + 1)
+                }
+            })
+        }
     }, [listProduct])
 
     const handleDeleteProduct = (id) => {
@@ -120,8 +122,8 @@ function CartArea() {
 
     return (
         <>
-            {listProduct.length === 0 && check > 0 && <EmptyCart />}
-            {listProduct.length !== 0 && check > 0 &&
+            {!listProduct && check > 0 && <EmptyCart />}
+            {listProduct && check > 0 &&
                 <section id="cartArea" className='ptb100'>
                     <Container>
                         <Row>

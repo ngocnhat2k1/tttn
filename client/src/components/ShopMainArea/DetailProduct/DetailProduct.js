@@ -87,12 +87,13 @@ const DetailProduct = () => {
     }
     useEffect(() => {
         axios
-            .get(`http://127.0.0.1:8000/api/user/feedback/product/${productId}`, {
+            .get(`http://127.0.0.1:8000/api/feedback/product/${productId}`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
             .then((response) => {
+                console.log(response.data)
                 setListReview(response.data.data)
             })
 
@@ -141,6 +142,7 @@ const DetailProduct = () => {
                         })
                         .then((response) => {
                             if (!response.data.success) {
+                                console.log(response.data)
                                 setMessage(response.data.message)
                                 setSuccess(response.data.success)
                             } else {
