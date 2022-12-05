@@ -131,3 +131,8 @@ table {
 .textRight {
     text-align: right !important;
 }
+
+del {
+    font-weight: 400;
+    color: gray;
+}

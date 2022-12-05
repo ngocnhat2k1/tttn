@@ -9,13 +9,8 @@ const ModalNotifyAdd = ({ nameBtn, productId }) => {
     const [success, setSuccess] = useState('');
 
     const handleAddToCart = (productId) => {
-        const payload = {
-            productId: productId,
-            quantity: 1
-        }
-
         axios
-            .post(`http://localhost:8000/api/user/cart/add`, payload, {
+            .post(`http://localhost:8000/api/user/cart/add/${productId}`, [], {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -53,6 +48,7 @@ const ModalNotifyAdd = ({ nameBtn, productId }) => {
     } else {
         document.body.classList.remove('active-modal')
     }
+
     return (
         <>
             <button type="button" className='theme-btn-one btn-black-overlay btn_sm' onClick={() => handleAddToCart(productId)}>{nameBtn}</button>

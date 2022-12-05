@@ -32,7 +32,7 @@ body.active-modal {
     transform: translate(-50%, -50%);
     line-height: 1.4;
     background: #f1f1f1;
-    padding: 25px 30px;
+    padding: 20px 20px;
     border-radius: 3px;
     max-width: 600px;
     min-width: 300px;
@@ -46,7 +46,7 @@ body.active-modal {
     color: #fff;
     font-size: 18px;
     padding: 12px 20px;
-    margin: 20px 50px 10px 50px ;
+    margin: 20px 50px 10px 50px;
 }
 
 .title_modal {
@@ -93,8 +93,86 @@ body.active-modal {
     padding: 0;
 }
 
+.modal-quickview {
+    margin: 0 50px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 20px 20px;
+    border-radius: 3px;
+    max-width: 9000px;
+    min-width: 700px;
+    height: 350px;
+}
+
 .btnSvg {
     font-size: 24px;
     border: none;
     background-color: transparent;
+}
+
+.product_count {
+    text-align: left;
+}
+
+.modal_product_content {
+    text-align: left;
+}
+
+.modal_product_content h3 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.modal_product_content h4 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    padding-top: 20px;
+}
+
+.modal_product_content p {
+    padding-top: 20px;
+    margin: 0;
+    color: #777c87;
+    line-height: 24px;
+}
+
+.modal-quickview img {
+    max-width: 100%;
+}
+
+.product_count {
+    padding-top: 30px;
+}
+
+.plus-minus-input {
+    display: flex;
+    align-items: center;
+}
+
+.plus-minus-input button {
+    background: #000;
+    color: #fff;
+    font-size: 30px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 6px;
+    position: relative;
+}
+
+.product_count input {
+    padding: 0.375rem 0.75rem;
+    width: 30%;
+    min-height: 40px;
+    border-radius: 0;
+    margin: 0 8px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ddd;
 }
