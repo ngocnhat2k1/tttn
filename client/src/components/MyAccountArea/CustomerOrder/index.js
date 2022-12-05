@@ -9,8 +9,9 @@ function CustomerOrder() {
                 <table>
                     <thead>
                         <tr>
-                            <th>Mã đơn</th>
+                            <th>ID</th>
                             <th>Ngày đặt</th>
+                            <th>Người nhận</th>
                             <th>Tình trạng</th>
                             <th>Tổng tiền</th>
                             <th>Hành động</th>

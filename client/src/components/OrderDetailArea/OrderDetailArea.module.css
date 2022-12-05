@@ -1,0 +1,56 @@
+.detailArea {
+    text-align: center !important;
+    margin: 0 auto;
+    width: 650px;
+    display: block;
+}
+
+.backBtn {
+    padding-top: 36px;
+    padding-bottom: 30px;
+    background: #fff;
+    text-align: left;
+}
+
+.backBtn button {
+    border: none;
+}
+
+.backBtn svg {
+    font-weight: 400;
+}
+
+.boxTable {
+    box-shadow: 0 0 11px 5px rgb(0 0 0 / 6%);
+    padding: 0px 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center
+}
+
+.boxTable img {
+    width: 300px;;
+    height: auto;
+    margin-bottom: 30px;
+}
+
+.detailArea .title {
+    color: #444;
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 0;
+    text-transform: uppercase;
+    display: inline-block;
+    line-height: 1;
+}
+
+.detailArea p{
+    margin: 15px 0;
+    font-size: 16px;
+    line-height: 24px;
+    color: #777c87;
+    font-weight: 400;
+    font-family: "Poppins",sans-serif;
+}
