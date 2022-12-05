@@ -356,7 +356,8 @@ class CheckoutController extends Controller
 
         $id_delivery = $this->generateDeliveryCode($request->paidType);
 
-        $filtered = $request->except("voucherCode", "dateOrder", "nameReceiver", "phoneReceiver", "paidType");
+        $filtered = $request->except("voucherCode", "nameReceiver", "phoneReceiver", "paidType");
+        $filtered['date_order'] = date("Y-m-d H:i:s");
         $filtered['voucher_id'] = $voucher_data->id ?? null;
         $filtered["customer_id"] = $customer->id;
         $filtered["total_price"] = $total_price - (($total_price * $voucher_sale_value) / 100);
