@@ -1,13 +1,12 @@
 import styles from '../HotProduct/ProductWrapper/ProductWrapper.module.css'
-import { FaExpand, FaRegHeart, FaRegCheckCircle, FaTimesCircle, FaQuestionCircle, FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
-import { useEffect, useState } from 'react';
+import { FaExpand, FaRegCheckCircle, FaTimesCircle, FaMinus, FaPlus } from "react-icons/fa";
+import { useState } from 'react';
 import axios from 'axios';
-import styles2 from './ModalDetailProduct.module.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { formatter } from '../../utils/utils';
 import Cookies from 'js-cookie';
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function ModalDetailProduct({ productId }) {
 
