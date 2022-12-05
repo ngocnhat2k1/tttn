@@ -15,7 +15,7 @@ function MyAccountArea() {
     const [tab, setTab] = useState("Dashboard");
 
     return (
-        <section id='myAccountArea' className='ptb100 prl50'>
+        <section id='myAccountArea' className='ptb100 prl30'>
             <Container fluid>
                 <Row>
                     <Col sm={12} md={12} lg={3}>

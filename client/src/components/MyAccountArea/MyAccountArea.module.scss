@@ -125,7 +125,7 @@ table {
     font-weight: 500;
     text-transform: capitalize;
     text-align: center;
-    min-width: 150px;
+    min-width: 160px;
 }
 
 .tablePage table tbody tr td {
@@ -184,4 +184,12 @@ table {
     color: #777c87;
     font-weight: 400;
     font-family: "Poppins", sans-serif;
+}
+
+.status {
+    min-width: 140px !important;
+}
+
+.action {
+    min-width: 120px !important;
 }

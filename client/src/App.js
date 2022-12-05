@@ -17,6 +17,7 @@ import NotFound from "./components/NotFound";
 import "./components/ModalATag/Modal.css"
 import AddressCreate from "./pages/AddressCreate";
 import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct";
+import OrderDetail from "./pages/OrderDetail";
 
 function App() {
 
@@ -43,6 +44,10 @@ function App() {
             <Route path="/cart" element={<Cart />}>
             </Route>
             <Route path="/wishlist" element={<Wishlist />}>
+            </Route>
+            <Route path="/order-detail" element={<NotFound />}> 
+            </Route>
+            <Route path="/order-detail/:id" element={<OrderDetail />}> 
             </Route>
             <Route path="/order-complete" element={<OrderComplete />}>
             </Route>
