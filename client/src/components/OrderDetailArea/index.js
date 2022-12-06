@@ -12,6 +12,7 @@ function OrderDetailArea() {
     const { id } = useParams();
     const [modal, setModal] = useState(false);
     const [modal2, setModal2] = useState(false);
+    const [modal3, setModal3] = useState(false);
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState('');
     const [order, setOrder] = useState('')
@@ -36,6 +37,15 @@ function OrderDetailArea() {
         }
     }
 
+    const closeModal3 = () => {
+        if (success) {
+            setModal3(!modal3);
+            window.location.reload(false);
+        } else {
+            setModal3(!modal3);
+        }
+    }
+
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -43,6 +53,12 @@ function OrderDetailArea() {
     }
 
     if (modal2) {
+        document.body.classList.add('active-modal')
+    } else {
+        document.body.classList.remove('active-modal')
+    }
+
+    if (modal3) {
         document.body.classList.add('active-modal')
     } else {
         document.body.classList.remove('active-modal')
@@ -77,13 +93,31 @@ function OrderDetailArea() {
         }
     }, [order])
 
-    const handleComplete = () => {
-
+    const handleComplete = (productId) => {
+        axios
+            .put(`http://127.0.0.1:8000/api/user/order/${productId}/status`, [], {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('token')}`,
+                }
+            })
+            .then(response => {
+                console.log(response.data)
+                if (response.data.success) {
+                    setMessage(response.data.message);
+                } else {
+                    setMessage(response.data.errors)
+                }
+                setSuccess(response.data.success);
+                setModal3(!modal3);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
-    const handleCancel = () => {
+    const handleCancel = (productId) => {
         axios
-            .delete(`http://127.0.0.1:8000/api/user/order/${id}/cancel`, {
+            .delete(`http://127.0.0.1:8000/api/user/order/${productId}/cancel`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -98,6 +132,8 @@ function OrderDetailArea() {
                 console.log(err)
             })
     }
+
+    console.log(order);
 
     return (
         <>{check > 0 &&
@@ -216,8 +252,9 @@ function OrderDetailArea() {
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    {order.order.status === 1 && <button type="button" className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleComplete}>ĐÃ NHẬN HÀNG</button>}
-                                                    {order.order.status === 0 && <button type="button" className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={toggleModal}>HỦY ĐƠN HÀNG</button>}
+                                                    {console.log(order.order.id)}
+                                                    {order.order.status === 1 && <button type="button" className='theme-btn-one btn-blue-overlay btn_sm' onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button>}
+                                                    {order.order.status === 0 && <button type="button" className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={() => toggleModal(order.order.id)}>HỦY ĐƠN HÀNG</button>}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -251,6 +288,22 @@ function OrderDetailArea() {
                                             <p className='p_modal'>{message}</p>
                                             <div className='divClose'>
                                                 <button className="close close-modal" onClick={closeModal2}>OK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {modal3 && (
+                                    <div className="modal">
+                                        <div onClick={closeModal3} className="overlay"></div>
+                                        <div className="modal-content">
+                                            <div>
+                                                {success === true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
+                                            </div>
+                                            <h2 className="title_modal">Xác nhận nhận hàng {success ? "thành công" : "thất bại"}</h2>
+                                            <p className='p_modal'>{message}</p>
+                                            <div className='divClose'>
+                                                <button className="close close-modal" onClick={closeModal3}>OK</button>
                                             </div>
                                         </div>
                                     </div>

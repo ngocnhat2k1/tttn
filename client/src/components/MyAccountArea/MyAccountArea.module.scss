@@ -151,8 +151,13 @@ table {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
-.badgeCompleted {
+.badgeConfirm {
     background-color: #28a745;
+    color: white;
+}
+
+.badgeCompleted {
+    background-color: #17a2b8;
     color: white;
 }
 
