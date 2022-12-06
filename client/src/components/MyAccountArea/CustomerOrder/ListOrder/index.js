@@ -24,8 +24,6 @@ function ListOrder() {
             });
     }, []);
 
-    console.log(listOrder)
-
     return (
         <>
             {listOrder.map((order, index) => {
@@ -36,8 +34,8 @@ function ListOrder() {
                         <td>{order.nameReceiver}</td>
                         <td className={styles.status}>
                             <span className={`${styles.badge}
-                        ${order.deletedBy !== null ? styles.badgeCanceled : order.status === 0 ? styles.badgePending : styles.badgeCompleted}`}>
-                                {order.deletedBy !== null ? 'Cancelled' : order.status === 0 ? 'Pending' : order.status === 1 ? 'Confirm' : 'Completed'}</span>
+                        ${order.deletedBy !== null ? styles.badgeCanceled : order.status === 0 ? styles.badgePending : order.status === 1 ? styles.badgeConfirm : styles.badgeCompleted}`}>
+                                {order.deletedBy !== null ? 'Đã hủy' : order.status === 0 ? 'Đang chờ' : order.status === 1 ? 'Đã xác nhận' : 'Đã hoàn thành'}</span>
                         </td>
                         <td>{formatter.format(order.totalPrice)}</td>
                         <td className={styles.action}>
