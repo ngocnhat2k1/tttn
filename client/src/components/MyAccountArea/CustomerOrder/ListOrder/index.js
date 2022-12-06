@@ -26,7 +26,7 @@ function ListOrder() {
 
     return (
         <>
-            {listOrder.map((order, index) => {
+            {listOrder && listOrder.map((order, index) => {
                 return (
                     <tr key={index}>
                         <td>{order.idDelivery}</td>

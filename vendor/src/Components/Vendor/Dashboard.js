@@ -31,6 +31,7 @@ const Dashboard = () => {
                 },
             })
             .then((response) => {
+                console.log(response.data)
                 setOrderPending(response.data.totalOrdersPending)
                 setTotalProduct(response.data.totalProducts)
                 setTotalSales(response.data.totalSales)

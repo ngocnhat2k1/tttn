@@ -267,41 +267,41 @@ class ProductQueryController extends Controller
             ->where("product_id", "=", $data->id);
 
         // calculate average of total quality that product has
-        $quality = 0;
+        // $quality = 0;
 
-        /** Checking if quality of feedback has been made */
-        // If not then average of total quality is 0
-        if (!$average_quality->exists()) {
-            $quality = 0;
-        }
-        // If so then calculate it
-        else {
-            $total = $average_quality->get(); // Get all quality feedback
+        // /** Checking if quality of feedback has been made */
+        // // If not then average of total quality is 0
+        // if (!$average_quality->exists()) {
+        //     $quality = 0;
+        // }
+        // // If so then calculate it
+        // else {
+        //     $total = $average_quality->get(); // Get all quality feedback
 
-            for ($i = 0; $i < sizeof($total); $i++) { // Sum all quality to make an average calculation
-                $quality += $total[$i]->quality;
-            }
+        //     for ($i = 0; $i < sizeof($total); $i++) { // Sum all quality to make an average calculation
+        //         $quality += $total[$i]->quality;
+        //     }
 
-            $quality = $quality / sizeof($total);
+        //     $quality = $quality / sizeof($total);
 
-            $float_point = explode(".", $quality);
+        //     $float_point = explode(".", $quality);
 
-            if (sizeof($float_point) >= 2) {
-                $decimal_number = (int)$float_point[1];
+        //     if (sizeof($float_point) >= 2) {
+        //         $decimal_number = (int)$float_point[1];
 
-                while ($decimal_number > 10) {
-                    $decimal_number = $decimal_number / 10;
-                }
+        //         while ($decimal_number > 10) {
+        //             $decimal_number = $decimal_number / 10;
+        //         }
 
-                if ($decimal_number >= 5) {
-                    $quality = ceil($quality);
-                } else {
-                    $quality = floor($quality);
-                }
-            }
-        }
+        //         if ($decimal_number >= 5) {
+        //             $quality = ceil($quality);
+        //         } else {
+        //             $quality = floor($quality);
+        //         }
+        //     }
+        // }
 
-        $data['quality'] = $quality;
+        // $data['quality'] = $quality;
 
         return response()->json([
             "success" => true,
@@ -340,7 +340,8 @@ class ProductQueryController extends Controller
     {
         $value = "%" . $request->value . "%";
 
-        $search = Product::where("name", "like", "$value");
+        $search = Product::where("name", "like", "$value")
+            ->where("deleted_at", "=", null);
 
         if ($search->get()->count() === 0) {
             $category_value = "%" . $request->value . "%";
@@ -463,20 +464,13 @@ class ProductQueryController extends Controller
         if (!$query->exists()) {
             return response()->json([
                 "success" => false,
-                "errors" => "Phản hồi của sản phẩm không tồn tại."
-            ]);
-        }
-
-        if ($query->get()->count() === 0) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Sản phẩm chưa có phản hồi." 
+                "errors" => "Sản phẩm chưa có phản hồi."
             ]);
         }
 
         $data = $query->get();
         $arr = [];
-        
+
         for ($i = 0; $i < sizeof($data); $i++) {
             $customer = Customer::find($data[$i]->customer_id);
 

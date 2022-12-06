@@ -23,7 +23,7 @@ class OrderController extends Controller
 
     public function index(GetCustomerBasicRequest $request)
     {
-        $data = Order::where("customer_id", "=", $request->user()->id);
+        $data = Order::where("customer_id", "=", $request->user()->id)->orderBy("created_at", "DESC");
         $count = $data->get()->count();
 
         if (empty($count)) {

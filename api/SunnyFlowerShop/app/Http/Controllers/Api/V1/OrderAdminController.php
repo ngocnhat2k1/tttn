@@ -49,7 +49,7 @@ class OrderAdminController extends Controller
         }
 
         // $orders = Order::with("customers")->paginate(10);
-        $customers_orders = Customer::with("orders")->get();
+        $customers_orders = Customer::with("orders")->orderBy("created_at", "DESC")->get();
         // return $customers_orders;
         $arr = [];
         $index = 0;
@@ -223,7 +223,7 @@ class OrderAdminController extends Controller
 
     public function updateStatus(UpdateOrderCustomerStatus $request, Order $order)
     {
-        /** Update current status of order 
+        /** Update current status of order
          * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
          * Status can only be changed from "Confirmed" to "Completed", no reverse allow
          * When status is in "Completed" status, quantity was store in pivot table "order_prodcut" with use to minus the quantity of products in "products" table

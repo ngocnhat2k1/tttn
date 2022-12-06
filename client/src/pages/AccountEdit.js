@@ -27,7 +27,7 @@ function AccountEdit() {
 
     return (
         <>
-            <CommonBanner namePage="Account Info Edit" />
+            <CommonBanner namePage="Chỉnh sửa thông tin cá nhân" />
             <AccountEditArea />
         </>
     )

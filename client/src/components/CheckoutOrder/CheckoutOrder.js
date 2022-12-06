@@ -125,75 +125,75 @@ const CheckoutOrder = () => {
                             <Col lg={6} md={12} sm={12} xs={12}>
                                 <div className='checkout-area-bg bg-white'>
                                     <div className='check-heading'>
-                                        <h3>Billings Information</h3>
+                                        <h3>Thông tin đơn hàng</h3>
                                     </div>
                                     <div className='check-out-form'>
                                         <form onSubmit={handleSubmit(PlaceOrder)}>
                                             <Row>
                                                 <Col lg={12} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="nameReceiver">Name Receiver<span className="text-danger">*</span></label>
+                                                        <label htmlFor="nameReceiver">Tên người nhận<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={nameReceiver}
                                                             className='form-control'
-                                                            placeholder='Name Receiver'
+                                                            placeholder='Tên người nhận'
                                                             {...register("nameReceiver", { required: true, onChange: (e) => { setnameReceiver(e.target.value) } })} />
                                                     </div>
                                                 </Col>
 
                                                 <Col lg={12} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="phoneReceiver">Phone Receiver<span className="text-danger">*</span></label>
+                                                        <label htmlFor="phoneReceiver">Số điện thoại<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={phoneReceiver}
                                                             className='form-control'
-                                                            placeholder='Phone Receiver'
+                                                            placeholder='Số điện thoại'
                                                             {...register("phoneReceiver", { required: true, onChange: (e) => { setphoneReceiver(e.target.value) } })} />
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="province">Province<span className="text-danger">*</span></label>
+                                                        <label htmlFor="province">Tỉnh/Thành Phố<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={province}
                                                             className='form-control'
-                                                            placeholder='Province'
+                                                            placeholder='Tỉnh/Thành Phố'
                                                             {...register("province", { required: true, onChange: (e) => { setprovince(e.target.value) } })} />
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="district">District<span className="text-danger">*</span></label>
+                                                        <label htmlFor="district">Quận/Huyện<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={district}
                                                             className='form-control'
-                                                            placeholder='District'
+                                                            placeholder='Quận/Huyện'
                                                             {...register("district", { required: true, onChange: (e) => { setdistrict(e.target.value) } })} />
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="ward">Ward<span className="text-danger">*</span></label>
+                                                        <label htmlFor="ward">Xã/Phường<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={ward}
                                                             className='form-control'
-                                                            placeholder='Ward'
+                                                            placeholder='Xã/Phường'
                                                             {...register("ward", { required: true, onChange: (e) => { setWard(e.target.value) } })} />
                                                     </div>
                                                 </Col>
                                                 <Col lg={12} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
-                                                        <label htmlFor="street">Street<span className="text-danger">*</span></label>
+                                                        <label htmlFor="street">Đường<span className="text-danger">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={street}
                                                             className='form-control'
-                                                            placeholder='Ex: 36 Nguyen Chi Thanh '
+                                                            placeholder='VD: 36 Nguyễn Chí Thanh '
                                                             {...register("street", { required: true, onChange: (e) => { setStreet(e.target.value) } })} />
                                                     </div>
                                                 </Col>
@@ -206,28 +206,28 @@ const CheckoutOrder = () => {
                                 <div className='order_review  bg-white'>
                                     <div className='order_review bg-white'>
                                         <div className='check-heading'>
-                                            <h3>Apply Voucher</h3>
+                                            <h3>Áp dụng mã giảm giá</h3>
                                         </div>
                                         <div className='coupon'>
                                             <form onSubmit={handleSubmit2(onSubmit2)}>
                                                 <input
                                                     type="text"
-                                                    placeholder="Coupon code"
+                                                    placeholder="Mã giảm giá"
                                                     {...register2("voucherCode")}
                                                 />
-                                                <AccountEditModal message={message} success={success} nameBtn='Apply coupon' />
+                                                <AccountEditModal message={message} success={success} nameBtn='Áp Dụng' />
                                             </form>
                                         </div>
                                     </div>
                                     <div className='check-heading'>
-                                        <h3>Your Orders</h3>
+                                        <h3>Đơn hàng của bạn</h3>
                                     </div>
                                     <div className='table-responsive order_table'>
                                         <table className='table'>
                                             <thead>
                                                 <tr>
-                                                    <th>Product</th>
-                                                    <th>Total</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Giá</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -241,22 +241,22 @@ const CheckoutOrder = () => {
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <th>SubTotal:</th>
+                                                    <th>Tạm tính:</th>
                                                     <td className='product-subtotal'>{formatter.format(totalPriceCart)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Discount:</th>
+                                                    <th>Giảm giá:</th>
                                                     <td >{percent}% </td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Total:</th>
+                                                    <th>Thành tiền:</th>
                                                     <td className='product-subtotal'>{formatter.format(totalPriceCart - (percent * totalPriceCart / 100))} </td>
                                                 </tr>
                                             </tfoot>
                                         </table>
                                     </div>
                                     <div className='coupon' onClick={PlaceOrder}>
-                                        <button type="submit" className="theme-btn-one bg-black btn_sm" >Place Order</button>
+                                        <button type="submit" className="theme-btn-one bg-black btn_sm" >Hoàn tất đặt hàng</button>
                                         {modal && (
                                             <div className="modal">
                                                 <div onClick={toggleModal} className="overlay"></div>
@@ -264,7 +264,7 @@ const CheckoutOrder = () => {
                                                     <div>
                                                         {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                                                     </div>
-                                                    <h2 className="title_modal">Place Order {success ? 'Successful' : 'Failed'}</h2>
+                                                    <h2 className="title_modal">Đặt hàng {success ? 'thành công' : 'thất bại'}</h2>
                                                     <p className='p_modal'>{message}</p>
                                                     <div className='divClose'>
                                                         <button className="close close-modal" onClick={closeModal}>OK</button>

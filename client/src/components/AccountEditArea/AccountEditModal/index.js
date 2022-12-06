@@ -12,6 +12,7 @@ function AccountEditModal({ message, success, nameBtn }) {
 
     const closeModal = () => {
         setModal(!modal);
+        window.location.reload(false)
     }
 
     if (modal) {
