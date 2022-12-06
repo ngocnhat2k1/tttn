@@ -77,7 +77,7 @@ const AddProduct = () => {
                             <Row>
                                 <Col lg={12}>
                                     <div className='add_product_wrapper'>
-                                        <h4>Add Product</h4>
+                                        <h4>Thêm Sản Phẩm</h4>
                                         <form className='add_product_form'
                                             onSubmit={handleSubmit(onSubmit)}>
                                             <Row>
@@ -92,7 +92,7 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="product_name">Product Name</label>
+                                                        <label htmlFor="product_name">Tên sản phẩm</label>
                                                         <input
                                                             id='product_name'
                                                             type="text"
@@ -104,7 +104,7 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="product_price">Product Price</label>
+                                                        <label htmlFor="product_price">Giá sản phẩm</label>
                                                         <input
                                                             id="product_price"
                                                             type="number"
@@ -116,7 +116,7 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="quantity">Quantity</label>
+                                                        <label htmlFor="quantity">Số lượng</label>
                                                         <input
                                                             id='quantity'
                                                             type="number"
@@ -130,18 +130,18 @@ const AddProduct = () => {
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="percent_sale">Percent Sale</label>
+                                                        <label htmlFor="percent_sale">Phần trăm giảm giá</label>
                                                         <input
                                                             id='percent_sale'
                                                             type="number"
                                                             className='form-control'
-                                                            {...register("percentSale", { min: 1, max: 99 })} />
+                                                            {...register("percentSale", { min: 0, max: 99 })} />
                                                         {errors.percentSale && <span className='error'>Phần trăm giảm giá chỉ có thể từ 1-99</span>}
                                                     </div>
                                                 </Col>
                                                 <Col lg={12}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="categoryId">Caterory</label>
+                                                        <label htmlFor="categoryId">Danh mục</label>
                                                         <Row>
                                                             {listCategories.map((category) => {
                                                                 return (
@@ -165,7 +165,7 @@ const AddProduct = () => {
                                                 </Col>
                                                 <Col lg={12}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="description">Description</label>
+                                                        <label htmlFor="description">Mô tả</label>
                                                         <textarea
                                                             id='description'
                                                             rows="4" cols=""
@@ -181,7 +181,7 @@ const AddProduct = () => {
                                                     <div className='vendor_order_boxed position-relative'>
                                                         <div className='btn_right_table'>
                                                             <button type='submit' className="theme-btn-one bg-black btn_sm">
-                                                                Add Product
+                                                                Thêm sản phẩm
                                                             </button>
                                                         </div>
                                                     </div>

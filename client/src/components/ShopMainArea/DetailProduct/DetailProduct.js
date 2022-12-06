@@ -65,23 +65,31 @@ const DetailProduct = () => {
                     setPercentSale(response.data.data.percentSale)
                 }
             })
+            .catch((errors) => {
+                console.log(errors)
+            })
     }, [])
     const AddWishlist = () => {
         axios
-            .post(`http://127.0.0.1:8000/api/user/favorite/${productId}`, [], {
+            .get(`http://localhost:8000/api/retrieveToken`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
             .then((response) => {
-                setMessage(response.data.message)
-                setSuccess(response.data.success)
-                if (!response.data.success) {
-                    setIsLogin(false)
+                if (response.data.success) {
+                    axios
+                        .post(`http://127.0.0.1:8000/api/user/favorite/${productId}`, [], {
+                            headers: {
+                                Authorization: `Bearer ${Cookies.get('token')}`,
+                            },
+                        })
+                        .then((response) => {
+                            setMessage(response.data.message)
+                            setSuccess(response.data.success)
+                        })
                 } else {
-                    console.log(response.data)
-                    setMessage(response.data.message)
-                    setSuccess(response.data.success)
+                    navigate("/login")
                 }
             })
     }
@@ -93,7 +101,6 @@ const DetailProduct = () => {
                 },
             })
             .then((response) => {
-                console.log(response.data)
                 setListReview(response.data.data)
             })
 
@@ -105,27 +112,35 @@ const DetailProduct = () => {
             quantity: quantityPurchased
         }
         axios
-            .post(`http://127.0.0.1:8000/api/user/cart/add`, payload, {
+            .get(`http://localhost:8000/api/retrieveToken`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             })
             .then((response) => {
-                if (!response.data.success) {
-                    navigate("/login")
+                if (response.data.success) {
+                    axios
+                        .post(`http://127.0.0.1:8000/api/user/cart/add`, payload, {
+                            headers: {
+                                Authorization: `Bearer ${Cookies.get('token')}`,
+                            },
+                        })
+                        .then((response) => {
+                            setMessage(response.data.message)
+                            setSuccess(response.data.success)
+                            setModal(!modal)
+                        })
                 } else {
-                    setMessage(response.data.message)
-                    setSuccess(response.data.success)
-                    setModal(!modal)
+                    navigate("/login")
                 }
             })
     }
+
     const sentReview = (data) => {
         const payload = {
             ...data,
             productId: productId
         }
-        console.log(payload)
         axios
             .get(`http://localhost:8000/api/retrieveToken`, {
                 headers: {
@@ -141,14 +156,8 @@ const DetailProduct = () => {
                             },
                         })
                         .then((response) => {
-                            if (!response.data.success) {
-                                console.log(response.data)
-                                setMessage(response.data.message)
-                                setSuccess(response.data.success)
-                            } else {
-                                setMessage(response.data.message)
-                                setSuccess(response.data.success)
-                            }
+                            setMessage(response.data.message)
+                            setSuccess(response.data.success)
                         })
                 } else {
                     navigate("/login")
@@ -157,9 +166,6 @@ const DetailProduct = () => {
             .catch(function (error) {
                 console.log(error);
             });
-
-
-
     }
     return (
         <>
@@ -241,17 +247,17 @@ const DetailProduct = () => {
                                     </div>
                                     <div id='review' className={activeTab === 'review' ? "tab-pane fade in active show" : 'tab-pane fade'}>
                                         <div className='product_reviews'>
-                                            {/* {listReview.map((review) => {
+                                            {listReview && listReview.map((review, index) => {
                                                 return (
-                                                    <ul key={review._id}>
+                                                    <ul key={index}>
                                                         <li className='media'>
                                                             <div className='media-img'>
-                                                                <img src={review.customer.avatar} alt="img" />
+                                                                {review.avatar ? <img src={review.avatar} alt="img" /> : <img src={review.defaultAvatar} alt="img" />}
                                                             </div>
                                                             <div className='media-body'>
                                                                 <div className='media-header'>
                                                                     <div className='media-name'>
-                                                                        <h4>{review.customer.first_name} {review.customer.last_name}</h4>
+                                                                        <h4>{review.firstName} {review.lastName}</h4>
                                                                     </div>
                                                                     <div className='post-share'>
                                                                         <p className=''>{review.createdAt}</p>
@@ -264,7 +270,7 @@ const DetailProduct = () => {
                                                         </li>
                                                     </ul>
                                                 )
-                                            })} */}
+                                            })}
                                         </div>
                                         <div className='input-review'>
                                             <Row>
