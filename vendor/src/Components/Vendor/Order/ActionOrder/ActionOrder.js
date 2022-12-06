@@ -181,8 +181,8 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                     <div className='detail-footer text-right'>
                                         {deletedBy ? "" : state === 2 ? "" : <p>Bạn muốn thay đổi trạng thái nào?</p>}
                                         <div className='buttons'>
-                                            {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Xác nhậN</button> : state === 1 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Hoàn thành</button> : ""}
-
+                                            {/* {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Xác nhậN</button> : state === 1 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Hoàn thành</button> : ""} */}
+                                            {deletedBy ? '' : state === 0 ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Xác nhậN</button> : ""}
                                             {deletedBy ? "" : state === 2 ? '' : <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Huỷ</button>}
                                         </div>
                                     </div>

@@ -38,9 +38,9 @@ function ProductWrapper({ unit }) {
             })
 
         axios
-            .get(`http://localhost:8000/api/product/bestSeller`)
+            .get(`http://127.0.0.1:8000/api/product/bestSeller`)
             .then(response => {
-                // console.log("3", response.data)
+                console.log("3", response.data)
                 setListBestSellers(response.data)
             })
             .catch(err => {
@@ -73,13 +73,13 @@ function ProductWrapper({ unit }) {
 
     return (
         <>
-            {list.map((product) => {
+            {Object.values(list).map((product) => {
                 return (
                     <Col lg={3} md={4} sm={6} xs={12} key={product.id}>
                         <div className={styles.productWrapper}>
                             <div className={styles.thumb}>
                                 <Link to={`/shop/${product.id}`} className={styles.image}>
-                                    <img src={product.image} alt={product.name} />
+                                    <img src={product.img} alt={product.name} />
                                 </Link>
                                 <span className={styles.badges}>
                                     <span
@@ -93,7 +93,7 @@ function ProductWrapper({ unit }) {
                                     {/* <a className={`${styles.action}`} title="Quickview">
                                         <FaExpand />
                                     </a> */}
-                                    <ModalDetailProduct productId={product.id}/>
+                                    <ModalDetailProduct productId={product.id} />
                                 </div>
                                 <ModalAddToCart productId={product.id} />
                             </div>
