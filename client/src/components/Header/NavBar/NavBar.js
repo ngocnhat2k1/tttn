@@ -22,9 +22,9 @@ function NavBar() {
           <Col lg={12} className='d-flex align-items-center justify-content-between'>
             <div className='header-logo'>
               <div className='logo'>
-                <a href=".">
+                <Link to="/">
                   < img src={LogoSrc} alt="" className="Logo" />
-                </a>
+                </Link>
               </div>
             </div>
             <ul className='nav-item-ul'
