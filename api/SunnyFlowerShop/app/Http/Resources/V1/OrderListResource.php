@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Enums\OrderStatusEnum;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderListResource extends JsonResource
@@ -21,13 +22,16 @@ class OrderListResource extends JsonResource
             // "description" => $this->description,
             // "voucher_id" => $this->voucher_id,
             "dateOrder" => date("d/m/Y H:i:s", strtotime($this->date_order)),
-            "address" => $this->address,
+            "street" => $this->street,
+            "ward" => $this->ward,
+            "district" => $this->district,
+            "province" => $this->province,
             "nameReceiver" => $this->name_receiver,
             "phoneReceiver" => $this->phone_receiver,
             "totalPrice" => $this->total_price,
-            "status" => $this->status,
+            "status" => OrderStatusEnum::getStatusAttribute($this->status),
+            // "payUrl" => $this->status),
             // "paidType" => $this->paid_type,
-            "deletedBy" => $this->deleted_by,
         ];
     }
 }

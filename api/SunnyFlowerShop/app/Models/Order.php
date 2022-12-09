@@ -17,11 +17,16 @@ class Order extends Model
         "customer_id",
         "voucher_id",
         "id_delivery",
+        "expected_delivery_time",
         "date_order",
-        "address",
+        "street",
+        "ward",
+        "district",
+        "province",
         "name_receiver",
         "phone_receiver",
         "total_price",
+        "status",
         "paid_type",
         "deleted_by",
     ];
@@ -34,6 +39,11 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, "order_product", "order_id", "product_id")->withPivot("quantity", "price", "percent_sale");
+    }
+
+    public function products_temp()
+    {
+        return $this->belongsToMany(Product::class, "order_product_temp", "order_id", "product_id")->withPivot("quantity");
     }
 
     public function vouchers()

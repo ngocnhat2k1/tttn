@@ -38,15 +38,28 @@ class StoreOrderRequest extends FormRequest
             //     "required",
             //     "date_format:Y-m-d H:i:s",
             // ],
-            "address" => [
-                "required",
-                "string",
-            ],
             "nameReceiver" => [
                 "required",
                 "string",
             ],
             "phoneReceiver" => [
+                "required",
+                "string",
+            ],
+            "province" => [
+                "required",
+                "min:5",
+                "string",
+            ],
+            "district" => [
+                "required",
+                "string",
+            ],
+            "ward" => [
+                "required",
+                "string",
+            ],
+            "street" => [
                 "required",
                 "string",
             ],

@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\OrderCustomerController;
 use App\Http\Controllers\Api\V1\VoucherController;
 use App\Http\Controllers\Api\V1\VoucherCustomerController;
 use App\Http\Controllers\Api\V1\ProductQueryController;
+use App\Http\Controllers\Api\V1\UpdateOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -145,8 +146,14 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/", [OrderAdminController::class, "index"]);
             Route::get("/{order}", [OrderAdminController::class, "show"]);
             Route::get("/idDelivery/{id}", [OrderAdminController::class, "showViaIdDelivery"]);
-            Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
+            // Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
             Route::delete("/{order}/destroy={state}", [OrderAdminController::class, "destroy"]);
+
+            // Update order status and Create-Update-Cancel Order in GiaoHangNhanh
+            Route::put("/{order}/updateStatus={state}", [UpdateOrderController::class, "updateStatus"]); // Update status and create order in GiaoHangNhanh site            
+            Route::post("/refresh", [UpdateOrderController::class, "refreshState"]); // Use for refresh API to update Order state
+            
+            Route::post("/{order}/preview", [UpdateOrderController::class, "preview"]); // Use for preview order created by Giao Hang Nhanh before creating an order in GiaoHangNhanh site [NOTE: CURRENTLY IT'S BROKEN]
         });
 
         /** Address
@@ -229,6 +236,7 @@ Route::get('/products/categories/{filter}', [ProductQueryController::class, "fil
 Route::get('/products/filter/search={value}', [ProductQueryController::class, "searchProduct"])->name("filter.search"); // Show detail of a specific product
 Route::get('/products/topBar/search={value}', [ProductQueryController::class, "searchTopBar"]); // Show detail of a specific product
 Route::get("/feedback/product/{id}", [ProductQueryController::class, "feedbacksProduct"]);
+Route::get("/show/voucher", [ProductQueryController::class, "showVoucher"]);
 /** Query for products appearance in front page
  * Trending product
  * New products
@@ -265,32 +273,36 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Create-Read-Update(Reduce quantity)-Delete Proudct from cart
         Route::get("/cart/state={state}", [CartController::class, "index"]);
-        Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
+        // Route::post("/cart/add", [CartController::class, "store"]); // Update quantity or add new product to cart - Apply in Products page and cart page
         Route::post("/cart/add/{id}", [CartController::class, "singleQuantity"]); // Update quantity or add new product to cart - Apply in Products page and cart page
         Route::put("/cart/update", [CartController::class, "update"]); // Update quantity base on keyboard and only apply in cart page
         Route::post("/cart/reduce/{id}", [CartController::class, "reduce"]); // {id} is product_id; Reduce quantity of product in cart (only apply in cart page). May need to reconsider about GET Method
         Route::delete("/cart/destroy/{id}", [CartController::class, "destroy"]); // {id} is product_id
         Route::delete("/cart/empty", [CartController::class, "empty"]); // {id} is product_id
 
+        /**  ORDER FUNCTION */
         // Create-Review-Cancel Order function
         Route::get("/order", [OrderController::class, "index"]); // Show all order from current login user
         Route::get("/order/{id}", [OrderController::class, "show"]); // {id} is order_id; Show detail of order from current login user
         Route::get("/order/idDelivery/{id}", [OrderController::class, "showViaIdDelivery"]); // {id} is order_id; Show detail of order from current login user
         Route::post("/order/placeorder", [CheckoutController::class, "store"]); // Placeorder
-        Route::post("/order/placeorderPaypal", [CheckoutPaypalController::class, "store"]); // Placeorder
-        Route::get("/order/{id}/payment", [CheckoutController::class, "redirect"])->name("redirect.page");
+        // Route::post("/order/placeorderPaypal", [CheckoutPaypalController::class, "store"]); // Placeorder
+        Route::get("/order/{id}/payment", [CheckoutController::class, "redirect"])->name("redirect.page"); // Use for momo
 
+        // Check voucher process
         Route::post("/voucherCheck", [VoucherCustomerController::class, "checkVoucher"]);
 
         // After payment completed
-        Route::get(
-            "/order/payment?partnerCode={partnerCode}&orderId={orderId}&requestId={requestId}&amount={amount}&orderInfo={orderInfo}&orderType={orderType}&transId={transId}&resultCode={resultCode}&message={message}&payType={payType}&responseTime={responseTime}&extraData={extraData}&signature={signature}",
-            [CheckoutController::class, "redirect"]
-        )->name("return.page");
+        // Route::get(
+        //     "/order/payment?partnerCode={partnerCode}&orderId={orderId}&requestId={requestId}&amount={amount}&orderInfo={orderInfo}&orderType={orderType}&transId={transId}&resultCode={resultCode}&message={message}&payType={payType}&responseTime={responseTime}&extraData={extraData}&signature={signature}",
+        //     [CheckoutController::class, "redirect"]
+        // )->name("return.page");
         Route::post("/order/complete/payment", [CheckoutController::class, "redirect"]); // Use this when front-end can't get header redirect URL
 
-        Route::delete("/order/{id}/cancel", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
+        Route::delete("/order/{idDelivery}/cancel", [OrderController::class, "destroy"]); // {id} is order_id; Cancel order
         Route::put("/order/{id}/status", [OrderController::class, "updateStatus"]); // Customer only allow to confirm "Completed" state for order
+        /** END OF ORDER FUNCTION */
+
 
         // Create-Review-Update-Delete (May be reconsider about soft delete instead) Feedback function
         Route::get("/feedback", [FeedBackController::class, "viewFeedBack"]); // Overview all feedback (still reconsider about this one)

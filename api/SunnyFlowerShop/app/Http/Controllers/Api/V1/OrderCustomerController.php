@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentDisplayEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
 use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
@@ -10,15 +12,147 @@ use App\Http\Resources\V1\OrderListCollection;
 use App\Mail\OrderDeliveredNotify;
 use App\Mail\OrderDeliveredState;
 use App\Models\Customer;
+use App\Models\Momo;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 class OrderCustomerController extends Controller
 {
+    private $shopId = '120932';
+    private $token = '7f4667c9-756e-11ed-a83f-5a63c54f968d';
+
+    public function paginator($arr, $request, $page)
+    {
+        $total = count($arr);
+        $per_page = $page;
+        $current_page = $request->input("page") ?? 1;
+
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $arr = array_slice($arr, $starting_point, $per_page, true);
+
+        $arr = new LengthAwarePaginator($arr, $total, $per_page, $current_page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
+
+        return $arr;
+    }
+
+    // Checking order status in GiaoHangNhanh site
+    public function getOrderStatus($state)
+    {
+        switch ($state) {
+            // Picking state
+            case 'ready_to_pick':
+            case 'picking':
+                $state = "ready_to_pick";
+                break;
+
+            // Picked State
+            case 'picked ':
+                $state = "picked";
+                break;
+            
+            // Delivering State
+            case 'delivering':
+            case 'transporting':
+            case 'money_collect_picking':
+            case 'storing':
+            case 'sorting':
+            case 'money_collect_delivering':
+                $state = "delivering";
+                break;
+
+            // Cancel State
+            case 'cancel':
+                $state = "cancel";
+                break;
+
+            // Return/ Damage/ Lost/ Processing State
+            case 'return':
+            case 'return_transporting':
+            case 'return_sorting':
+            case 'returning':
+            case 'return_fail':
+            case 'returned':
+            case 'exception':
+            case 'damage':
+            case 'lost':
+            case 'delivered':
+            case 'delivery_fail':
+            case 'waiting_to_return':
+                $state = "processing";
+
+            default:
+                return;
+        }
+
+        return $state;
+    }
+
+    /**  Use for refresh order status */
+    public function refreshState($order)
+    {
+        if (empty($order->order_code)) return;
+
+        $response = Http::withHeaders([
+            'ShopId' => $this->shopId,
+            'Token' => $this->token
+        ])
+            ->accept('application/json')
+            ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
+                "order_code" => $order->order_code
+            ]);
+
+        // Handle errors
+        if ($response->failed()) {
+            return json_decode($response);
+        }
+
+        // $arr[$index] = $response['data'];
+        // $index++;
+
+        $state = $this->getOrderStatus($response['data']['status']);
+
+        $order->status = (int) OrderStatusEnum::getStatusAttributeReverse($state);
+        $order->save();
+    }
+
+    /** Use for refresh all orders status */
+    public function refreshAllStateOrder($orders)
+    {
+        for ($i = 0; $i < sizeof($orders); $i++) {
+            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
+
+            $response = Http::withHeaders([
+                'ShopId' => $this->shopId,
+                'Token' => $this->token
+            ])
+                ->accept('application/json')
+                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
+                    "order_code" => $orders[$i]->order_code
+                ]);
+
+            // Handle errors
+            if ($response->failed()) {
+                return json_decode($response);
+            }
+
+            // $arr[$index] = $response['data'];
+            // $index++;
+            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
+            $orders[$i]->save();
+        }
+    }
+
+    /** Main Functions */
     public function index(GetAdminBasicRequest $request, Customer $customer)
     {
         $order = $customer->orders;
@@ -30,10 +164,29 @@ class OrderCustomerController extends Controller
             ]);
         }
 
-        return response()->json([
-            "success" => true,
-            "data" => new OrderListCollection($order)
-        ]);
+        $this->refreshAllStateOrder($order);
+
+        $arr = [];
+
+        for ($i = 0; $i < sizeof($order); $i++) {
+            $arr[$i]['id'] = $order[$i]->id;
+            $arr[$i]['customerId'] = $order[$i]->customer_id;
+            $arr[$i]['idDelivery'] = $order[$i]->id_delivery;
+            $arr[$i]['dateOrder'] = $order[$i]->date_order;
+            $arr[$i]['address'] = $order[$i]->street . ", " . $order[$i]->ward . ", " . $order[$i]->district . ", " . $order[$i]->province . ", Việt Nam";
+            $arr[$i]['nameReceiver'] = $order[$i]->name_receiver;
+            $arr[$i]['totalPrice'] = $order[$i]->total_price;
+            $arr[$i]['phoneReceiver'] = $order[$i]->phone_receiver;
+            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($order[$i]->paid_type);
+            $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($order[$i]->status);
+        }
+
+        return $this->paginator($arr, $request, 12);
+
+        // return response()->json([
+        //     "success" => true,
+        //     "data" => new OrderListCollection($order)
+        // ]);
     }
 
     public function show(GetAdminBasicRequest $request, Customer $customer, Order $order)
@@ -87,6 +240,10 @@ class OrderCustomerController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
+        if ($data->status < 6) {
+            $this->refreshState($data);
+        }
+
         return response()->json([
             "success" => true,
             "data" => [
@@ -103,13 +260,12 @@ class OrderCustomerController extends Controller
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
                     "dateOrder" => $data->date_order,
-                    "address" => $data->address,
+                    "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,
                     "totalPrice" => $data->total_price,
-                    "status" => $data->status,
-                    "paidType" => $data->paid_type,
-                    "deleted_by" => $data->deleted_by,
+                    "status" => OrderStatusEnum::getStatusAttribute($data->status),
+                    "paidType" => PaymentDisplayEnum::getPaymentDisplayAttribute($data->paid_type),
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
@@ -134,7 +290,7 @@ class OrderCustomerController extends Controller
 
         // Checking Order_status or Deleted_by column isNull
         // 0 fresh new and null is order doesn't get cancelled
-        if ($order_data->status === 0 && $order_data->deleted_by === null) {
+        if ($order_data->status === 0) {
             // Create products array
             $products = $request->products;
 
@@ -204,7 +360,7 @@ class OrderCustomerController extends Controller
          */
 
         // Check order (Soft) Delete state and Order status
-        if ($order->deleted_by !==  null || $order->status === 2) {
+        if ($order->status === -1 || $order->status === 6) {
             return response()->json([
                 "success" => false,
                 "errors" => "Không thể thay đổi trạng thái Đơn hàng nếu Đơn hàng đang ở trạng thái hủy hoặc hoàn tất."
@@ -235,32 +391,19 @@ class OrderCustomerController extends Controller
             ]);
         }
 
-        if ($state === 0) {
-            $order_state = "Đang xử lý";
-        } else if ($state === 1) {
-            $order_state = "Xác nhận";
-        } else {
-            $order_state = "Hoàn tất";
-        }
-
         return response()->json([
             "success" => true,
-            "message" => "Thay đổi thành công trạng thái của Đơn hàng với ID = " . $order->id .  " sang trạng thái " . $order_state
+            "message" => "Thay đổi thành công trạng thái của Đơn hàng với ID = " . $order->id .  " sang trạng thái " . OrderStatusEnum::getStatusAttribute($state)
         ]);
-    }
-
-    // Use for order has already been delivered to customer
-    public function mail($customer, $order, $listProducts)
-    {
     }
 
     public function notifyOrder(GetAdminBasicRequest $request, Customer $customer, Order $order)
     {
         // Check order (Soft) Delete state and Order status
-        if ($order->deleted_by !==  null || $order->status === 2) {
+        if ($order->status === -1 || $order->status === 6) {
             return response()->json([
                 "success" => false,
-                "errors" => "Không thể thay đổi trạng thái Đơn hàng nếu Đơn hàng đang ở trạng thái hủy hoặc hoàn tất."
+                "errors" => "Đơn hàng đang ở trạng thái hủy hoặc hoàn tất."
             ]);
         }
 
@@ -326,7 +469,7 @@ class OrderCustomerController extends Controller
         // State right here is delete state not Order state
         if ((int)$request->state !== 0) {
             // Checking whether Deleted_by column is null or not
-            if ($order->deleted_by !== null || $order->deleted_by === 0) {
+            if ($order->status === -1) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Đơn hàng với ID = " . $order->id . " đã được hủy."
@@ -334,7 +477,7 @@ class OrderCustomerController extends Controller
             }
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
-            $order->deleted_by = 1;
+            $order->status = -1;
             $result = $order->save();
 
             if (!$result) {
@@ -362,7 +505,7 @@ class OrderCustomerController extends Controller
             }
 
             // Checking whether Deleted_by column is null or not
-            if ($order->deleted_by === null) {
+            if ($order->status !== -1) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Đơn hàng với iD = " . $order->id . " đã được hoàn tác việc hủy đơn."
@@ -370,7 +513,7 @@ class OrderCustomerController extends Controller
             }
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
-            $order->deleted_by = null;
+            $order->status = 0;
             $result = $order->save();
 
             if (!$result) {

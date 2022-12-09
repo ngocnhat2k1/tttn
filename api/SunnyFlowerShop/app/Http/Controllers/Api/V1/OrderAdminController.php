@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentDisplayEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Delete\DeleteAdminBasicRequest;
 use App\Http\Requests\Admin\Get\GetAdminBasicRequest;
@@ -15,9 +17,13 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class OrderAdminController extends Controller
 {
+    private $shopId = '120932';
+    private $token = '7f4667c9-756e-11ed-a83f-5a63c54f968d';
+
     /** ADMIN FUNCTIONs */
     public function paginator($arr, $request)
     {
@@ -37,6 +43,87 @@ class OrderAdminController extends Controller
         return $arr;
     }
 
+    // Checking order status in GiaoHangNhanh site
+    public function getOrderStatus($state)
+    {
+        switch ($state) {
+            // Picking state
+            case 'ready_to_pick':
+            case 'picking':
+                $state = "ready_to_pick";
+                break;
+
+            // Picked State
+            case 'picked ':
+                $state = "picked";
+                break;
+            
+            // Delivering State
+            case 'delivering':
+            case 'transporting':
+            case 'money_collect_picking':
+            case 'storing':
+            case 'sorting':
+            case 'money_collect_delivering':
+                $state = "delivering";
+                break;
+
+            // Cancel State
+            case 'cancel':
+                $state = "cancel";
+                break;
+
+            // Return/ Damage/ Lost/ Processing State
+            case 'return':
+            case 'return_transporting':
+            case 'return_sorting':
+            case 'returning':
+            case 'return_fail':
+            case 'returned':
+            case 'exception':
+            case 'damage':
+            case 'lost':
+            case 'delivered':
+            case 'delivery_fail':
+            case 'waiting_to_return':
+                $state = "processing";
+
+            default:
+                return;
+        }
+
+        return $state;
+    }
+
+    /**  Use for refresh order status */
+    public function refreshStateOrder($order)
+    {
+        if (empty($order->order_code)) return;
+
+        $response = Http::withHeaders([
+            'ShopId' => $this->shopId,
+            'Token' => $this->token
+        ])
+            ->accept('application/json')
+            ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
+                "order_code" => $order->order_code
+            ]);
+
+        // Handle errors
+        if ($response->failed()) {
+            return json_decode($response);
+        }
+
+        // $arr[$index] = $response['data'];
+        // $index++;
+
+        $state = $this->getOrderStatus($response['data']['status']);
+
+        $order->status = (int) OrderStatusEnum::getStatusAttributeReverse($state);
+        $order->save();
+    }
+
+    /** Main Functions */
     public function index(GetAdminBasicRequest $request)
     {
         $check = Order::get()->count();
@@ -49,33 +136,40 @@ class OrderAdminController extends Controller
         }
 
         // $orders = Order::with("customers")->paginate(10);
-        $customers_orders = Customer::with("orders")->orderBy("created_at", "DESC")->get();
-        // return $customers_orders;
+        $orders = Order::orderBy("created_at", "DESC")->get();
         $arr = [];
         $index = 0;
 
         // Do two for loop to add all order to array
-        for ($i = 0; $i < sizeof($customers_orders); $i++) { // First loop is used to get into Customer index at $i
-            // Second loop is used to get Order index at $j from Customer index at $i
-            for ($j = 0; $j < sizeof($customers_orders[$i]->orders); $j++) {
-                $arr[$index]['customerId'] = $customers_orders[$i]->id;
-                $arr[$index]['orderId'] = $customers_orders[$i]->orders[$j]->id;
-                $arr[$index]['firstName'] = $customers_orders[$i]->first_name;
-                $arr[$index]['lastName'] = $customers_orders[$i]->last_name;
-                // $arr[$index]['disabled'] = $customers_orders[$i]->disabled;
-                $arr[$index]['voucherId'] = $customers_orders[$i]->orders[$j]->voucher_id;
-                $arr[$index]['idDelivery'] = $customers_orders[$i]->orders[$j]->id_delivery;
-                $arr[$index]['address'] = $customers_orders[$i]->orders[$j]->address;
-                $arr[$index]['nameReceiver'] = $customers_orders[$i]->orders[$j]->name_receiver;
-                $arr[$index]['phoneReceiver'] = $customers_orders[$i]->orders[$j]->phone_receiver;
-                $arr[$index]['price'] = $customers_orders[$i]->orders[$j]->total_price;
-                $arr[$index]['status'] = $customers_orders[$i]->orders[$j]->status;
-                $arr[$index]['createdAt'] = date_format($customers_orders[$i]->orders[$j]->created_at, "d/m/Y H:i:s");
-                $arr[$index]['updatedAt'] = date_format($customers_orders[$i]->orders[$j]->updated_at, "d/m/Y H:i:s");
-                $arr[$index]['deletedBy'] = $customers_orders[$i]->orders[$j]->deleted_by;
+        for ($i = 0; $i < sizeof($orders); $i++) { // First loop is used to get into Customer index at $i
+            // Get customer info
+            $customer = Customer::find($orders[$i]->customer_id);
 
-                $index++; // index for array we currently use
+            // Customer field
+            $arr[$index]['customerId'] = $customer->id;
+            $arr[$index]['orderId'] = $orders[$i]->id;
+            $arr[$index]['firstName'] = $customer->first_name;
+            $arr[$index]['lastName'] = $customer->last_name;
+
+            // Order field
+            $arr[$index]['voucherId'] = $orders[$i]->voucher_id;
+            $arr[$index]['idDelivery'] = $orders[$i]->id_delivery;
+            $arr[$index]['address'] = $orders[$i]->street . ", " . $orders[$i]->ward . ", " . $orders[$i]->district . ", " . $orders[$i]->province . ", Việt Nam";
+            $arr[$index]['nameReceiver'] = $orders[$i]->name_receiver;
+            $arr[$index]['phoneReceiver'] = $orders[$i]->phone_receiver;
+            $arr[$index]['price'] = $orders[$i]->total_price;
+
+            // Confirm Order status to display it correctly
+            if ($orders[$i]->status < 6) {
+                $this->refreshStateOrder($orders[$i]);
             }
+
+            $arr[$index]['status'] = OrderStatusEnum::getStatusAttribute($orders[$i]->status);
+            $arr[$index]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($orders[$i]->status);
+            $arr[$index]['createdAt'] = date_format($orders[$i]->created_at, "d/m/Y H:i:s");
+            $arr[$index]['updatedAt'] = date_format($orders[$i]->updated_at, "d/m/Y H:i:s");
+
+            $index++; // index for array we currently use
         }
 
         $new_arr = $this->paginator($arr, $request);
@@ -127,6 +221,11 @@ class OrderAdminController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
+        // Confirm Order status to display it correctly
+        if ($order->status < 6) {
+            $this->refreshStateOrder($order);
+        }
+
         return response()->json([
             "success" => true,
             "data" => [
@@ -136,13 +235,12 @@ class OrderAdminController extends Controller
                     "orderId" => $order->id,
                     "idDelivery" => $order->id_delivery,
                     "dateOrder" => $order->date_order,
-                    "address" => $order->address,
+                    "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,
                     "phoneReceiver" => $order->phone_receiver,
                     "totalPrice" => $order->total_price,
-                    "status" => $order->status,
-                    "paidType" => $order->paid_type,
-                    "deletedBy" => $order->deleted_by,
+                    "status" => OrderStatusEnum::getStatusAttribute($order->status),
+                    "paidType" => PaymentDisplayEnum::getPaymentDisplayAttribute($order->paid_type),
                     "products" => $productsInOrder
                 ]
             ]
@@ -199,6 +297,11 @@ class OrderAdminController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
+        // Confirm Order status to display it correctly
+        if ($order->status < 6) {
+            $this->refreshStateOrder($order);
+        }
+
         return response()->json([
             "success" => true,
             "data" => [
@@ -208,64 +311,22 @@ class OrderAdminController extends Controller
                     "orderId" => $order->id,
                     "idDelivery" => $order->id_delivery,
                     "dateOrder" => $order->date_order,
-                    "address" => $order->address,
+                    "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,
                     "phoneReceiver" => $order->phone_receiver,
                     "totalPrice" => $order->total_price,
-                    "status" => $order->status,
-                    "paidType" => $order->paid_type,
-                    "deletedBy" => $order->deleted_by,
+                    "status" => OrderStatusEnum::getStatusAttribute($order->status),
+                    "paidType" => PaymentDisplayEnum::getPaymentDisplayAttribute($order->paid_type),
                     "products" => $productsInOrder
                 ]
             ]
         ]);
     }
 
-    public function updateStatus(UpdateOrderCustomerStatus $request, Order $order)
-    {
-        /** Update current status of order
-         * Status can change from "Pending" to "Confirmed" and vice versa if admin dectects any supscious actions
-         * Status can only be changed from "Confirmed" to "Completed", no reverse allow
-         * When status is in "Completed" status, quantity was store in pivot table "order_prodcut" with use to minus the quantity of products in "products" table
-         */
-
-        // Check order (Soft) Delete state and Order status
-        if ($order->deleted_by !==  null || $order->status === 2) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Không thể thay đổi trạng thái Đơn hàng nếu Đơn hàng đang ở trạng thái hủy hoặc hoàn tất."
-            ]);
-        }
-
-        $state = (int) $request->state;
-        $order->status = $state;
-        $result = $order->save();
-
-        if (empty($result)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
-            ]);
-        }
-
-        if ($state === 0) {
-            $order_state = "Đang xử lý";
-        } else if ($state === 1) {
-            $order_state = "Xác nhận";
-        } else {
-            $order_state = "Hoàn tất";
-        }
-
-        return response()->json([
-            "success" => true,
-            "message" => "Cập nhật thành công trạng thái của Đơn hàng có ID = " . $order->id .  " sang trạng thái " . $order_state
-        ]);
-    }
-
     public function destroy(Order $order, DeleteAdminBasicRequest $request)
     {
         // If Order state is 2 (Completed state), then return
-        if ($order->status === 2) {
+        if ($order->status === 6) {
             return response()->json([
                 "success" => false,
                 "errors" => "Không thể hủy đơn hàng nếu Đơn hàng đang trong trạng thái Hoàn tất."
@@ -277,7 +338,7 @@ class OrderAdminController extends Controller
         // State right here is delete state not Order state
         if ((int)$request->state !== 0) {
             // Checking whether Deleted_by column is null or not
-            if ($order->deleted_by !== null || $order->deleted_by === 0) {
+            if ($order->status === -1) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Đơn hàng với ID = " . $order->id . " đã được hủy."
@@ -285,7 +346,7 @@ class OrderAdminController extends Controller
             }
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
-            $order->deleted_by = 1;
+            $order->status = -1;
             $result = $order->save();
 
             if (!$result) {
@@ -306,7 +367,7 @@ class OrderAdminController extends Controller
         } else {
 
             // Checking whether Deleted_by column is null or not
-            if ($order->deleted_by === null) {
+            if ($order->status !== -1) {
                 return response()->json([
                     "success" => false,
                     "errors" => "Đơn hàng với ID = " . $order->id . " đã được hoàn tác việc hủy đơn."
@@ -314,7 +375,7 @@ class OrderAdminController extends Controller
             }
 
             // If not then asign value to order->deleted_by by 1 (1 for admin; 0 for customer)
-            $order->deleted_by = null;
+            $order->status = 0;
             $result = $order->save();
 
             if (!$result) {
