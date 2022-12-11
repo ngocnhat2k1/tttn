@@ -64,9 +64,9 @@ class CheckoutController extends Controller
         // $redirectUrl = route("redirect.page", [
         //     'id' => $currentOrder
         // ]);
-        $redirectUrl = "http://127.0.0.1:5500/paySucces.html";
+        $redirectUrl = "http://localhost:3000/order-completed";
         // $redirectUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
-        $ipnUrl = "http://127.0.0.1:5500/index.html";
+        $ipnUrl = "http://127.0.0.1:3000";
         $extraData = "";
 
         if ((int) $requestType === 1) {

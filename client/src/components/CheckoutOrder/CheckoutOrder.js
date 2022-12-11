@@ -6,11 +6,14 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import axios from "axios";
 import Cookies from 'js-cookie'
+import useLocationForm from "../InputLocation/useLocationForm";
+import Select from "react-select";
 import "./CheckoutOrder.css"
 import AccountEditModal from '../AccountEditArea/AccountEditModal';
 import { formatter } from '../../utils/utils';
 import CartArea from '../CartArea';
 import EmptyCart from '../CartArea/EmptyCart';
+
 
 const CheckoutOrder = () => {
     const [listProduct, setListProduct] = useState([]);
@@ -30,7 +33,17 @@ const CheckoutOrder = () => {
     const [modal, setModal] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { register: register2, handleSubmit: handleSubmit2 } = useForm();
+    const { state, onCitySelect, onDistrictSelect, onWardSelect, onSubmit } =
+        useLocationForm(true);
 
+    const {
+        cityOptions,
+        districtOptions,
+        wardOptions,
+        selectedCity,
+        selectedDistrict,
+        selectedWard,
+    } = state;
     useEffect(() => {
         axios
             .get(`http://127.0.0.1:8000/api/user/cart/state=all`, {
@@ -51,12 +64,11 @@ const CheckoutOrder = () => {
     }
 
     const PlaceOrder = () => {
-
         const payload = {
             phoneReceiver: phoneReceiver,
             nameReceiver: nameReceiver,
             voucherCode: voucherId,
-            address: street + ', ' + ward + ', ' + district + ', ' + province,
+            address: street + ', ' + selectedWard.label + ', ' + selectedDistrict.label + ', ' + selectedCity.label,
             paidType: 0
         }
         console.log(payload)
@@ -67,7 +79,6 @@ const CheckoutOrder = () => {
                 },
             })
             .then((response) => {
-                console.log(response.data)
                 setMessage(response.data.message)
                 setSuccess(response.data.success)
                 setModal(!modal)
@@ -114,7 +125,6 @@ const CheckoutOrder = () => {
                 }
             })
     }
-    console.log(voucherId)
     return (
         <>
             {!listProduct && check > 0 && <EmptyCart />}
@@ -156,34 +166,62 @@ const CheckoutOrder = () => {
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
                                                         <label htmlFor="province">Tỉnh/Thành Phố<span className="text-danger">*</span></label>
-                                                        <input
+                                                        <Select
+                                                            name="province"
+                                                            key={`cityId_${selectedCity?.value}`}
+                                                            isDisabled={cityOptions.length === 0}
+                                                            options={cityOptions}
+                                                            // className='form-control'
+                                                            onChange={(option) => onCitySelect(option)}
+                                                            placeholder="Tỉnh/Thành"
+                                                            defaultValue={selectedCity}
+                                                        />
+                                                        {/* <input
                                                             type="text"
                                                             value={province}
                                                             className='form-control'
                                                             placeholder='Tỉnh/Thành Phố'
-                                                            {...register("province", { required: true, onChange: (e) => { setprovince(e.target.value) } })} />
+                                                            {...register("province", { required: true, onChange: (e) => { setprovince(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
                                                         <label htmlFor="district">Quận/Huyện<span className="text-danger">*</span></label>
-                                                        <input
+                                                        <Select
+                                                            name="district"
+                                                            key={`districtId_${selectedDistrict?.value}`}
+                                                            isDisabled={districtOptions.length === 0}
+                                                            options={districtOptions}
+                                                            onChange={(option) => onDistrictSelect(option)}
+                                                            placeholder="Quận/Huyện"
+                                                            defaultValue={selectedDistrict}
+                                                        />
+                                                        {/* <input
                                                             type="text"
                                                             value={district}
                                                             className='form-control'
                                                             placeholder='Quận/Huyện'
-                                                            {...register("district", { required: true, onChange: (e) => { setdistrict(e.target.value) } })} />
+                                                            {...register("district", { required: true, onChange: (e) => { setdistrict(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
                                                         <label htmlFor="ward">Xã/Phường<span className="text-danger">*</span></label>
-                                                        <input
+                                                        <Select
+                                                            name="ward"
+                                                            key={`wardId_${selectedWard?.value}`}
+                                                            isDisabled={wardOptions.length === 0}
+                                                            options={wardOptions}
+                                                            placeholder="Phường/Xã"
+                                                            onChange={(option) => onWardSelect(option)}
+                                                            defaultValue={selectedWard}
+                                                        />
+                                                        {/* <input
                                                             type="text"
                                                             value={ward}
                                                             className='form-control'
                                                             placeholder='Xã/Phường'
-                                                            {...register("ward", { required: true, onChange: (e) => { setWard(e.target.value) } })} />
+                                                            {...register("ward", { required: true, onChange: (e) => { setWard(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={12} md={12} sm={12} xs={12}>
@@ -200,10 +238,6 @@ const CheckoutOrder = () => {
                                             </Row>
                                         </form>
                                     </div>
-                                </div>
-                            </Col>
-                            <Col lg={6} md={12} sm={12} xs={12}>
-                                <div className='order_review  bg-white'>
                                     <div className='order_review bg-white'>
                                         <div className='check-heading'>
                                             <h3>Áp dụng mã giảm giá</h3>
@@ -219,6 +253,11 @@ const CheckoutOrder = () => {
                                             </form>
                                         </div>
                                     </div>
+                                </div>
+                            </Col>
+                            <Col lg={6} md={12} sm={12} xs={12}>
+                                <div className='order_review  bg-white'>
+
                                     <div className='check-heading'>
                                         <h3>Đơn hàng của bạn</h3>
                                     </div>
