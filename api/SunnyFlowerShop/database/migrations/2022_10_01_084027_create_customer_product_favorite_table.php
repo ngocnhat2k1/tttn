@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('customer_product_favorite', function (Blueprint $table) {
-            $table->id();
             $table->integer("customer_id");
             $table->integer("product_id");
             // $table->timestamps();

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("trans_id")->nullable();
             $table->string("pay_type")->nullable();
             $table->integer("status")->comment("-1 is for cancelled order; 0 is in payment state; 1 for confirm payment");
+            $table->longText("pay_url")->nullable();
             $table->string("signature");
             $table->timestamps();
         });

@@ -7,15 +7,124 @@ use App\Http\Requests\Customer\Store\StoreOrderRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
 use App\Mail\PlaceOrderMail;
+use App\Mail\PlaceOrderMailNotifyAdmin;
+use App\Models\Admin;
 use App\Models\Customer;
 use App\Models\Momo;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
+    /** GiaoHangNhanh API */
+    private $shopId = '120932';
+    private $token = '7f4667c9-756e-11ed-a83f-5a63c54f968d';
+    private $pick_station_id = 71500;
+    private $insurance_value = 1000000;
+    private $from_name = "Sunny Flower Shop";
+    private $from_phone = "0909999999";
+    private $from_address = "123 đường Tô Ký";
+    private $from_ward_name = "Phường Tân Chánh Hiệp";
+    private $from_district_name = "Quận 12";
+    private $from_province_name = "Hồ Chí Minh";
+    private $cod_amount = 50000;
+
+    public function getProductsFromOrder($order)
+    {
+        $products = DB::table("order_product")
+            ->where("order_id", "=", $order->id)
+            ->get();
+
+        $arr = [];
+
+        for ($i = 0; $i < sizeof($products); $i++) {
+            $product = Product::find($products[$i]->product_id);
+            $init_price = (int)$products[$i]->price * (int)$products[$i]->quantity; // Price before apply sale
+            $sale_price = ($init_price * (int)$products[$i]->percent_sale) / 100; // Discount price
+
+            $arr[$i]['name'] = $product->name;
+            $arr[$i]['code'] = (string) $product->id;
+            $arr[$i]['quantity'] = $products[$i]->quantity;
+            $arr[$i]['price'] = ceil($init_price - $sale_price);
+            $arr[$i]['length'] = 30;
+            $arr[$i]['width'] = 15;
+            $arr[$i]['height'] = 45;
+            $arr[$i]['category'] = [
+                "level1" => $product->categories[0]->name
+            ];
+        }
+
+        return $arr;
+    }
+
+    // Update to confirm state
+    public function confirmStatus($order)
+    {
+        $data = [
+            "payment_type_id" => 2,
+            "note" => "",
+            "from_name" => $this->from_name,
+            "from_phone" => $this->from_phone,
+            "from_address" => $this->from_address,
+            "from_ward_name" => $this->from_ward_name,
+            "from_district_name" => $this->from_district_name,
+            "from_province_name" => $this->from_province_name,
+            "required_note" => "KHONGCHOXEMHANG",
+            "return_name" => $this->from_name,
+            "return_phone" => $this->from_phone,
+            "return_address" => $this->from_address,
+            "return_ward_name" => $this->from_ward_name,
+            "return_district_name" => $this->from_district_name,
+            "return_province_name" => $this->from_province_name,
+            "client_order_code" => "",
+            "to_name" => $order->name_receiver,
+            "to_phone" => $order->phone_receiver,
+            "to_address" => $order->street,
+            "to_ward_name" => $order->ward,
+            "to_district_name" => $order->district,
+            "to_province_name" => $order->province, // "TP Hồ Chí Minh"
+            "cod_amount" => $this->cod_amount,
+            "content" => "Sunny Flower Shop gửi hàng",
+            "weight" => 500,
+            "length" => 35,
+            "width" => 20,
+            "height" => 50,
+            "pick_station_id" => $this->pick_station_id,
+            "deliver_station_id" => null,
+            "insurance_value" => $this->insurance_value,
+            "service_id" => 53320,
+            "service_type_id" => 2,
+            "coupon" => null,
+            "pick_shift" => null,
+            "pickup_time" => 1665272576,
+            "items" => $this->getProductsFromOrder($order)
+        ];
+
+        // Make a request to create order in Giao Hang Nhanh site
+        $response = Http::withHeaders([
+            'ShopId' => $this->shopId,
+            'Token' => $this->token
+        ])
+            ->accept('application/json')
+            ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', $data);
+
+        // Handle errors
+        if ($response->failed()) {
+            return json_decode($response);
+        }
+
+        /** Change some value in order table */
+        $order->expected_delivery_time = date("Y-m-d H:i:s", strtotime($response['data']['expected_delivery_time']));
+        $order->order_code = $response['data']['order_code'];
+        $order->total_fee = $response['data']['total_fee'];
+        $order->trans_type = $response['data']['trans_type'];
+        $order->status = 2;
+        $order->save();
+    }
+
     // MOMO PAYMENT
     public function execPostRequest($url, $data)
     {
@@ -114,14 +223,20 @@ class CheckoutController extends Controller
     }
 
     /** PLACE ORDER FUNCTION */
-    public function mail($customer, $order, $listProducts)
+    /** Sending mail */
+    public function mail($customer, $order, $listProducts, $title, $text, $subject)
     {
-        $title = "Quý khách đã đặt hàng thành công";
-        $text = "Đơn hàng sẽ được giao đến cho quý khách sớm nhất có thể.";
         $userName = $customer->first_name . " " . $customer->last_name;
         $priceOrder = $order->total_price;
         $idDelivery = $order->id_delivery;
-        Mail::to($customer->email)->queue(new PlaceOrderMail($title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
+        Mail::to($customer->email)->queue(new PlaceOrderMail($subject, $title, $text, $userName, $idDelivery, $priceOrder, $listProducts));
+    }
+
+    public function mailNotifyAdmin($admin, $order, $listProducts, $title, $text, $subject)
+    {
+        $priceOrder = $order->total_price;
+        $idDelivery = $order->id_delivery;
+        Mail::to($admin->email)->queue(new PlaceOrderMailNotifyAdmin($subject, $title, $text, $idDelivery, $priceOrder, $listProducts));
     }
 
     public function generateDeliveryCode($orderType)
@@ -142,7 +257,7 @@ class CheckoutController extends Controller
         $momo = Momo::where("order_id", "=", $order->id)->first();
 
         // Check if order and momo (order detail) has reached enough condition to continue payment progress
-        if ($order->deleted_by !== null || $momo->status === -1) {
+        if ($order->status === -1 || $momo->status === -1) {
             return response()->json([
                 "success" => false,
                 "errors" => "Đi đâu vậy anh bạn. Đơn hàng đã được hủy rồi!"
@@ -152,18 +267,20 @@ class CheckoutController extends Controller
         // If request message is "Successful." Then proceed to add the rest of products in cart to intermediate table "order_product"
         if ($request->message === "Successful." || $request->message === "Giao dịch thành công.") {
             $arr = [];
-            $productsFromCart = DB::table("customer_product_cart")
-                ->where("customer_id", "=", $order->customer_id)
+            $productsFromTemp = DB::table("order_product_temp")
+                ->where("order_id", "=", $order->id)
                 ->get();
 
-            for ($i = 0; $i < sizeof($productsFromCart); $i++) {
-                $value = Product::where("id", "=", $productsFromCart[$i]->product_id)->first();
+            for ($i = 0; $i < sizeof($productsFromTemp); $i++) {
+                $value = Product::where("id", "=", $productsFromTemp[$i]->product_id)->first();
 
                 $arr[$i]['product_id'] = $value->id;
-                $arr[$i]['quantity'] = $productsFromCart[$i]->quantity;
+                $arr[$i]['quantity'] = $productsFromTemp[$i]->quantity;
                 $arr[$i]['price'] = $value->price;
                 $arr[$i]['percent_sale'] = $value->percent_sale;
             }
+
+            $order->products_temp()->detach();
 
             $momo->partner_code = $request->partnerCode;
             $momo->order_type = $request->orderType;
@@ -171,16 +288,25 @@ class CheckoutController extends Controller
             $momo->pay_type = $request->payType;
             $momo->status = 1;
             $momo->signature = $request->signature;
+            $momo->pay_url = null;
             $momo->save();
 
+            // create order in GiaoHangNhanh immediately
             return $this->completeOrderProcess($arr, $order, $customer);
             // if customer cancels order, change deleted_by value to 0 (order cancelled by customer) and change momo order status to -1
         } else {
-            $order->deleted_by = 0;
+            $order->status = -1;
             $order->save();
 
             $momo->status = -1;
+            $momo->partner_code = $request->partnerCode;
+            $momo->order_type = $request->orderType;
+            $momo->trans_id = $request->transId;
+            $momo->signature = $request->signature;
+            $momo->pay_url = null;
             $momo->save();
+
+            $order->products_temp()->detach();
 
             $json_return = [
                 "success" => false,
@@ -211,21 +337,26 @@ class CheckoutController extends Controller
         // Insert data into intermediate table (order_product)
         for ($i = 0; $i < sizeof($arr); $i++) {
             $productId = Product::find($arr[$i]["product_id"]);
-            $confirm = $order->products()->attach($productId, [
+            $order->products()->attach($productId, [
                 "quantity" => $arr[$i]["quantity"],
                 "price" => $arr[$i]["price"],
                 "percent_sale" => $arr[$i]['percent_sale']
             ]);
         }
 
-        // Detach data from intermediate table (customer_product_cart)
-        $detach = $customer->customer_product_cart()->detach();
-
         // Get list product from current order
         $productsInOrder = [];
         $productsFromOrder = DB::table("order_product")
             ->where("order_id", "=", $order->id)
             ->get();
+
+        if ($order->paid_type === 1 || $order->paid_type === 2) {
+            $response = $this->confirmStatus($order);
+
+            if (!empty($response)) { // if response has value that means there has some issue when sending data to GiaoHangNhanh API
+                return $response;
+            }
+        }
 
         for ($i = 0; $i < sizeof($productsFromOrder); $i++) {
             $product = Product::where("id", "=", $productsFromOrder[$i]->product_id)->first();
@@ -236,14 +367,22 @@ class CheckoutController extends Controller
         }
 
         // Send mail to notify customer has placed order successfully
-        $this->mail($customer, $order, $productsInOrder);
+        $subject = 'Đặt hàng thành công';
+        $title = "Quý khách đã đặt hàng thành công";
+        $text = "Đơn hàng sẽ được giao đến cho quý khách sớm nhất có thể.";
+        $this->mail($customer, $order, $productsInOrder, $title, $text, $subject);
 
-        if (empty($detach)) {
-            return response()->json([
-                "success" => false,
-                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
-            ]);
+        // Send mail to admin to notify there was new order has been made
+        $superAdminEmail = Admin::where("level", "=", 0)->first();
+        $subject_notify = "Một đơn hàng mới được tạo.";
+        if ($order->paid_type === 0) {
+            $title_notify = "Một đơn hàng mới được tạo bởi người dùng.";
         }
+        else {
+            $title_notify = "Một đơn hàng thanh toán bằng hình momo vừa được tạo.";
+        }
+        $text_notify = "Vui lòng kiểm tra thông tin thật kĩ càng và nhanh chóng tiến hành gửi cho đơn vị vận chuyển sớm nhất có thể.";
+        $this->mailNotifyAdmin($superAdminEmail, $order, $productsInOrder, $title_notify, $text_notify, $subject_notify);
 
         return response()->json([
             "success" => true,
@@ -337,8 +476,6 @@ class CheckoutController extends Controller
 
         $arr = [];
         $total_price = 0;
-        $voucher_data = $query->first();
-        $voucher_sale_value = $voucher_data->percent ?? 0;
 
         for ($i = 0; $i < sizeof($data); $i++) {
             $value = Product::where("id", "=", $data[$i]->product_id)->first();
@@ -352,17 +489,40 @@ class CheckoutController extends Controller
             $total_price = $total_price + (($value->price - $sale_price) * $data[$i]->quantity);
         }
 
+        $voucher_data = $query->first();
+        $voucher_sale_value = $voucher_data->percent ?? 0;
+
         $orderCount = Order::where("customer_id", "=", $customer->id)->get()->count();
 
         $id_delivery = $this->generateDeliveryCode($request->paidType);
+
+        // Create expected_delivery_time
+        $day = date("d");
+        $month = date("m");
+        $year = date("Y");
+        $time = date("H:i:s");
+
+        // Check if current date is follow the rule of calendar
+        if ($day === 31 || $day === 30 || $day === 28 || $day === 29) {
+            $month = (int) $month + 1;
+            $day = "07";
+        } else {
+            $day = (int) $day + 7;
+        }
 
         $filtered = $request->except("voucherCode", "nameReceiver", "phoneReceiver", "paidType");
         $filtered['date_order'] = date("Y-m-d H:i:s");
         $filtered['voucher_id'] = $voucher_data->id ?? null;
         $filtered["customer_id"] = $customer->id;
-        $filtered["total_price"] = $total_price - (($total_price * $voucher_sale_value) / 100);
+        $filtered["expected_delivery_time"] = $year . "-" . $month . "-" . $day . " " . $time;
+        $filtered["total_price"] = ceil($total_price - (($total_price * $voucher_sale_value) / 100));
 
+        // Create expired date for voucher which next month after voucher is created
         $filtered['id_delivery'] = $id_delivery;
+
+        if ((int)$filtered['paid_type'] === 1 || (int)$filtered['paid_type'] === 2) {
+            $filtered['status'] = 1;
+        }
 
         /** MOMO fucntion */
         $ordesFromCustomer = Order::where('customer_id', "=", $customer->id)->get()->count();
@@ -392,6 +552,9 @@ class CheckoutController extends Controller
             ]);
         }
 
+        // Detach data from intermediate table (customer_product_cart)
+        $customer->customer_product_cart()->detach();
+
         $order = Order::find($check->id);
 
         // check order has been created or not
@@ -411,7 +574,8 @@ class CheckoutController extends Controller
                 "order_id" => $order->id,
                 "partner_code" => $momo['data']['partnerCode'],
                 "status" => 0,
-                "signature" => $momo['data']['signature']
+                "signature" => $momo['data']['signature'],
+                "pay_url" => $momo['link']['payUrl']
             ];
 
             $result = Momo::create($data);
@@ -420,6 +584,14 @@ class CheckoutController extends Controller
                 return response()->json([
                     "success" => false,
                     "erorrs" => "Đã có lỗi xảy ra trong quá trình vận hành (lần 3) !!"
+                ]);
+            }
+
+            for ($i = 0; $i < sizeof($arr); $i++) {
+                $productId = Product::find($arr[$i]['product_id']);
+                $order->products_temp()->attach($productId, [
+                    "order_id" => $order->id,
+                    "quantity" => $arr[$i]['quantity'],
                 ]);
             }
 

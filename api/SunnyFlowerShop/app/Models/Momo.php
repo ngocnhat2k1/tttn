@@ -16,7 +16,8 @@ class Momo extends Model
         "trans_id",
         "pay_type",
         "status",
-        "signature"
+        "signature",
+        "pay_url"
     ];
 
     protected $table = "momo";

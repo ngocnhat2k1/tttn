@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CategoryListResource;
 use App\Http\Resources\V1\ProductDetailResource;
 use App\Http\Resources\V1\ProductListCollection;
+use App\Http\Resources\V1\VoucherDetailResource;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -441,6 +443,18 @@ class ProductQueryController extends Controller
         $categories = Category::all();
 
         return CategoryListResource::collection($categories);
+    }
+
+    public function showVoucher() {
+        $query = Voucher::where("show", "=", 1);
+
+        return !$query->exists() ? [
+            "success" => false,
+            "message" => "Hiện cửa hàng chưa có mã giảm giá đặc biệt."
+        ] : [
+            "success" => true,
+            "data" => new VoucherDetailResource($query->first())
+        ];
     }
 
     // View all feedback attach selected product

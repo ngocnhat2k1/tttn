@@ -2,29 +2,163 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentDisplayEnum;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\Delete\DeleteCustomerRequest;
 use App\Http\Requests\Customer\Get\GetCustomerBasicRequest;
 use App\Http\Resources\V1\OrderListCollection;
 use App\Http\Resources\V1\ProductDetailResource;
+use App\Models\Momo;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
+    private $shopId = '120932';
+    private $token = '7f4667c9-756e-11ed-a83f-5a63c54f968d';
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
 
+    // Paginator
+    public function paginator($arr, $request, $page)
+    {
+        $total = count($arr);
+        $per_page = $page;
+        $current_page = $request->input("page") ?? 1;
+
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $arr = array_slice($arr, $starting_point, $per_page, true);
+
+        $arr = new LengthAwarePaginator($arr, $total, $per_page, $current_page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
+
+        return $arr;
+    }
+
+    // Checking order status in GiaoHangNhanh site
+    public function getOrderStatus($state)
+    {
+        switch ($state) {
+                // Picking state
+            case 'ready_to_pick':
+            case 'picking':
+                $state = "ready_to_pick";
+                break;
+
+                // Picked State
+            case 'picked ':
+                $state = "picked";
+                break;
+
+                // Delivering State
+            case 'delivering':
+            case 'transporting':
+            case 'money_collect_picking':
+            case 'storing':
+            case 'sorting':
+            case 'money_collect_delivering':
+                $state = "delivering";
+                break;
+
+                // Cancel State
+            case 'cancel':
+                $state = "cancel";
+                break;
+
+                // Return/ Damage/ Lost/ Processing State
+            case 'return':
+            case 'return_transporting':
+            case 'return_sorting':
+            case 'returning':
+            case 'return_fail':
+            case 'returned':
+            case 'exception':
+            case 'damage':
+            case 'lost':
+            case 'delivered':
+            case 'delivery_fail':
+            case 'waiting_to_return':
+                $state = "processing";
+
+            default:
+                return;
+        }
+
+        return $state;
+    }
+
+    /**  Use for refresh order status */
+    public function refreshState($order)
+    {
+        if (empty($order->order_code)) return;
+
+        $response = Http::withHeaders([
+            'ShopId' => $this->shopId,
+            'Token' => $this->token
+        ])
+            ->accept('application/json')
+            ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
+                "order_code" => $order->order_code
+            ]);
+
+        // Handle errors
+        if ($response->failed()) {
+            return json_decode($response);
+        }
+
+        // $arr[$index] = $response['data'];
+        // $index++;
+
+        $state = $this->getOrderStatus($response['data']['status']);
+
+        $order->status = (int) OrderStatusEnum::getStatusAttributeReverse($state);
+        $order->save();
+    }
+
+    /** Use for refresh all orders status */
+    public function refreshAllStateOrder($orders)
+    {
+        for ($i = 0; $i < sizeof($orders); $i++) {
+            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
+
+            $response = Http::withHeaders([
+                'ShopId' => $this->shopId,
+                'Token' => $this->token
+            ])
+                ->accept('application/json')
+                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
+                    "order_code" => $orders[$i]->order_code
+                ]);
+
+            // Handle errors
+            if ($response->failed()) {
+                return json_decode($response);
+            }
+
+            // $arr[$index] = $response['data'];
+            // $index++;
+            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
+            $orders[$i]->save();
+        }
+    }
+
     public function index(GetCustomerBasicRequest $request)
     {
-        $data = Order::where("customer_id", "=", $request->user()->id)->orderBy("created_at", "DESC");
-        $count = $data->get()->count();
+        $data = Order::where("customer_id", "=", $request->user()->id)->orderBy("created_at", "DESC")->get();
+        $count = $data->count();
 
         if (empty($count)) {
             return response()->json([
@@ -32,8 +166,33 @@ class OrderController extends Controller
                 "errors" => "Danh sách đơn hàng hiện đang trống."
             ]);
         }
+        $this->refreshAllStateOrder($data);
 
-        return new OrderListCollection($data->paginate(12));
+        $arr = [];
+
+        for ($i = 0; $i < sizeof($data); $i++) {
+            $arr[$i]['id'] = $data[$i]->id;
+            $arr[$i]['customerId'] = $data[$i]->customer_id;
+            $arr[$i]['idDelivery'] = $data[$i]->id_delivery;
+            $arr[$i]['dateOrder'] = $data[$i]->date_order;
+            $arr[$i]['address'] = $data[$i]->street . ", " . $data[$i]->ward . ", " . $data[$i]->district . ", " . $data[$i]->province . ", Việt Nam";
+            $arr[$i]['nameReceiver'] = $data[$i]->name_receiver;
+            $arr[$i]['totalPrice'] = $data[$i]->total_price;
+            $arr[$i]['phoneReceiver'] = $data[$i]->phone_receiver;
+            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
+            $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($data[$i]->status);
+
+            $momo = Momo::where("order_id", "=", $data[$i]->id)
+                ->where("status", "<>", -1);
+
+            if ($momo->exists()) {
+                $arr[$i]['payUrl'] = $momo->first()->pay_url;
+            } else {
+                $arr[$i]['payUrl'] = null;
+            }
+        }
+
+        return $this->paginator($arr, $request, 12);
 
         // return response()->json([
         //     "success" => true,
@@ -104,6 +263,19 @@ class OrderController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
+        if ($data->status < 6) {
+            $this->refreshState($data);
+        }
+
+        $momo = Momo::where("order_id", "=", $data->id)
+            ->where("status", "<>", -1);
+
+        if ($momo->exists()) {
+            $data['payUrl'] = $momo->first()->pay_url;
+        } else {
+            $data['payUrl'] = null;
+        }
+
         return response()->json([
             "success" => true,
             "data" => [
@@ -120,13 +292,13 @@ class OrderController extends Controller
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
                     "dateOrder" => $data->date_order,
-                    "address" => $data->address,
+                    "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,
                     "totalPrice" => $data->total_price,
-                    "status" => $data->status,
-                    "paidType" => $data->paid_type,
-                    "deleted_by" => $data->deleted_by,
+                    "status" => OrderStatusEnum::getStatusAttribute($data->status),
+                    "paidType" => PaymentDisplayEnum::getPaymentDisplayAttribute($data->paid_type),
+                    "payUrl" => $data->payUrl,
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
@@ -142,7 +314,6 @@ class OrderController extends Controller
         // Check Order isExists
         $query = Order::where("orders.id_delivery", "=", $request->id)
             ->where("customer_id", "=", $request->user()->id);
-
 
         if (!$query->exists()) {
             return response()->json([
@@ -189,6 +360,19 @@ class OrderController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
+        if ($data->status < 6) {
+            $this->refreshState($data);
+        }
+
+        $momo = Momo::where("order_id", "=", $data->id)
+            ->where("status", "<>", -1);
+
+        if ($momo->exists()) {
+            $data['payUrl'] = $momo->first()->pay_url;
+        } else {
+            $data['payUrl'] = null;
+        }
+
         return response()->json([
             "success" => true,
             "data" => [
@@ -205,13 +389,13 @@ class OrderController extends Controller
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
                     "dateOrder" => $data->date_order,
-                    "address" => $data->address,
+                    "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,
                     "totalPrice" => $data->total_price,
-                    "status" => $data->status,
-                    "paidType" => $data->paid_type,
-                    "deleted_by" => $data->deleted_by,
+                    "status" => OrderStatusEnum::getStatusAttribute($data->status),
+                    "paidType" => PaymentDisplayEnum::getPaymentDisplayAttribute($data->paid_type),
+                    "payUrl" => $data->payUrl,
                     "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                     "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s"),
                 ],
@@ -230,7 +414,7 @@ class OrderController extends Controller
     {
         // $customer = Customer::find($request->user()->id);
 
-        $query = Order::where("id", "=", $request->id)
+        $query = Order::where("id_delivery", "=", $request->idDelivery)
             ->where("customer_id", "=", $request->user()->id);
 
         if (!$query->exists()) {
@@ -242,7 +426,7 @@ class OrderController extends Controller
 
         $order = $query->first();
 
-        if ($order->deleted_by !== null) {
+        if ($order->status === -1) {
             return response()->json([
                 "success" => false,
                 "errors" => "Đơn hàng đã bị hủy."
@@ -250,7 +434,7 @@ class OrderController extends Controller
         }
 
         // This function cancel by customer so value will be 0
-        $order->deleted_by = 0;
+        $order->status = -1;
 
         $result = $order->save();
 
@@ -264,7 +448,7 @@ class OrderController extends Controller
         return response()->json(
             [
                 'success' => true,
-                'message' => "Thành công việc hủy Đơn hàng với ID = " . $query->first()->id_delivery
+                'message' => "Thành công việc hủy Đơn hàng với ID = " . $request->idDelivery
             ]
         );
     }
@@ -285,7 +469,7 @@ class OrderController extends Controller
         $order = $query->first();
 
         // We only allow customer to change Order Status to Completed state
-        if ($order->status === 2) {
+        if ($order->status == 6) {
             return response()->json([
                 "success" => false,
                 "errors" => "Đơn hàng này đã được chuyển sang trạng thái hoàn tất."
@@ -302,7 +486,7 @@ class OrderController extends Controller
             ]);
         }
 
-        $order->status = 2;
+        $order->status = 6;
         // $order_detach = Order::find($request->id); // Create this to only
 
         // Descrease Product Quantity
