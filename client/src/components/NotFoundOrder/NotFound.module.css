@@ -1,0 +1,18 @@
+.errorWrapper h1 {
+    font-weight: 200;
+    font-size: 200px;
+    text-shadow: 2px 8px 5px rgb(247 152 55 / 28%);
+    font-style: italic;
+    line-height: 165px;
+    margin: 0;
+}
+
+.errorWrapper h3 {
+    padding-bottom: 30px;
+    padding-top: 30px;
+    margin: 0;
+}
+
+.errorWrapper a {
+    margin-top: 30px;
+}

@@ -39,7 +39,7 @@ function ListOrder() {
                         </td>
                         <td>{formatter.format(order.totalPrice)}</td>
                         <td className={styles.action}>
-                            <Link className={styles.view} to={`/order-detail/${order.id}`}>View</Link>
+                            <Link className={styles.view} to={`/order-detail/${order.idDelivery}`}>View</Link>
                         </td>
                     </tr>
                 )

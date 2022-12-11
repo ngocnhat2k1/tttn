@@ -20,6 +20,7 @@ import DetailProduct from "./components/ShopMainArea/DetailProduct/DetailProduct
 import CheckoutOrderPage from "./pages/CheckoutOrderPage";
 import OrderCompleteArea from "./components/OrderCompleteArea";
 import OrderDetail from "./pages/OrderDetail";
+import OrderTracking from "./pages/OrderTracking";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/order-complete" element={<OrderComplete />} />
+            <Route path="/order-tracking" element={<OrderTracking />} />
             <Route path="/account-edit" element={<AccountEdit />} />
             <Route path="/address-create" element={<AddressCreate />} />
             <Route path="/address-edit" element={<NotFound />} />
