@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import { useParams, Link } from "react-router-dom"
 import { FaQuestionCircle, FaTimesCircle, FaRegCheckCircle } from "react-icons/fa"
 import { formatter } from '../../utils/utils'
+import NotFoundOrder from '../NotFoundOrder'
 
 function OrderDetailArea() {
 
@@ -16,7 +17,7 @@ function OrderDetailArea() {
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState('');
     const [order, setOrder] = useState('')
-    const [check, setCheck] = useState(0);
+    const [check, setCheck] = useState('');
     const [totalProduct, setTotalProduct] = useState(0);
     const [couter, setCouter] = useState(0);
 
@@ -66,7 +67,7 @@ function OrderDetailArea() {
 
     useEffect(() => {
         axios
-            .get(`http://127.0.0.1:8000/api/user/order/${id}`, {
+            .get(`http://127.0.0.1:8000/api/user/order/idDelivery/${id}`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -75,6 +76,8 @@ function OrderDetailArea() {
                 if (response.data.success) {
                     setOrder(response.data.data);
                     setCheck(1);
+                } else {
+                    setCheck(0);
                 }
             })
             .catch(error => {
@@ -101,7 +104,6 @@ function OrderDetailArea() {
                 }
             })
             .then(response => {
-                console.log(response.data)
                 if (response.data.success) {
                     setMessage(response.data.message);
                 } else {
@@ -133,10 +135,12 @@ function OrderDetailArea() {
             })
     }
 
-    console.log(order);
-
     return (
-        <>{check > 0 &&
+        <>
+        {
+            check === 0 && <NotFoundOrder id={id}/>
+        }
+        {check === 1 &&
             <div className={styles.detailArea}>
                 <div className={styles.backBtn}>
                     <Link to="/my-account/customer-order" className='theme-btn-one btn-black-overlay btn_sm'>
@@ -252,7 +256,6 @@ function OrderDetailArea() {
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    {console.log(order.order.id)}
                                                     {order.order.status === 1 && <button type="button" className='theme-btn-one btn-blue-overlay btn_sm' onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button>}
                                                     {order.order.status === 0 && <button type="button" className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={() => toggleModal(order.order.id)}>HỦY ĐƠN HÀNG</button>}
                                                 </td>
