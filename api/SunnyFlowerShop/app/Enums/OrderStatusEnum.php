@@ -30,7 +30,7 @@ final class OrderStatusEnum extends Enum
       "Đơn hàng đang chờ xử lý." => self::pending,
       "Đơn hàng đang chờ thanh toán." => self::payment,
       "Đơn hàng đang gửi cho đơn vị vận chuyển." => self::ready_to_pick,
-      "Đơn hàng đang giao." => self::picked,
+      "Đơn vị vận chuyển đã nhận đơn hàng." => self::picked,
       "Đơn hàng đang được giao." => self::delivering,
       "Đơn hàng được giao thành công." => self::delivered,
       "Đã nhận hàng." => self::completed,

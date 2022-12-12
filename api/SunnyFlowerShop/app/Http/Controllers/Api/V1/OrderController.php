@@ -59,7 +59,7 @@ class OrderController extends Controller
                 break;
 
                 // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
 
@@ -92,6 +92,7 @@ class OrderController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;
@@ -101,7 +102,7 @@ class OrderController extends Controller
     }
 
     /**  Use for refresh order status */
-    public function refreshState($order)
+    public function refreshStateOrder($order)
     {
         if (empty($order->order_code)) return;
 
@@ -128,33 +129,6 @@ class OrderController extends Controller
         $order->save();
     }
 
-    /** Use for refresh all orders status */
-    public function refreshAllStateOrder($orders)
-    {
-        for ($i = 0; $i < sizeof($orders); $i++) {
-            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
-
-            $response = Http::withHeaders([
-                'ShopId' => $this->shopId,
-                'Token' => $this->token
-            ])
-                ->accept('application/json')
-                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
-                    "order_code" => $orders[$i]->order_code
-                ]);
-
-            // Handle errors
-            if ($response->failed()) {
-                return json_decode($response);
-            }
-
-            // $arr[$index] = $response['data'];
-            // $index++;
-            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
-            $orders[$i]->save();
-        }
-    }
-
     public function index(GetCustomerBasicRequest $request)
     {
         $data = Order::where("customer_id", "=", $request->user()->id)->orderBy("created_at", "DESC")->get();
@@ -166,7 +140,6 @@ class OrderController extends Controller
                 "errors" => "Danh sách đơn hàng hiện đang trống."
             ]);
         }
-        $this->refreshAllStateOrder($data);
 
         $arr = [];
 
@@ -189,8 +162,13 @@ class OrderController extends Controller
             $arr[$i]['nameReceiver'] = $data[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $data[$i]->total_price;
             $arr[$i]['phoneReceiver'] = $data[$i]->phone_receiver;
-            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
+            
+            if ($data[$i]->status < 6) {
+                $this->refreshStateOrder($data[$i]);
+            }
+            
             $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($data[$i]->status);
+            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
 
             $momo = Momo::where("order_id", "=", $data[$i]->id)
                 ->where("status", "<>", -1);
@@ -238,7 +216,7 @@ class OrderController extends Controller
         $data = $query->first();
 
         if ($data->status < 6) {
-            $this->refreshState($data);
+            $this->refreshStateOrder($data);
         }
 
         if ($data->voucher_id !== null) {
@@ -336,7 +314,7 @@ class OrderController extends Controller
         $data = $query->first();
 
         if ($data->status < 6) {
-            $this->refreshState($data);
+            $this->refreshStateOrder($data);
         }
 
         if ($data->voucher_id !== null) {

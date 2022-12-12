@@ -54,7 +54,7 @@ class OrderAdminController extends Controller
                 break;
 
             // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
             
@@ -87,6 +87,7 @@ class OrderAdminController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;

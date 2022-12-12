@@ -56,7 +56,7 @@ class OrderCustomerController extends Controller
                 break;
 
             // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
             
@@ -89,6 +89,7 @@ class OrderCustomerController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;
@@ -125,33 +126,6 @@ class OrderCustomerController extends Controller
         $order->save();
     }
 
-    /** Use for refresh all orders status */
-    public function refreshAllStateOrder($orders)
-    {
-        for ($i = 0; $i < sizeof($orders); $i++) {
-            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
-
-            $response = Http::withHeaders([
-                'ShopId' => $this->shopId,
-                'Token' => $this->token
-            ])
-                ->accept('application/json')
-                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
-                    "order_code" => $orders[$i]->order_code
-                ]);
-
-            // Handle errors
-            if ($response->failed()) {
-                return json_decode($response);
-            }
-
-            // $arr[$index] = $response['data'];
-            // $index++;
-            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
-            $orders[$i]->save();
-        }
-    }
-
     /** Main Functions */
     public function index(GetAdminBasicRequest $request, Customer $customer)
     {
@@ -178,6 +152,11 @@ class OrderCustomerController extends Controller
             $arr[$i]['nameReceiver'] = $order[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $order[$i]->total_price;
             $arr[$i]['phoneReceiver'] = $order[$i]->phone_receiver;
+
+            if ($order[$i]->status < 6) {
+                $this->refreshStateOrder($order[$i]);
+            }
+
             $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($order[$i]->paid_type);
             $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($order[$i]->status);
         }
