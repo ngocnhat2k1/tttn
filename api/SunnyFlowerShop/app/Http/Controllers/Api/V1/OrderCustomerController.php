@@ -172,6 +172,7 @@ class OrderCustomerController extends Controller
             $arr[$i]['id'] = $order[$i]->id;
             $arr[$i]['customerId'] = $order[$i]->customer_id;
             $arr[$i]['idDelivery'] = $order[$i]->id_delivery;
+            $arr[$i]['orderCode'] = $order[$i]->order_code;
             $arr[$i]['dateOrder'] = $order[$i]->date_order;
             $arr[$i]['address'] = $order[$i]->street . ", " . $order[$i]->ward . ", " . $order[$i]->district . ", " . $order[$i]->province . ", Việt Nam";
             $arr[$i]['nameReceiver'] = $order[$i]->name_receiver;
@@ -203,6 +204,10 @@ class OrderCustomerController extends Controller
         }
 
         $data = $query->first();
+
+        if ($data->status < 6) {
+            $this->refreshState($data);
+        }
 
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
@@ -240,10 +245,6 @@ class OrderCustomerController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        if ($data->status < 6) {
-            $this->refreshState($data);
-        }
-
         return response()->json([
             "success" => true,
             "data" => [
@@ -259,6 +260,7 @@ class OrderCustomerController extends Controller
                 "order" => [
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
+                    "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
