@@ -81,16 +81,10 @@ function LoginArea() {
                                         className="FormInput"
                                         type="password"
                                         placeholder="Mật khẩu"
-                                        {...register("password", { required: true, minLength: 3, maxLength: 24 })}
+                                        {...register("password", { required: true })}
                                     />
                                     {errors.password && errors.password.type === "required" && (
                                         <p className="checkInput">Mật khẩu không được để trống</p>
-                                    )}
-                                    {errors.password && errors.password.type === "minLength" && (
-                                        <p className="checkInput">Mật khẩu phải có ít nhất 3 ký tự</p>
-                                    )}
-                                    {errors.password && errors.password.type === "maxLength" && (
-                                        <p className="checkInput">Mật khẩu chỉ được tối đa 24 ký tự</p>
                                     )}
                                 </div>
                                 <div className={styles.loginSubmit}>

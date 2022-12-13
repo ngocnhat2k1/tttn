@@ -5,8 +5,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CommonBanner from '../components/CommonBanner';
 import WishlistArea from '../components/WishlistArea';
 import Cookies from 'js-cookie'
+import { useNavigate } from 'react-router-dom';
 
 function Wishlist() {
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -17,7 +19,7 @@ function Wishlist() {
       })
       .then((response) => {
         if (!response.data.success) {
-          window.location.href = 'http://localhost:3000/login';
+          navigate('/login')
         }
       })
       .catch(function (error) {

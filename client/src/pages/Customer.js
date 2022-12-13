@@ -5,8 +5,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CommonBanner from '../components/CommonBanner';
 import MyAccountArea from '../components/MyAccountArea';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Customer() {
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -17,7 +20,7 @@ function Customer() {
       })
       .then((response) => {
         if (!response.data.success) {
-          window.location.href = 'http://localhost:3000/login';
+          navigate('/login')
         }
       })
       .catch(function (error) {

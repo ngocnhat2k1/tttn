@@ -7,10 +7,10 @@ function TopHeaderRightDefault() {
         <div className={styles.divRight}>
             <ul className={styles.rightList}>
                 <li>
-                    <Link to="/login"><FaUser fontSize={12} /> Login</Link>
+                    <Link to="/login"><FaUser fontSize={12} /> Đăng nhập</Link>
                 </li>
                 <li>
-                    <Link to="/register"><FaLock fontSize={12} /> Register</Link>
+                    <Link to="/register"><FaLock fontSize={12} /> Đăng ký</Link>
                 </li>
             </ul>
         </div>
