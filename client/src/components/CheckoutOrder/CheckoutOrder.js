@@ -68,7 +68,10 @@ const CheckoutOrder = () => {
             phoneReceiver: phoneReceiver,
             nameReceiver: nameReceiver,
             voucherCode: voucherId,
-            address: street + ', ' + selectedWard.label + ', ' + selectedDistrict.label + ', ' + selectedCity.label,
+            province: selectedCity.label,
+            district: selectedDistrict.label,
+            ward: selectedWard.label,
+            street: street,
             paidType: 0
         }
         console.log(payload)

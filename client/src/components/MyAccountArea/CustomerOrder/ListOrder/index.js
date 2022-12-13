@@ -33,9 +33,10 @@ function ListOrder() {
                         <td>{order.dateOrder}</td>
                         <td>{order.nameReceiver}</td>
                         <td className={styles.status}>
-                            <span className={`${styles.badge}
-                        ${order.deletedBy !== null ? styles.badgeCanceled : order.status === 0 ? styles.badgePending : order.status === 1 ? styles.badgeConfirm : styles.badgeCompleted}`}>
-                                {order.deletedBy !== null ? 'Đã hủy' : order.status === 0 ? 'Đang chờ' : order.status === 1 ? 'Đã xác nhận' : 'Đã hoàn thành'}</span>
+
+
+                            {order.status}
+
                         </td>
                         <td>{formatter.format(order.totalPrice)}</td>
                         <td className={styles.action}>

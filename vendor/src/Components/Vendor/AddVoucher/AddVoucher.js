@@ -44,14 +44,14 @@ const AddVoucher = () => {
                             <Row>
                                 <Col lg={12}>
                                     <div className='add_product_wrapper'>
-                                        <h4>Add Voucher</h4>
+                                        <h4>Thêm mã giảm giá</h4>
                                         <form className='add_product_form'
                                             onSubmit={handleSubmit(onSubmit)}>
                                             <Row>
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="voucher_name">Voucher Name</label>
+                                                        <label htmlFor="voucher_name">Mã giảm giá</label>
                                                         <input
                                                             id='voucher_name'
                                                             type="text"
@@ -64,7 +64,7 @@ const AddVoucher = () => {
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="percent_sale">Percent Sale</label>
+                                                        <label htmlFor="percent_sale">Phần trăm giảm giá</label>
                                                         <input
                                                             id='percent_sale'
                                                             type="number"
@@ -77,7 +77,7 @@ const AddVoucher = () => {
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="usage">Voucher Usage</label>
+                                                        <label htmlFor="usage">Lựot sử dụng</label>
                                                         <input
                                                             id='usage'
                                                             type="number"
@@ -90,7 +90,7 @@ const AddVoucher = () => {
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="expiredDate">Expired Date</label>
+                                                        <label htmlFor="expiredDate">Ngày Hết Hạn</label>
                                                         <input
                                                             id='expiredDate'
                                                             type="datetime-local"
@@ -105,7 +105,7 @@ const AddVoucher = () => {
                                                     <div className='vendor_order_boxed position-relative'>
                                                         <div className='btn_right_table'>
                                                             <button type='submit' className="theme-btn-one bg-black btn_sm">
-                                                                Add Product
+                                                                Thêm mã giảm giá
                                                             </button>
                                                         </div>
                                                     </div>

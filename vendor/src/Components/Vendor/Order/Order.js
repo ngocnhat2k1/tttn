@@ -88,12 +88,12 @@ const Order = () => {
                                                 <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>{data.page + 1}</Link>
                                             </li>}
                                             {data.page - 3 === 0 && <li className={styles.pageItem}><Link to={`?page=${data.page + 2}`} className={styles.pageLink}>{data.page + 2}</Link></li>}
-                                            {/* {data.page !== data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
+                                            {data.page !== data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
                                                 <Link className={styles.pageLink}>...</Link>
-                                            </li>} */}
-                                            {/* {data.page !== data.lastPage && <li className={styles.pageItem}>
+                                            </li>}
+                                            {data.page !== data.lastPage && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.lastPage}`} className={styles.pageLink}>{data.lastPage}</Link>
-                                            </li>} */}
+                                            </li>}
                                             {data.page !== data.lastPage && <li className={styles.pageItem}>
                                                 <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>»</Link>
                                             </li>}

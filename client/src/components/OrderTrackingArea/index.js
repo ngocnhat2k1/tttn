@@ -19,7 +19,7 @@ function OrderTrackingArea() {
     }
 
     return (
-        <section id='order_tracking' className='ptb-100'>
+        <section id='order_tracking' className='ptb100'>
             <Container>
                 <Row>
                     <Col lg={{ span: 6, offset: 3 }}>
@@ -35,7 +35,7 @@ function OrderTrackingArea() {
                                         placeholder='Nhập mã đơn hàng của bạn'
                                         {...register("order_ID", { required: true })}
                                     />
-                                     {errors.order_ID && errors.order_ID.type === "required" && (
+                                    {errors.order_ID && errors.order_ID.type === "required" && (
                                         <p className="checkInput">Mã đơn hàng không được để trống</p>
                                     )}
                                 </div>

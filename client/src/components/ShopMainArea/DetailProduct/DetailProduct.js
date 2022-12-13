@@ -111,6 +111,7 @@ const DetailProduct = () => {
             productId: productId,
             quantity: quantityPurchased
         }
+        console.log(payload)
         axios
             .get(`http://localhost:8000/api/retrieveToken`, {
                 headers: {
@@ -120,7 +121,7 @@ const DetailProduct = () => {
             .then((response) => {
                 if (response.data.success) {
                     axios
-                        .post(`http://127.0.0.1:8000/api/user/cart/add`, payload, {
+                        .put(`http://127.0.0.1:8000/api/user/cart/update`, payload, {
                             headers: {
                                 Authorization: `Bearer ${Cookies.get('token')}`,
                             },

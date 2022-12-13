@@ -146,7 +146,7 @@ class OrderController extends Controller
         for ($i = 0; $i < sizeof($data); $i++) {
             $arr[$i]['id'] = $data[$i]->id;
             $arr[$i]['customerId'] = $data[$i]->customer_id;
-            
+
             if ($data[$i]->voucher_id !== null) {
                 $voucher_code = Voucher::find($data[$i]->voucher_id)->name;
             }
@@ -157,16 +157,17 @@ class OrderController extends Controller
             $arr[$i]['voucherCode'] = $voucher_code;
             $arr[$i]['idDelivery'] = $data[$i]->id_delivery;
             $arr[$i]['orderCode'] = $data[$i]->order_code;
+            $arr[$i]['expectedDeliveryTime'] = date("Y-m-d", strtotime($data[$i]->expected_delivery_time));
             $arr[$i]['dateOrder'] = $data[$i]->date_order;
             $arr[$i]['address'] = $data[$i]->street . ", " . $data[$i]->ward . ", " . $data[$i]->district . ", " . $data[$i]->province . ", Việt Nam";
             $arr[$i]['nameReceiver'] = $data[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $data[$i]->total_price;
             $arr[$i]['phoneReceiver'] = $data[$i]->phone_receiver;
-            
+
             if ($data[$i]->status < 6) {
                 $this->refreshStateOrder($data[$i]);
             }
-            
+
             $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($data[$i]->status);
             $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
 
@@ -281,6 +282,7 @@ class OrderController extends Controller
                     "idDelivery" => $data->id_delivery,
                     "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
+                    "expectedDeliveryTime" => date("Y-m-d", strtotime($data->expected_delivery_time)),
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,
@@ -379,6 +381,7 @@ class OrderController extends Controller
                     "idDelivery" => $data->id_delivery,
                     "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
+                    "expectedDeliveryTime" => date("Y-m-d", strtotime($data->expected_delivery_time)),
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,
