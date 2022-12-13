@@ -10,7 +10,8 @@ body.active-modal {
 } */
 
 .modal,
-.overlay {
+.overlay,
+.modalDetailProduct {
     width: 100vw;
     height: 100vh;
     top: 0;
@@ -106,6 +107,22 @@ body.active-modal {
     max-width: 9000px;
     min-width: 700px;
     height: 350px;
+}
+
+.modalQuickViewDetailProduct {
+    margin: 0 50px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 20px 20px;
+    border-radius: 3px;
+    max-width: 9000px;
+    min-width: 700px;
+    max-height: 400px;
+    min-height: 300px;
 }
 
 .btnSvg {

@@ -117,7 +117,7 @@ function ModalDetailProduct({ productId }) {
             {modal && (
                 <div className="modal">
                     <div onClick={closeModal} className="overlay"></div>
-                    <div className='modal-quickview'>
+                    <div className='modalQuickViewDetailProduct'>
                         <Row>
                             <Col lg={5} md={6} sm={12} xs={12}>
                                 <div>

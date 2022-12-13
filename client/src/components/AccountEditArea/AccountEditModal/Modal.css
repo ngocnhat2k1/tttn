@@ -32,10 +32,10 @@ body.active-modal {
     transform: translate(-50%, -50%);
     line-height: 1.4;
     background: #f1f1f1;
-    padding: 25px 50px;
+    padding: 25px 30px;
     border-radius: 3px;
-    max-width: 600px;
-    min-width: 300px;
+    max-width: 650px;
+    min-width: 400px;
 }
 
 .close-modal {
