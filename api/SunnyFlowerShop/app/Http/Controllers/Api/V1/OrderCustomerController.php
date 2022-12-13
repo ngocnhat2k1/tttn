@@ -56,7 +56,7 @@ class OrderCustomerController extends Controller
                 break;
 
             // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
             
@@ -89,6 +89,7 @@ class OrderCustomerController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;
@@ -125,33 +126,6 @@ class OrderCustomerController extends Controller
         $order->save();
     }
 
-    /** Use for refresh all orders status */
-    public function refreshAllStateOrder($orders)
-    {
-        for ($i = 0; $i < sizeof($orders); $i++) {
-            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
-
-            $response = Http::withHeaders([
-                'ShopId' => $this->shopId,
-                'Token' => $this->token
-            ])
-                ->accept('application/json')
-                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
-                    "order_code" => $orders[$i]->order_code
-                ]);
-
-            // Handle errors
-            if ($response->failed()) {
-                return json_decode($response);
-            }
-
-            // $arr[$index] = $response['data'];
-            // $index++;
-            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
-            $orders[$i]->save();
-        }
-    }
-
     /** Main Functions */
     public function index(GetAdminBasicRequest $request, Customer $customer)
     {
@@ -172,11 +146,17 @@ class OrderCustomerController extends Controller
             $arr[$i]['id'] = $order[$i]->id;
             $arr[$i]['customerId'] = $order[$i]->customer_id;
             $arr[$i]['idDelivery'] = $order[$i]->id_delivery;
+            $arr[$i]['orderCode'] = $order[$i]->order_code;
             $arr[$i]['dateOrder'] = $order[$i]->date_order;
             $arr[$i]['address'] = $order[$i]->street . ", " . $order[$i]->ward . ", " . $order[$i]->district . ", " . $order[$i]->province . ", Việt Nam";
             $arr[$i]['nameReceiver'] = $order[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $order[$i]->total_price;
             $arr[$i]['phoneReceiver'] = $order[$i]->phone_receiver;
+
+            if ($order[$i]->status < 6) {
+                $this->refreshStateOrder($order[$i]);
+            }
+
             $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($order[$i]->paid_type);
             $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($order[$i]->status);
         }
@@ -203,6 +183,10 @@ class OrderCustomerController extends Controller
         }
 
         $data = $query->first();
+
+        if ($data->status < 6) {
+            $this->refreshState($data);
+        }
 
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
@@ -240,10 +224,6 @@ class OrderCustomerController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        if ($data->status < 6) {
-            $this->refreshState($data);
-        }
-
         return response()->json([
             "success" => true,
             "data" => [
@@ -259,6 +239,7 @@ class OrderCustomerController extends Controller
                 "order" => [
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
+                    "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,

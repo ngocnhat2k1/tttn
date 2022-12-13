@@ -54,7 +54,7 @@ class OrderAdminController extends Controller
                 break;
 
             // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
             
@@ -87,6 +87,7 @@ class OrderAdminController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;
@@ -152,8 +153,16 @@ class OrderAdminController extends Controller
             $arr[$index]['lastName'] = $customer->last_name;
 
             // Order field
-            $arr[$index]['voucherId'] = $orders[$i]->voucher_id;
+            if ($orders[$i]->voucher_id !== null) {
+                $voucher_code = Voucher::find($orders[$i]->voucher_id)->name;
+            }
+            else {
+                $voucher_code = null;
+            }
+            
+            $arr[$index]['voucherCode'] = $voucher_code;
             $arr[$index]['idDelivery'] = $orders[$i]->id_delivery;
+            $arr[$index]['orderCode'] = $orders[$i]->order_code;
             $arr[$index]['address'] = $orders[$i]->street . ", " . $orders[$i]->ward . ", " . $orders[$i]->district . ", " . $orders[$i]->province . ", Việt Nam";
             $arr[$index]['nameReceiver'] = $orders[$i]->name_receiver;
             $arr[$index]['phoneReceiver'] = $orders[$i]->phone_receiver;
@@ -165,7 +174,7 @@ class OrderAdminController extends Controller
             }
 
             $arr[$index]['status'] = OrderStatusEnum::getStatusAttribute($orders[$i]->status);
-            $arr[$index]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($orders[$i]->status);
+            $arr[$index]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($orders[$i]->paid_type);
             $arr[$index]['createdAt'] = date_format($orders[$i]->created_at, "d/m/Y H:i:s");
             $arr[$index]['updatedAt'] = date_format($orders[$i]->updated_at, "d/m/Y H:i:s");
 
@@ -192,6 +201,11 @@ class OrderAdminController extends Controller
                     "errors" => "Đơn hàng có vài thông tin không hợp lệ, vui lòng kiểm tra lại trước khi cho phép hiển thị trên màn hình."
                 ]);
             }
+        }
+
+        // Confirm Order status to display it correctly
+        if ($order->status < 6) {
+            $this->refreshStateOrder($order);
         }
 
         if ($order->voucher_id !== null) {
@@ -221,11 +235,6 @@ class OrderAdminController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        // Confirm Order status to display it correctly
-        if ($order->status < 6) {
-            $this->refreshStateOrder($order);
-        }
-
         return response()->json([
             "success" => true,
             "data" => [
@@ -234,6 +243,7 @@ class OrderAdminController extends Controller
                     "voucher" => $order->voucher,
                     "orderId" => $order->id,
                     "idDelivery" => $order->id_delivery,
+                    "orderCode" => $order->order_code,
                     "dateOrder" => $order->date_order,
                     "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,
@@ -268,6 +278,12 @@ class OrderAdminController extends Controller
         }
 
         $order = $order_query->first();
+
+        // Confirm Order status to display it correctly
+        if ($order->status < 6) {
+            $this->refreshStateOrder($order);
+        }
+
         $customer_query = Customer::where("id", "=", $order->customer_id)->first();
 
         if ($order->voucher_id !== null) {
@@ -297,11 +313,6 @@ class OrderAdminController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        // Confirm Order status to display it correctly
-        if ($order->status < 6) {
-            $this->refreshStateOrder($order);
-        }
-
         return response()->json([
             "success" => true,
             "data" => [
@@ -310,6 +321,7 @@ class OrderAdminController extends Controller
                     "voucher" => $order->voucher,
                     "orderId" => $order->id,
                     "idDelivery" => $order->id_delivery,
+                    "orderCode" => $order->order_code,
                     "dateOrder" => $order->date_order,
                     "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,

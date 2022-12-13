@@ -59,7 +59,7 @@ class OrderController extends Controller
                 break;
 
                 // Picked State
-            case 'picked ':
+            case 'picked':
                 $state = "picked";
                 break;
 
@@ -92,6 +92,7 @@ class OrderController extends Controller
             case 'delivery_fail':
             case 'waiting_to_return':
                 $state = "processing";
+                break;
 
             default:
                 return;
@@ -101,7 +102,7 @@ class OrderController extends Controller
     }
 
     /**  Use for refresh order status */
-    public function refreshState($order)
+    public function refreshStateOrder($order)
     {
         if (empty($order->order_code)) return;
 
@@ -128,33 +129,6 @@ class OrderController extends Controller
         $order->save();
     }
 
-    /** Use for refresh all orders status */
-    public function refreshAllStateOrder($orders)
-    {
-        for ($i = 0; $i < sizeof($orders); $i++) {
-            if (empty($orders[$i]->order_code) || $orders[$i]->status === 6) continue;
-
-            $response = Http::withHeaders([
-                'ShopId' => $this->shopId,
-                'Token' => $this->token
-            ])
-                ->accept('application/json')
-                ->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', [
-                    "order_code" => $orders[$i]->order_code
-                ]);
-
-            // Handle errors
-            if ($response->failed()) {
-                return json_decode($response);
-            }
-
-            // $arr[$index] = $response['data'];
-            // $index++;
-            $orders[$i]->status = (int) OrderStatusEnum::getStatusAttributeReverse($response['data']['status']);
-            $orders[$i]->save();
-        }
-    }
-
     public function index(GetCustomerBasicRequest $request)
     {
         $data = Order::where("customer_id", "=", $request->user()->id)->orderBy("created_at", "DESC")->get();
@@ -166,21 +140,35 @@ class OrderController extends Controller
                 "errors" => "Danh sách đơn hàng hiện đang trống."
             ]);
         }
-        $this->refreshAllStateOrder($data);
 
         $arr = [];
 
         for ($i = 0; $i < sizeof($data); $i++) {
             $arr[$i]['id'] = $data[$i]->id;
             $arr[$i]['customerId'] = $data[$i]->customer_id;
+            
+            if ($data[$i]->voucher_id !== null) {
+                $voucher_code = Voucher::find($data[$i]->voucher_id)->name;
+            }
+            else {
+                $voucher_code = null;
+            }
+
+            $arr[$i]['voucherCode'] = $voucher_code;
             $arr[$i]['idDelivery'] = $data[$i]->id_delivery;
+            $arr[$i]['orderCode'] = $data[$i]->order_code;
             $arr[$i]['dateOrder'] = $data[$i]->date_order;
             $arr[$i]['address'] = $data[$i]->street . ", " . $data[$i]->ward . ", " . $data[$i]->district . ", " . $data[$i]->province . ", Việt Nam";
             $arr[$i]['nameReceiver'] = $data[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $data[$i]->total_price;
             $arr[$i]['phoneReceiver'] = $data[$i]->phone_receiver;
-            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
+            
+            if ($data[$i]->status < 6) {
+                $this->refreshStateOrder($data[$i]);
+            }
+            
             $arr[$i]['status'] = OrderStatusEnum::getStatusAttribute($data[$i]->status);
+            $arr[$i]['paidType'] = PaymentDisplayEnum::getPaymentDisplayAttribute($data[$i]->paid_type);
 
             $momo = Momo::where("order_id", "=", $data[$i]->id)
                 ->where("status", "<>", -1);
@@ -227,6 +215,10 @@ class OrderController extends Controller
 
         $data = $query->first();
 
+        if ($data->status < 6) {
+            $this->refreshStateOrder($data);
+        }
+
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
 
@@ -263,10 +255,6 @@ class OrderController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        if ($data->status < 6) {
-            $this->refreshState($data);
-        }
-
         $momo = Momo::where("order_id", "=", $data->id)
             ->where("status", "<>", -1);
 
@@ -291,6 +279,7 @@ class OrderController extends Controller
                 "order" => [
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
+                    "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
@@ -324,11 +313,15 @@ class OrderController extends Controller
 
         $data = $query->first();
 
+        if ($data->status < 6) {
+            $this->refreshStateOrder($data);
+        }
+
         if ($data->voucher_id !== null) {
             $voucher = Voucher::where("id", "=", $data->voucher_id)->first();
 
             $voucher_data = [
-                "voucherId" => $voucher->voucher_id,
+                "voucherId" => $voucher->id,
                 "percent" => $voucher->percent,
                 "name" => $voucher->name,
                 "expiredDate" => $voucher->expired_date,
@@ -360,10 +353,6 @@ class OrderController extends Controller
             $productsInOrder[$i]['quantity'] = $productQuantity->quantity;
         }
 
-        if ($data->status < 6) {
-            $this->refreshState($data);
-        }
-
         $momo = Momo::where("order_id", "=", $data->id)
             ->where("status", "<>", -1);
 
@@ -388,6 +377,7 @@ class OrderController extends Controller
                 "order" => [
                     "id" => $data->id,
                     "idDelivery" => $data->id_delivery,
+                    "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
