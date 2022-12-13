@@ -59,7 +59,7 @@ class OrderCustomerController extends Controller
             case 'picked':
                 $state = "picked";
                 break;
-            
+
             // Delivering State
             case 'delivering':
             case 'transporting':
@@ -148,6 +148,7 @@ class OrderCustomerController extends Controller
             $arr[$i]['idDelivery'] = $order[$i]->id_delivery;
             $arr[$i]['orderCode'] = $order[$i]->order_code;
             $arr[$i]['dateOrder'] = $order[$i]->date_order;
+            $arr[$i]['expectedDeliveryTime'] = date("Y-m-d", strtotime($order[$i]->expected_delivery_time));
             $arr[$i]['address'] = $order[$i]->street . ", " . $order[$i]->ward . ", " . $order[$i]->district . ", " . $order[$i]->province . ", Việt Nam";
             $arr[$i]['nameReceiver'] = $order[$i]->name_receiver;
             $arr[$i]['totalPrice'] = $order[$i]->total_price;
@@ -241,6 +242,7 @@ class OrderCustomerController extends Controller
                     "idDelivery" => $data->id_delivery,
                     "orderCode" => $data->order_code,
                     "dateOrder" => $data->date_order,
+                    "expectedDeliveryTime" => date("Y-m-d", strtotime($data->expected_delivery_time)),
                     "address" => $data->street . ", " . $data->ward . ", " . $data->district . ", " . $data->province . ", Việt Nam",
                     "nameReceiver" => $data->name_receiver,
                     "phoneReceiver" => $data->phone_receiver,

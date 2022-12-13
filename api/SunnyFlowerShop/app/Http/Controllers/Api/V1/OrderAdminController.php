@@ -57,7 +57,7 @@ class OrderAdminController extends Controller
             case 'picked':
                 $state = "picked";
                 break;
-            
+
             // Delivering State
             case 'delivering':
             case 'transporting':
@@ -159,9 +159,11 @@ class OrderAdminController extends Controller
             else {
                 $voucher_code = null;
             }
-            
+
             $arr[$index]['voucherCode'] = $voucher_code;
             $arr[$index]['idDelivery'] = $orders[$i]->id_delivery;
+            $arr[$index]['dateOrder'] = $orders[$i]->date_order;
+            $arr[$index]['expectedDeliveryTime'] = date("Y-m-d", strtotime($orders[$i]->expected_delivery_time));
             $arr[$index]['orderCode'] = $orders[$i]->order_code;
             $arr[$index]['address'] = $orders[$i]->street . ", " . $orders[$i]->ward . ", " . $orders[$i]->district . ", " . $orders[$i]->province . ", Việt Nam";
             $arr[$index]['nameReceiver'] = $orders[$i]->name_receiver;
@@ -245,6 +247,7 @@ class OrderAdminController extends Controller
                     "idDelivery" => $order->id_delivery,
                     "orderCode" => $order->order_code,
                     "dateOrder" => $order->date_order,
+                    "expectedDeliveryTime" => date("Y-m-d", strtotime($order->expected_delivery_time)),
                     "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,
                     "phoneReceiver" => $order->phone_receiver,
@@ -323,6 +326,7 @@ class OrderAdminController extends Controller
                     "idDelivery" => $order->id_delivery,
                     "orderCode" => $order->order_code,
                     "dateOrder" => $order->date_order,
+                    "expectedDeliveryTime" => date("Y-m-d", strtotime($order->expected_delivery_time)),
                     "address" => $order->street . ", " . $order->ward . ", " . $order->district . ", " . $order->province . ", Việt Nam",
                     "nameReceiver" => $order->name_receiver,
                     "phoneReceiver" => $order->phone_receiver,
