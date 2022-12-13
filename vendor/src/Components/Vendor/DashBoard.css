@@ -427,6 +427,34 @@ input[type="checkbox"]:checked:after {
     justify-content: space-between;
 }
 
+.detail-header .detail-bottom {
+    padding-top: 24px;
+    margin-top: 24px;
+    border-top: 1px solid #ddd;
+    /* display: flex; */
+    justify-content: space-between;
+}
+
+.detail-header .detail-address ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detail-header .detail-address ul li {
+    display: flex;
+    font-size: 16px;
+}
+
+.detail-header .detail-address ul li h6 {
+    margin: auto 0 auto 4px;
+}
+
+.detail-header .detail-address ul li span {
+    color: #f79837;
+    text-transform: capitalize;
+}
+
 .detail-header .detail-bottom ul {
     display: flex;
     align-items: center;
