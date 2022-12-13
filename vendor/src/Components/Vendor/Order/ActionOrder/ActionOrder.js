@@ -19,12 +19,13 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
     const [address, setAddress] = useState('')
     const [paidType, setPaidType] = useState("")
     const [deletedBy, setDeletedBy] = useState()
+    const [expectedDate, setexpectedDate] = useState('')
     const [state, setState] = useState('')
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const toggleModal = () => {
         setModal(!modal);
         axios
-            .get(`http://127.0.0.1:8000/api/v1/users/${idCustomer}/orders/${idOrder}`, {
+            .get(`http://127.0.0.1:8000/api/v1/orders/${idOrder}`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
@@ -33,15 +34,16 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             .then((response) => {
                 console.log(response.data)
                 setIdDelivery(response.data.data.order.idDelivery)
-                setCreatedAt(response.data.data.order.createdAt)
+                setCreatedAt(response.data.data.order.dateOrder)
                 settotalPrice(response.data.data.order.totalPrice)
-                setListProducts(response.data.data.products)
-                setEmail(response.data.data.customer.email)
+                setListProducts(response.data.data.order.products)
+                setEmail(response.data.data.order.customer.email)
                 setState(response.data.data.order.status)
                 setAddress(response.data.data.order.address)
                 setPaidType(response.data.data.order.paidType)
                 setDiscount(response.data.data.product)
                 setDeletedBy(response.data.data.order.deleted_by)
+                setexpectedDate(response.data.data.order.expectedDeliveryTime)
             });
     };
 
@@ -57,12 +59,12 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
             })
             .then((response) => {
                 alert(response.data.message)
-                // window.location.reload(false)
+                window.location.reload(false)
             })
     }
     const handleCancel = () => {
         axios
-            .delete(`http://127.0.0.1:8000/api/v1/users/${idCustomer}/orders/${idOrder}/destroy=1`, {
+            .delete(`http://127.0.0.1:8000/api/v1/orders/${idOrder}/destroy=1`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('adminToken')}`,
                 },
@@ -110,6 +112,12 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                                         <h6>{paidType}</h6>
                                                     </li>
                                                 </ul>
+                                                <ul>
+                                                    <li>
+                                                        <span>Ngày dự kiến giao hàng: </span>
+                                                        <h6>{expectedDate}</h6>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </Col>
                                         <Col lg={6}>
@@ -154,7 +162,7 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {listProducts.map((product) => {
+                                            {listProducts && Object.values(listProducts).map((product) => {
                                                 return (
                                                     <tr key={product.id} className="align-middle">
                                                         <th scope='col' className='img_product_order'><img src={product.img} alt="img" /></th>
@@ -183,11 +191,10 @@ const ActionOrder = ({ idOrder, idCustomer }) => {
                                         </tfoot>
                                     </table>
                                     <div className='detail-footer text-right'>
-                                        {/* {deletedBy ? "" : state === 2 ? "" : <p>Bạn muốn thay đổi trạng thái nào?</p>} */}
                                         <div className='buttons'>
-                                            {console.log(state)}
+                                            {console.log(state === "Đơn hàng đang gửi cho đơn vị vận chuyển.")}
                                             {state == "Đơn hàng đang chờ xử lý." ? <button className='theme-btn-one btn-blue-overlay btn_sm' onClick={handleState}>Xác Nhận</button> : ""}
-                                            <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel}>Huỷ Đơn Hàng</button>
+                                            {state === "Đơn hàng đang chờ xử lý." ? <button className='theme-btn-one btn-red-overlay btn_sm ml-2' onClick={handleCancel} >Huỷ Đơn Hàng</button> : ""}
                                         </div>
                                     </div>
                                     <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>

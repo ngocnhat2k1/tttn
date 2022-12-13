@@ -14,10 +14,10 @@ function OrderCompleteArea() {
                         <div className={styles.orderComplete}>
                             <FaCheckCircle />
                             <div className={styles.orderCompleteHeading}>
-                                <h2>Your order is completed!</h2>
+                                <h2>Bạn đã đặt hàng thành công!</h2>
                             </div>
-                            <p>Thank you for your order! Your order is being processed and will be completed within 3-6 hours. You will receive an email confirmation when your order is completed.</p>
-                            <Link to="/shop" className='theme-btn-one bg-black btn_sm'>Continue Shopping</Link>
+                            <p>Cảm ơn bạn đã đặt hàng của bạn! Đơn đặt hàng của bạn đang được xử lý và sẽ được hoàn thành trong vòng 3-6 giờ. Bạn sẽ nhận được email xác nhận khi đơn đặt hàng của bạn hoàn tất.</p>
+                            <Link to="/shop" className='theme-btn-one bg-black btn_sm'>Tiếp tục mua hàng</Link>
                         </div>
                     </Col>
                 </Row>

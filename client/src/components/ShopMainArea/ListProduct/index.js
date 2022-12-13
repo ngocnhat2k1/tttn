@@ -22,7 +22,7 @@ function ListProduct({ currentItems }) {
             quantity: 1
         }
         axios
-            .post(`http://127.0.0.1:8000/api/user/cart/add`, payload, {
+            .put(`http://127.0.0.1:8000/api/user/cart/update`, payload, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -84,7 +84,7 @@ function ListProduct({ currentItems }) {
                                         <FaExpand />
                                     </a>
                                 </div>
-                                <div onClick={() => { AddToCart(product.id) }}><button className={`${styles.addToCart}`}>Add to cart</button></div>
+                                <div onClick={() => { AddToCart(product.id) }}><button className={`${styles.addToCart}`}>Thêm vào giỏ hàng</button></div>
 
                             </div>
                             <div className={styles.content}>
