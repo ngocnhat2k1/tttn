@@ -56,6 +56,7 @@ class FavoriteProductCustomerController extends Controller
 
             $data[$i]['id'] = $product->id;
             $data[$i]['name'] = $product->name;
+            $data[$i]['img'] = $product->img;
             $data[$i]['price'] = $product->price;
             $data[$i]['percentSale'] = $product->percent_sale;
             $data[$i]['quantity'] = $product->quantity;
