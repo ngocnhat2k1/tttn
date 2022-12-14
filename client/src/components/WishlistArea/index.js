@@ -20,6 +20,7 @@ function WishlistArea() {
                 },
             })
             .then((response) => {
+                console.log(response.data.data)
                 setListWishlist(response.data.data);
                 setCheck(check + 1);
             })
@@ -30,8 +31,8 @@ function WishlistArea() {
 
     return (
         <>
-            {listWishlist.length === 0 && check > 0 && <EmptyWishlist />}
-            {listWishlist.length !== 0 && check > 0 &&
+            {!listWishlist && check > 0 && <EmptyWishlist />}
+            {listWishlist && check > 0 &&
                 <section id={styles.wishlistArea} className='ptb100'>
                     <Container>
                         <Row>

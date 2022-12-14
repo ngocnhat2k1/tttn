@@ -12,8 +12,8 @@ function NotFound() {
                     <Col lg={{ span: 6, offset: 3 }}>
                         <div className={styles.errorWrapper}>
                             <h1>404</h1>
-                            <h3>We are sorry, the page you've requested is not available</h3>
-                            <Link to="/" className='theme-btn-one btn-black-overlay btn_md'>BACK TO HOME PAGE</Link>
+                            <h3>Chúng tôi xin lỗi, trang bạn yêu cầu không tồn tại</h3>
+                            <Link to="/" className='theme-btn-one btn-black-overlay btn_md'>TRỞ VỀ TRANG CHỦ</Link>
                         </div>
                     </Col>
                 </Row>

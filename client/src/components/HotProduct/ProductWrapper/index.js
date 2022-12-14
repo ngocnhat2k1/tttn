@@ -90,9 +90,6 @@ function ProductWrapper({ unit }) {
                                 </span>
                                 <div className={styles.actions}>
                                     <ModalAddToWishList productId={product.id} />
-                                    {/* <a className={`${styles.action}`} title="Quickview">
-                                        <FaExpand />
-                                    </a> */}
                                     <ModalDetailProduct productId={product.id} />
                                 </div>
                                 <ModalAddToCart productId={product.id} />

@@ -19,6 +19,7 @@ function CustomerAddress() {
             })
             .then(response => {
                 setListAddress(response.data.data);
+                console.log(response.data)
             })
             .catch(function (error) {
                 console.log(error);
@@ -41,7 +42,7 @@ function CustomerAddress() {
                             <h4 className={styles.title}>Địa chỉ giao hàng {index + 1}</h4>
                             <div className={styles.shippingAddress}>
                                 <h5>
-                                    <strong>{address.nameReceiver}</strong>
+                                    <strong>{address.firstNameReceiver} {address.lastNameReceiver}</strong>
                                 </h5>
                                 <p>
                                     {address.streetName}, {address.ward}<br />

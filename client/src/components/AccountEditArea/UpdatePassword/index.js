@@ -15,7 +15,7 @@ function UpdatePassword() {
     const closeModal = () => {
         setModal(!modal);
     }
-    
+
     const handleUpdatePassword = (data) => {
         axios
             .put(`http://localhost:8000/api/user/changePassword`, data, {
@@ -56,10 +56,16 @@ function UpdatePassword() {
                     className="FormInput"
                     type="password"
                     placeholder="Mật khẩu hiện tại"
-                    {...register("oldPassword", { required: true, minLength: 3, maxLength: 24 })}
+                    {...register("oldPassword", { required: true, minLength: 6, maxLength: 24 })}
                 />
-                {errors["oldPassword"] && (
-                    <p className="checkInput">Mật khẩu phải có từ 3 đến 24 ký tự</p>
+                {errors.oldPassword && errors.oldPassword.type === "required" && (
+                    <p className="checkInput">Mật khẩu hiện tại không được để trống</p>
+                )}
+                {errors.oldPassword && errors.oldPassword.type === "minLength" && (
+                    <p className="checkInput">Mật khẩu hiện tại phải có ít nhất 6 ký tự</p>
+                )}
+                {errors.oldPassword && errors.oldPassword.type === "maxLength" && (
+                    <p className="checkInput">Mật khẩu hiện tại chỉ được tối đa 24 ký tự</p>
                 )}
                 <label htmlFor="password">Mật khẩu mới</label>
                 <input
@@ -68,8 +74,14 @@ function UpdatePassword() {
                     placeholder="Mật khẩu mới"
                     {...register("password", { required: true, minLength: 6, maxLength: 24 })}
                 />
-                {errors["password"] && (
-                    <p className="checkInput">Mật khẩu mới phải có từ 6 đến 24 ký tự</p>
+                {errors.password && errors.password.type === "required" && (
+                    <p className="checkInput">Mật khẩu mới không được để trống</p>
+                )}
+                {errors.password && errors.password.type === "minLength" && (
+                    <p className="checkInput">Mật khẩu mới phải có ít nhất 6 ký tự</p>
+                )}
+                {errors.password && errors.password.type === "maxLength" && (
+                    <p className="checkInput">Mật khẩu mới chỉ được tối đa 24 ký tự</p>
                 )}
                 <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
                 <input
@@ -78,8 +90,14 @@ function UpdatePassword() {
                     placeholder="Xác nhận mật khẩu mới"
                     {...register("confirmPassword", { required: true, minLength: 6, maxLength: 24 })}
                 />
-                {errors["confirmPassword"] && (
-                    <p className="checkInput">Mật khẩu hiện tại và mật khẩu mới phải giống nhau</p>
+                {errors.confirmPassword && errors.confirmPassword.type === "required" && (
+                    <p className="checkInput">Xác nhận mật khẩu mới không được để trống</p>
+                )}
+                {errors.confirmPassword && errors.confirmPassword.type === "minLength" && (
+                    <p className="checkInput">Xác nhận mật khẩu mới phải có ít nhất 6 ký tự</p>
+                )}
+                {errors.confirmPassword && errors.confirmPassword.type === "maxLength" && (
+                    <p className="checkInput">Xác nhận mật khẩu mới chỉ được tối đa 24 ký tự</p>
                 )}
             </div>
             <button type="submit" className="theme-btn-one bg-black btn_sm">Cập nhật mật khẩu</button>

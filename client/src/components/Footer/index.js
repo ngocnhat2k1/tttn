@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Logo from '../../images/Logo.png';
 import { useForm } from "react-hook-form";
+import { Link } from 'react-router-dom';
 
 function Footer() {
 
@@ -24,9 +25,9 @@ function Footer() {
                 <Row>
                     <Col lg={4} md={12} sm={12} xs={12}>
                         <div className={styles.footerLeft}>
-                            <a href=".">
+                            <Link to="/">
                                 <img src={Logo} alt="logo" width={200} />
-                            </a>
+                            </Link>
                             <p><strong>Hướng Dương Shop</strong> là cửa hàng chuyên mua bán và cung cấp các mặt hàng về balo, cặp sách với nhiều mẫu mã và lựa chọn khác nhau .</p>
                             <div className={styles.divFooterIcon}>
                                 <ul>
