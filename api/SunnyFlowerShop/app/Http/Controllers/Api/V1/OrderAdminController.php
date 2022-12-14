@@ -47,18 +47,18 @@ class OrderAdminController extends Controller
     public function getOrderStatus($state)
     {
         switch ($state) {
-            // Picking state
+                // Picking state
             case 'ready_to_pick':
             case 'picking':
                 $state = "ready_to_pick";
                 break;
 
-            // Picked State
+                // Picked State
             case 'picked':
                 $state = "picked";
                 break;
 
-            // Delivering State
+                // Delivering State
             case 'delivering':
             case 'transporting':
             case 'money_collect_picking':
@@ -68,12 +68,12 @@ class OrderAdminController extends Controller
                 $state = "delivering";
                 break;
 
-            // Cancel State
+                // Cancel State
             case 'cancel':
                 $state = "cancel";
                 break;
 
-            // Return/ Damage/ Lost/ Processing State
+                // Return/ Damage/ Lost/ Processing State
             case 'return':
             case 'return_transporting':
             case 'return_sorting':
@@ -155,8 +155,7 @@ class OrderAdminController extends Controller
             // Order field
             if ($orders[$i]->voucher_id !== null) {
                 $voucher_code = Voucher::find($orders[$i]->voucher_id)->name;
-            }
-            else {
+            } else {
                 $voucher_code = null;
             }
 
@@ -407,6 +406,49 @@ class OrderAdminController extends Controller
                     'message' => "Hoàn tác thành công việc hủy Đơn hàng với ID = " . $order->id
                 ]
             );
+        }
+    }
+
+    // For testing only
+    public function status(UpdateOrderCustomerStatus $request, Order $order)
+    {
+        if (!empty($order->order_code)) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Không thể thay đổi trạng thái đơn đã được xác nhận."
+            ]);
+        }
+
+        $state = (int) $request->state;
+
+        switch ($state) {
+            case 1:
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Trạng thái 1 chỉ dành cho thanh toán momo, vui lòng chọn trạng thái khác."
+                ]);
+
+            case -2:
+            case -1:
+            case 0:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                $order->status = $state;
+                $order->save();
+
+                return response()->json([
+                    "success" => true,
+                    "message" => "Thay đổi thành công trạng thái đơn hàng với ID = " . $order->id . " sang trạng thái " . OrderStatusEnum::getStatusAttribute($state)
+                ]);
+
+            default:
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Trạng thái không hợp lệ."
+                ]);
         }
     }
 }

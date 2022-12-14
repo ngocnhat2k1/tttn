@@ -148,6 +148,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/idDelivery/{id}", [OrderAdminController::class, "showViaIdDelivery"]);
             // Route::put("/{order}/update/status={state}", [OrderAdminController::class, "updateStatus"]);
             Route::delete("/{order}/destroy={state}", [OrderAdminController::class, "destroy"]);
+            Route::put("/{order}/status={state}", [OrderAdminController::class, "status"]); // Testing status order (Not apply to confirmed orders)
 
             // Update order status and Create-Update-Cancel Order in GiaoHangNhanh
             Route::put("/{order}/updateStatus={state}", [UpdateOrderController::class, "updateStatus"]); // Update status and create order in GiaoHangNhanh site            
