@@ -23,12 +23,12 @@ function ModalDetailProduct({ productId }) {
             .then(response => {
                 if (response.data.success) {
                     setProduct(response.data.data);
+                    setModal(!modal);
                 }
             })
             .catch(err => {
                 console.log(err);
             })
-        setModal(!modal);
     }
 
     const closeModal = () => {
@@ -73,7 +73,7 @@ function ModalDetailProduct({ productId }) {
                     navigate('/login')
                 } else {
                     axios
-                        .post(`http://localhost:8000/api/user/cart/add`, payload, {
+                        .put(`http://localhost:8000/api/user/cart/update`, payload, {
                             headers: {
                                 Authorization: `Bearer ${Cookies.get('token')}`,
                             },
@@ -82,7 +82,6 @@ function ModalDetailProduct({ productId }) {
                             if (response.data.success) {
                                 setMessage(response.data.message)
                                 setSuccess(response.data.success)
-                                setModal(!modal);
                                 setModal2(!modal2);
                             }
                         })

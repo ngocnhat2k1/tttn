@@ -14,12 +14,13 @@ function CartArea() {
     const [loader, setLoader] = useState(true)
     const [listProduct, setListProduct] = useState([]);
     const [totalPriceCart, settotalPriceCart] = useState(0);
-    const [couter, setcouter] = useState(0)
     const [check, setCheck] = useState(0);
     const [message, setMessage] = useState("");
     const [success, setSuccess] = useState("");
     const [modal, setModal] = useState(false);
     const [modal2, setModal2] = useState(false);
+    const [modal3, setModal3] = useState(false);
+    const [modal4, setModal4] = useState(false);
 
     useEffect(() => {
         axios
@@ -36,17 +37,6 @@ function CartArea() {
                 console.log(error);
             });
     }, [loader]);
-
-    useEffect(() => {
-        if (listProduct) {
-            listProduct.map((product) => {
-                if (couter < 1) {
-                    settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
-                    setcouter(couter + 1)
-                }
-            })
-        }
-    }, [listProduct])
 
     const handleDeleteProduct = (id) => {
         axios
@@ -93,8 +83,36 @@ function CartArea() {
             });
     }
 
+    const handleClearCart = () => {
+        axios
+        .delete(`http://127.0.0.1:8000/api/user/cart/empty`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        })
+        .then((response) => {
+            setMessage(response.data.message)
+            setSuccess(response.data.success)
+            setModal3(!modal3)
+            setModal4(!modal4);
+        })
+    }
+
+    useEffect(() => {
+        if (listProduct) {
+            settotalPriceCart(0);
+            listProduct.map((product) => {
+                settotalPriceCart(totalPriceCart => totalPriceCart + (product.price * ((100 - product.percentSale) / 100)) * product.quantity)
+            })
+        }
+    }, [listProduct])
+
     const toggleModal = () => {
         setModal(!modal);
+    }
+
+    const toggleModal3 = () => {
+        setModal3(!modal3);
     }
 
     const closeModal = () => {
@@ -108,6 +126,17 @@ function CartArea() {
         }
     }
 
+    const closeModal3 = () => {
+        setModal3(!modal3);
+    }
+
+    const closeModal4 = () => {
+        setModal4(!modal4);
+        if (success) {
+            window.location.reload(false)
+        }
+    }
+
     if (modal) {
         document.body.classList.add('active-modal')
     } else {
@@ -115,6 +144,18 @@ function CartArea() {
     }
 
     if (modal2) {
+        document.body.classList.add('active-modal')
+    } else {
+        document.body.classList.remove('active-modal')
+    }
+
+    if (modal3) {
+        document.body.classList.add('active-modal')
+    } else {
+        document.body.classList.remove('active-modal')
+    }
+
+    if (modal4) {
         document.body.classList.add('active-modal')
     } else {
         document.body.classList.remove('active-modal')
@@ -216,7 +257,39 @@ function CartArea() {
                                         </table>
                                     </div>
                                     <div className={styles.btnClearCart}>
-                                        <button type="button" className='theme-btn-one btn-black-overlay btn_sm'>Làm trống giỏ hàng</button>
+                                        <button type="button" className='theme-btn-one btn-black-overlay btn_sm' onClick={toggleModal3}>Làm trống giỏ hàng</button>
+
+                                        {modal3 && (
+                                            <div className="modal">
+                                                <div onClick={closeModal3} className="overlay"></div>
+                                                <div className="modal-content">
+                                                    <div>
+                                                        <FaQuestionCircle className='svgQuestion' size={90} />
+                                                    </div>
+                                                    <h2 className="title_modal">Bạn chắc chắn muốn làm trống giỏ hàng?</h2>
+                                                    <div className='divClose'>
+                                                        <button className="close close-modal btnNo" onClick={closeModal3}>Không</button>
+                                                        <button className="close close-modal btnYes" onClick={handleClearCart}>Có</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {modal4 && (
+                                            <div className="modal">
+                                                <div onClick={closeModal4} className="overlay"></div>
+                                                <div className="modal-content">
+                                                    <div>
+                                                        {success === true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
+                                                    </div>
+                                                    <h2 className="title_modal">Làm trống giỏ hàng {success ? "thành công" : "thất bại"}</h2>
+                                                    <p className='p_modal'>{message}</p>
+                                                    <div className='divClose'>
+                                                        <button className="close close-modal" onClick={closeModal4}>OK</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </Col>
@@ -224,7 +297,7 @@ function CartArea() {
                                 <div className={styles.cartTotal}>
                                     <h3>Tổng tiền trong giỏ hàng</h3>
                                     <div className={styles.cartInner}>
-                                        <div className={`${styles.cartSubTotal} ${styles.border}`}>
+                                        <div className={`${styles.cartSubTotal}`}>
                                             <p>Tổng tiền</p>
                                             <p className={styles.cartSubTotalDetail}>{formatter.format(totalPriceCart)}</p>
                                         </div>

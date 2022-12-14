@@ -63,8 +63,14 @@ function UpdateInformation({ em, fName, lName }) {
                     placeholder="VD: Lê Quốc"
                     {...register("firstName", { required: true, minLength: 2, maxLength: 50 })}
                 />
-                {errors["firstName"] && (
-                    <p className="checkInput">Họ không hợp lệ</p>
+                {errors.firstName && errors.firstName.type === "required" && (
+                    <p className="checkInput">Họ không được để trống</p>
+                )}
+                {errors.firstName && errors.firstName.type === "minLength" && (
+                    <p className="checkInput">Họ phải có ít nhất 2 ký tự</p>
+                )}
+                {errors.firstName && errors.firstName.type === "maxLength" && (
+                    <p className="checkInput">Họ chỉ được tối đa 50 ký tự</p>
                 )}
                 <label htmlFor="lastName">Tên</label>
                 <input
@@ -73,8 +79,14 @@ function UpdateInformation({ em, fName, lName }) {
                     placeholder="VD: Bảo"
                     {...register("lastName", { required: true, minLength: 2, maxLength: 50 })}
                 />
-                {errors["lastName"] && (
-                    <p className="checkInput">Tên không hợp lệ</p>
+                {errors.lastName && errors.lastName.type === "required" && (
+                    <p className="checkInput">Tên không được để trống</p>
+                )}
+                {errors.lastName && errors.lastName.type === "minLength" && (
+                    <p className="checkInput">Tên phải có ít nhất 2 ký tự</p>
+                )}
+                {errors.lastName && errors.lastName.type === "maxLength" && (
+                    <p className="checkInput">Tên chỉ được tối đa 50 ký tự</p>
                 )}
             </div>
 
@@ -86,7 +98,10 @@ function UpdateInformation({ em, fName, lName }) {
                     placeholder="Username or Email"
                     {...register("email", { required: true, pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ })}
                 />
-                {errors["email"] && (
+                {errors.email && errors.email.type === "required" && (
+                    <p className="checkInput">Email không được để trống</p>
+                )}
+                {errors.email && errors.email.type === "pattern" && (
                     <p className="checkInput">Email không hợp lệ</p>
                 )}
             </div>

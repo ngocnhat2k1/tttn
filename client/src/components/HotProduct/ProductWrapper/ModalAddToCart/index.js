@@ -40,7 +40,7 @@ const ModalAddToCart = ({ productId }) => {
 
     return (
         <>
-            <button className={`${styles.addToCart}`} onClick={() => handleAddToCart(productId)}>Add to cart</button>
+            <button className={`${styles.addToCart}`} onClick={() => handleAddToCart(productId)}>Thêm vào giỏ hàng</button>
 
             {modal && (
                 <div className="modal">

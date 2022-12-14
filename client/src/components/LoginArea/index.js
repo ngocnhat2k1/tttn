@@ -39,6 +39,7 @@ function LoginArea() {
                     const token = response.data.token;
                     Cookies.set('token', token, { path: '/' });
                     setSuccess(response.data.success);
+                    setMessage('');
                     setModal(!modal)
                 } else {
                     setMessage(response.data.errors);

@@ -146,7 +146,7 @@ function CreateAddressArea() {
                                         placeholder="VD: Hồ Chí Minh"
                                         {...register("city", { required: true })} />
                                     {errors.city && errors.city.type === "required" && (
-                                        <p className="checkInput">Phường / Xã không được để trống</p>
+                                        <p className="checkInput">Tỉnh / Thành phố không được để trống</p>
                                     )}
                                     <Controller
                                         name="phoneReceiver"

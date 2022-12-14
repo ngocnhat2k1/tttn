@@ -109,7 +109,7 @@ function ContactForm() {
                                 )}
                             </div>
                             <div className={styles.submitButtonContact}>
-                                <button type="Submit">Submit</button>
+                                <button type="Submit">GỬI EMAIL</button>
                             </div>
                         </Col>
                     </Row>

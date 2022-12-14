@@ -32,11 +32,8 @@ function ListOrder() {
                         <td>{order.idDelivery}</td>
                         <td>{order.dateOrder}</td>
                         <td>{order.nameReceiver}</td>
-                        <td className={styles.status}>
-
-
+                        <td className={order.status === "Đơn hàng đã bị hủy" ? `${styles.status} text-danger` : `${styles.status} text-success`}>
                             {order.status}
-
                         </td>
                         <td>{formatter.format(order.totalPrice)}</td>
                         <td className={styles.action}>

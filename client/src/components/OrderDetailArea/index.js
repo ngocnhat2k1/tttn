@@ -117,9 +117,9 @@ function OrderDetailArea() {
             })
     }
 
-    const handleCancel = (productId) => {
+    const handleCancel = () => {
         axios
-            .delete(`http://127.0.0.1:8000/api/user/order/${productId}/cancel`, {
+            .delete(`http://127.0.0.1:8000/api/user/order/${id}/cancel`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
@@ -134,6 +134,8 @@ function OrderDetailArea() {
                 console.log(err)
             })
     }
+
+    console.log(order)
 
     return (
         <>
@@ -160,8 +162,8 @@ function OrderDetailArea() {
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <div className={order.order.deleted_by == null ? 'colorSuccess' : 'colorFail'}>
-                                                        {order.order.deleted_by == null ? <FaRegCheckCircle size={70} /> : <FaTimesCircle size={70} />}
+                                                    <div className={order.order.status === "Đơn hàng đã bị hủy" ? 'colorFail' : 'colorSuccess'}>
+                                                        {order.order.status === "Đơn hàng đã bị hủy" ? <FaTimesCircle size={70} /> : <FaRegCheckCircle size={70} />}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -172,7 +174,7 @@ function OrderDetailArea() {
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <p>{order.order.deleted_by === 0 ? "Bạn đã hủy đơn hàng" : order.order.deleted_by === 1 ? "Đơn hàng của bạn đã bị hủy. Liên hệ cửa hàng để biết thêm chi tiết!" : order.order.status === 0 ? "Đơn hàng của bạn sẽ sớm được xử lý" : order.order.status === 1 ? "Đơn hàng của bạn đang được vận chuyển" : "Cảm ơn bạn đã mua hàng tại Shop Hướng Dương"}</p>
+                                                    <p>{order.order.status === "Đơn hàng đã bị hủy" ? "Hãy tiếp tục mua hàng ở Shop Hướng Dương bạn nhé!" : "Cảm ơn bạn đã mua hàng tại Shop Hướng Dương"}</p>
                                                     <p>Mã đơn hàng: {order.order.idDelivery}</p>
                                                 </td>
                                             </tr>
@@ -251,20 +253,17 @@ function OrderDetailArea() {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    {((order.order.status === "Đơn hàng đang chờ xử lý." || order.order.status === "Đơn hàng đang chờ thanh toán.") && order.order.deleted_by == null) &&
                                         <table className={styles.tableAction} align='center' border={0} cellPadding={0} cellSpacing={0} width="100%">
                                             <tbody>
                                                 <tr>
                                                     {order && <td>
-
-                                                        {order.order.status === "Đơn hàng được giao thành công." ? <button type="button" className='theme-btn-one btn-blue-overlay btn_sm' onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button> : <button type="button" className='btn btn-lg theme-btn-one btn-blue-overlay btn_sm btn-secondary  mx-3' disabled={true} onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button>}
-                                                        {(order.order.status === "Đơn hàng đang chờ xử lý." || order.order.status === "Đơn hàng đang chờ thanh toán.") && <button type="button" className='theme-btn-one btn-red-overlay btn_sm ml-2 mx-3' onClick={() => toggleModal(order.order.id)}>HỦY ĐƠN HÀNG</button>}
+                                                        {order.order.status === "Đơn hàng được giao thành công." ? <button type="button" className='theme-btn-one btn-blue-overlay btn_sm' onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button> : <button type="button" className='btn btn-lg theme-btn-one btn-blue-overlay btn_sm btn-secondary mx-3' disabled={true} onClick={() => handleComplete(order.order.id)}>ĐÃ NHẬN HÀNG</button>}
+                                                        {(order.order.status === "Đơn hàng đang chờ xử lý." || order.order.status === "Đơn hàng đang chờ thanh toán.") && <button type="button" className='theme-btn-one btn-red-overlay btn_sm ml-2 mx-3' onClick={toggleModal}>HỦY ĐƠN HÀNG</button>}
                                                     </td>}
 
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    }
 
                                     {modal && (
                                         <div className="modal">

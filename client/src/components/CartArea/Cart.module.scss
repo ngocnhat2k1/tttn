@@ -166,8 +166,9 @@
 }
 
 .cartSubTotal p {
+    margin-top: 10px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .cartSubTotal .cartSubTotalDetail {
@@ -182,10 +183,6 @@
 
 .checkoutBtn {
     text-align: right;
-}
-
-.border {
-    border-top: 1px solid #ededed;
 }
 
 .plusMinusInput {
