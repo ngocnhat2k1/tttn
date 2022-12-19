@@ -5,7 +5,7 @@ import CommonBanner from '../components/CommonBanner';
 const CheckoutOrderPage = () => {
     return (
         <>
-            <CommonBanner namePage="Checkout Order" />
+            <CommonBanner namePage="Đặt hàng" />
             <CheckoutOrder />
         </>
     )

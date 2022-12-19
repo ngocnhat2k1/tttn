@@ -27,12 +27,10 @@
 
 }
 
-
-
-
-
-
-
+.error {
+    display: block;
+    color: red;
+}
 
 .order_review {
     margin-bottom: 40px;
@@ -106,15 +104,6 @@
 .order_table tfoot th, .product-subtotal {
     font-weight: 600;
 }
-
-
-
-
-
-
-
-
-
 
 .coupon {
     text-align: right;

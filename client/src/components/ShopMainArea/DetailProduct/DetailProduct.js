@@ -170,7 +170,7 @@ const DetailProduct = () => {
     }
     return (
         <>
-            <CommonBanner namePage="Product Details"></CommonBanner>
+            <CommonBanner namePage="Chi tiết sản phẩm"></CommonBanner>
             <section id='product_single_one' className='ptb-100'>
                 <div className='container'>
                     <div className='row area_boxed'>
@@ -194,7 +194,7 @@ const DetailProduct = () => {
                                                 <input type="number" className='form-control' readOnly value={quantityPurchased}
                                                     {...register("quantity", { required: true })} />
                                                 <div className='input-group-button'>
-                                                    <button type="button" className='button' onClick={() => { quantityPurchased === 5 ? setQuantityPurchased(5) : setQuantityPurchased(quantityPurchased + 1) }}><FaPlus></FaPlus></button>
+                                                    <button type="button" className='button' onClick={() => { quantityPurchased === 7 ? setQuantityPurchased(7) : setQuantityPurchased(quantityPurchased + 1) }}><FaPlus></FaPlus></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -277,15 +277,16 @@ const DetailProduct = () => {
                                             <Row>
                                                 <form onSubmit={handleSubmit2(sentReview)}>
                                                     <Col lg={12} md={12} sm={12} xs={12}>
-                                                        <label htmlFor="comment" className='media-name'>Để lại bình luận</label>
+                                                        <label htmlFor="comment" className='media-name'>Để lại đánh giá</label>
                                                         <input type="text"
                                                             className='form-control comment-input'
                                                             value={comment}
-                                                            placeholder='Enter your comment here'
-                                                            {...register2('comment', { onChange: (e) => { setComment(e.target.value) } })} />
+                                                            placeholder='Để lại đánh giá của bạn về sản phẩm..'
+                                                            {...register2('comment', { required: true, onChange: (e) => { setComment(e.target.value) } })} />
+                                                        {errors.comment && errors.comment.type === 'required' && <span className='error'>Để lại bình luận của bạn trước khi gửi</span>}
                                                     </Col>
                                                     <div className='submit-comment'>
-                                                        <AccountEditModal message={message} success={success} nameBtn='Comment' />
+                                                        <AccountEditModal message={message} success={success} nameBtn='Gửi đánh giá' />
                                                     </div>
                                                 </form>
                                             </Row>

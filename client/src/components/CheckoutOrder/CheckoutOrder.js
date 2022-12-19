@@ -11,7 +11,6 @@ import Select from "react-select";
 import "./CheckoutOrder.css"
 import AccountEditModal from '../AccountEditArea/AccountEditModal';
 import { formatter } from '../../utils/utils';
-import CartArea from '../CartArea';
 import EmptyCart from '../CartArea/EmptyCart';
 
 
@@ -24,9 +23,6 @@ const CheckoutOrder = () => {
     const [nameReceiver, setnameReceiver] = useState('')
     const [phoneReceiver, setphoneReceiver] = useState('')
     const [totalPriceCart, settotalPriceCart] = useState(0)
-    const [district, setdistrict] = useState('')
-    const [province, setprovince] = useState('')
-    const [ward, setWard] = useState('')
     const [street, setStreet] = useState('')
     const navigate = useNavigate();
     const [check, setCheck] = useState(0);
@@ -74,7 +70,6 @@ const CheckoutOrder = () => {
             street: street,
             paidType: 0
         }
-        console.log(payload)
         axios
             .post(`http://127.0.0.1:8000/api/user/order/placeorder`, payload, {
                 headers: {
@@ -141,7 +136,7 @@ const CheckoutOrder = () => {
                                         <h3>Thông tin đơn hàng</h3>
                                     </div>
                                     <div className='check-out-form'>
-                                        <form onSubmit={handleSubmit(PlaceOrder)}>
+                                        <form id='delivery_information' onSubmit={handleSubmit(PlaceOrder)}>
                                             <Row>
                                                 <Col lg={12} md={12} sm={12} xs={12}>
                                                     <div className='form-group'>
@@ -152,6 +147,7 @@ const CheckoutOrder = () => {
                                                             className='form-control'
                                                             placeholder='Tên người nhận'
                                                             {...register("nameReceiver", { required: true, onChange: (e) => { setnameReceiver(e.target.value) } })} />
+                                                        {errors.nameReceiver && errors.nameReceiver.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
                                                 </Col>
 
@@ -164,6 +160,7 @@ const CheckoutOrder = () => {
                                                             className='form-control'
                                                             placeholder='Số điện thoại'
                                                             {...register("phoneReceiver", { required: true, onChange: (e) => { setphoneReceiver(e.target.value) } })} />
+                                                        {errors.phoneReceiver && errors.phoneReceiver.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
@@ -174,17 +171,10 @@ const CheckoutOrder = () => {
                                                             key={`cityId_${selectedCity?.value}`}
                                                             isDisabled={cityOptions.length === 0}
                                                             options={cityOptions}
-                                                            // className='form-control'
                                                             onChange={(option) => onCitySelect(option)}
                                                             placeholder="Tỉnh/Thành"
                                                             defaultValue={selectedCity}
                                                         />
-                                                        {/* <input
-                                                            type="text"
-                                                            value={province}
-                                                            className='form-control'
-                                                            placeholder='Tỉnh/Thành Phố'
-                                                            {...register("province", { required: true, onChange: (e) => { setprovince(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
@@ -199,12 +189,6 @@ const CheckoutOrder = () => {
                                                             placeholder="Quận/Huyện"
                                                             defaultValue={selectedDistrict}
                                                         />
-                                                        {/* <input
-                                                            type="text"
-                                                            value={district}
-                                                            className='form-control'
-                                                            placeholder='Quận/Huyện'
-                                                            {...register("district", { required: true, onChange: (e) => { setdistrict(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={6} md={12} sm={12} xs={12}>
@@ -219,12 +203,6 @@ const CheckoutOrder = () => {
                                                             onChange={(option) => onWardSelect(option)}
                                                             defaultValue={selectedWard}
                                                         />
-                                                        {/* <input
-                                                            type="text"
-                                                            value={ward}
-                                                            className='form-control'
-                                                            placeholder='Xã/Phường'
-                                                            {...register("ward", { required: true, onChange: (e) => { setWard(e.target.value) } })} /> */}
                                                     </div>
                                                 </Col>
                                                 <Col lg={12} md={12} sm={12} xs={12}>
@@ -236,6 +214,7 @@ const CheckoutOrder = () => {
                                                             className='form-control'
                                                             placeholder='VD: 36 Nguyễn Chí Thanh '
                                                             {...register("street", { required: true, onChange: (e) => { setStreet(e.target.value) } })} />
+                                                        {errors.street && errors.street.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -298,7 +277,7 @@ const CheckoutOrder = () => {
                                         </table>
                                     </div>
                                     <div className='coupon' onClick={PlaceOrder}>
-                                        <button type="submit" className="theme-btn-one bg-black btn_sm" >Hoàn tất đặt hàng</button>
+                                        <button type="submit" form='delivery_information' className="theme-btn-one bg-black btn_sm" >Hoàn tất đặt hàng</button>
                                         {modal && (
                                             <div className="modal">
                                                 <div onClick={toggleModal} className="overlay"></div>

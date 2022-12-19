@@ -4,7 +4,7 @@ import NotFound from "../components/NotFound";
 function Error() {
     return (
         <>
-            <CommonBanner pageName='Error' />
+            <CommonBanner pageName='Lỗi' />
             <NotFound />
         </>
     )
