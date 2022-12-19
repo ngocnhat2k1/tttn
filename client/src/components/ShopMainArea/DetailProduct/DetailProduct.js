@@ -203,11 +203,11 @@ const DetailProduct = () => {
                                     <div className='links_Product_areas'>
                                         <ul>
                                             <li onClick={AddWishlist}>
-                                                <ModalATag message={message} success={success} nameBtn='Add To Wishlist' icon={<FaHeart />}></ModalATag>
+                                                <ModalATag message={message} success={success} nameBtn='Thêm vào danh sách yêu thích' icon={<FaHeart />}></ModalATag>
                                             </li>
                                         </ul>
                                         <button htmlFor='submit-form' className="theme-btn-one bg-black btn_sm" onClick={AddToCart}>
-                                            Add to cart
+                                            Thêm vào giỏ hàng
                                         </button>
                                         {modal && (
                                             <div className="modal">
@@ -216,7 +216,7 @@ const DetailProduct = () => {
                                                     <div>
                                                         {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                                                     </div>
-                                                    <h2 className="title_modal">Add to cart {success ? 'Successful' : 'Failed'}</h2>
+                                                    <h2 className="title_modal">Thêm vào giỏ hàng {success ? 'Thành Công' : 'Thất Bại'}</h2>
                                                     <p >{message}</p>
                                                     <div className='divClose'>
                                                         <button className="close close-modal" onClick={closeModal}>OK</button>
@@ -234,10 +234,10 @@ const DetailProduct = () => {
                             <div className='product_details_tabs text-left'>
                                 <ul className='nav nav-tabs'>
                                     <li onClick={() => { setActiveTab('description') }}>
-                                        <a href="#description" data-toggle="tab" onClick={(e) => { e.preventDefault(); }} className={activeTab === 'description' ? "active" : ''}>Description</a>
+                                        <a href="#description" data-toggle="tab" onClick={(e) => { e.preventDefault(); }} className={activeTab === 'description' ? "active" : ''}>Mô tả</a>
                                     </li>
                                     <li onClick={() => { setActiveTab('review') }}>
-                                        <a href="#review" data-toggle="tab" onClick={(e) => { e.preventDefault(); }} className={activeTab === 'review' ? "active" : ''}>Review</a>
+                                        <a href="#review" data-toggle="tab" onClick={(e) => { e.preventDefault(); }} className={activeTab === 'review' ? "active" : ''}>Đánh giá</a>
                                     </li>
                                 </ul>
                                 <div className='tab-content'>
@@ -277,7 +277,7 @@ const DetailProduct = () => {
                                             <Row>
                                                 <form onSubmit={handleSubmit2(sentReview)}>
                                                     <Col lg={12} md={12} sm={12} xs={12}>
-                                                        <label htmlFor="comment" className='media-name'>Leave a comment</label>
+                                                        <label htmlFor="comment" className='media-name'>Để lại bình luận</label>
                                                         <input type="text"
                                                             className='form-control comment-input'
                                                             value={comment}

@@ -27,7 +27,7 @@ const VendorArea = () => {
                     </Col>
                     <Routes>
                         <Route path='*' element={<DashBoard />} />
-                        <Route path='/all-product' element={<Product />} />
+                        <Route path='/all-products' element={<Product />} />
                         <Route path='/all-order' element={<Order />} />
                         <Route path='/vendor-users' element={<Users />} />
                         <Route path='/add-products' element={<AddProduct />} />

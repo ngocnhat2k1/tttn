@@ -6,14 +6,18 @@ import { useForm } from "react-hook-form";
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import formatDate from '../../../until/formatDateTime';
+import ModalConfirm from '../ModalConfirm/ModalConfirm';
 const AddVoucher = () => {
+    const [success, setSuccess] = useState("")
+    const [message, setMessage] = useState('')
+    const [notify, setNotify] = useState(false)
+
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = data => {
         const payload = {
             ...data,
             expiredDate: formatDate(data.expiredDate)
         }
-        console.log(payload)
         axios
             .post('http://127.0.0.1:8000/api/v1/vouchers/create', payload,
                 {
@@ -23,11 +27,9 @@ const AddVoucher = () => {
                 },
             )
             .then((response) => {
-                alert(response.data.success);
-                console.log(response.data.error);
-                if (response.data.success === true) {
-                    window.location.reload(false)
-                }
+                setSuccess(response.data.success);
+                setMessage(response.data.message);
+                setNotify(true)
             })
             .catch(function (error) {
                 alert(error);
@@ -56,7 +58,7 @@ const AddVoucher = () => {
                                                             id='voucher_name'
                                                             type="text"
                                                             className='form-control'
-                                                            placeholder='Voucher Title here'
+                                                            placeholder='Tên mã giảm giá'
                                                             {...register("name", { required: true })} />
                                                         {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
@@ -64,14 +66,15 @@ const AddVoucher = () => {
 
                                                 <Col lg={6}>
                                                     <div className='fotm-group'>
-                                                        <label htmlFor="percent_sale">Phần trăm giảm giá</label>
+                                                        <label htmlFor="percent">Phần trăm giảm giá</label>
                                                         <input
-                                                            id='percent_sale'
+                                                            id='percent'
                                                             type="number"
                                                             className='form-control'
-                                                            placeholder='Percent Sale here'
-                                                            {...register("percent", { required: true }, { min: 1, max: 99 })} />
-                                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
+                                                            placeholder='Phần trăm giảm giá'
+                                                            {...register("percent", { required: true, min: 1, max: 99 })} />
+                                                        {errors.percent && (errors.percent.type === 'min' || errors.percent.type === 'max') && <span className='error'>Phần trăm giảm giá chỉ có thể từ 1-99</span>}
+                                                        {errors.percent && errors.percent.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
                                                 </Col>
 
@@ -82,9 +85,11 @@ const AddVoucher = () => {
                                                             id='usage'
                                                             type="number"
                                                             className='form-control'
-                                                            placeholder='Voucher Usage here'
-                                                            {...register("usage", { required: true }, { min: 1 })} />
-                                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
+                                                            placeholder='Lượt sử dụng'
+                                                            {...register("usage", { required: true, min: 1 })} />
+                                                        {errors.usage && errors.usage.type === 'min' && <span className='error'>Lượt sử dụng phải lớn hơn 1</span>}
+                                                        {errors.usage && errors.usage.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
+
                                                     </div>
                                                 </Col>
 
@@ -95,9 +100,8 @@ const AddVoucher = () => {
                                                             id='expiredDate'
                                                             type="datetime-local"
                                                             className='form-control'
-                                                            placeholder='Expired Date here'
                                                             {...register("expiredDate", { required: true })} />
-                                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
+                                                        {errors.expiredDate && errors.expiredDate.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                                     </div>
                                                 </Col>
 
@@ -113,13 +117,16 @@ const AddVoucher = () => {
                                             </Row>
                                         </form>
                                     </div>
+
                                 </Col>
                             </Row>
                         </div>
                     </div>
                 </div>
-
             </div>
+            {notify && (
+                <ModalConfirm success={success} message={message} />
+            )}
         </Col >
     )
 }

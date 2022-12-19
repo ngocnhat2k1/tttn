@@ -354,7 +354,7 @@ input[type="checkbox"]:checked:after {
 
 .edit_icon {
     display: inline;
-    padding: 10%;
+    padding: 10px;
 }
 
 .modal-content-edit-voucher {
@@ -372,7 +372,7 @@ input[type="checkbox"]:checked:after {
 
 .modal-content-edit-product {
     position: absolute;
-    top: 80%;
+    top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
     line-height: 1.4;
@@ -558,4 +558,8 @@ input[type="checkbox"]:checked:after {
 .img_product_order img {
     width: 85px;
 
+}
+
+.edit_icon svg {
+    cursor: pointer;
 }

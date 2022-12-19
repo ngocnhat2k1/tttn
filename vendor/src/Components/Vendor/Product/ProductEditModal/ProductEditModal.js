@@ -13,7 +13,7 @@ const ProductEditModal = ({ idDetail }) => {
     const [modal, setModal] = useState(false);
     const [productName, setPoductName] = useState('')
     const [price, setPrice] = useState('')
-    const [percentSale, setPercentSale] = useState('')
+    const [percentSale, setPercentSale] = useState()
     const [quantity, setQuantity] = useState('');
     const [img, setImg] = useState('');
     const [success, setSuccess] = useState("")
@@ -38,7 +38,7 @@ const ProductEditModal = ({ idDetail }) => {
                 sessionStorage.setItem("product", JSON.stringify(response.data.data))
                 setPoductName(response.data.data.name);
                 setPrice(response.data.data.price)
-                setPercentSale(response.data.data.precentSale)
+                setPercentSale(response.data.data.percentSale)
                 setQuantity(response.data.data.quantity)
                 setImg(response.data.data.img)
                 setListCategoriesOfProduct(response.data.data.categories)
@@ -76,6 +76,7 @@ const ProductEditModal = ({ idDetail }) => {
             img: img,
         }
         let { category, deletedAt, id, quality, ...rest } = payload
+        console.log(rest)
         axios
             .put(`http://127.0.0.1:8000/api/v1/products/${idDetail}/edit`, rest, {
                 headers: {
@@ -83,8 +84,14 @@ const ProductEditModal = ({ idDetail }) => {
                 },
             })
             .then((response) => {
+                console.log(response.data)
                 setSuccess(response.data.success)
-                setMessage(response.data.message)
+                if (response.data.success) {
+
+                    setMessage(response.data.message)
+                } else {
+                    setMessage(response.data.error)
+                }
                 setNotify(true)
             })
             .catch(function (error) {
@@ -115,7 +122,7 @@ const ProductEditModal = ({ idDetail }) => {
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
                     <div className="modal-content-edit-product">
-                        <h2 className="title_modal">Edit Product {idDetail}</h2>
+                        <h2 className="title_modal">Chỉnh sửa sản phẩm {idDetail}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
                                 <div className='image-input'>
@@ -127,27 +134,31 @@ const ProductEditModal = ({ idDetail }) => {
                                 </div>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="name">Product Name</label>
+                                        <label htmlFor="name">Tên sản phẩm</label>
                                         <input type="text"
                                             className="form-control"
                                             id="name"
                                             {...register('name', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setPoductName(e.target.value)
                                                     if (productName == JSON.parse(productInsessicon).name) {
                                                         setIsChange(true)
                                                     }
+                                                    console.log(productName, JSON.parse(productInsessicon).name)
                                                 }
                                             })} />
+                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="price">Product Price</label>
+                                        <label htmlFor="price">Giá sản phẩm</label>
                                         <input type="number"
                                             className="form-control"
                                             id="price"
                                             {...register('price', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setPrice(e.target.value)
                                                     if (price == JSON.parse(productInsessicon).price) {
@@ -155,15 +166,18 @@ const ProductEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.price && errors.price.type === "min" && <span className='error'>Số lượng phải lớn hơn 1</span>}
+                                        {errors.price && errors.price.type === "required" && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="percentSale">Percent Sale Product</label>
+                                        <label htmlFor="percentSale">phần trăm giảm giá</label>
                                         <input type="number"
                                             className="form-control"
                                             id="percentSale"
                                             {...register('percentSale', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setPercentSale(e.target.value)
                                                     if (percentSale == JSON.parse(productInsessicon).percentSale) {
@@ -171,15 +185,17 @@ const ProductEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.percentSale && <span className='error'>Phần trăm giảm giá chỉ có thể từ 1-99</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="quantity">Quantity Product</label>
+                                        <label htmlFor="quantity">Số lượng</label>
                                         <input type="number"
                                             className="form-control"
                                             id="quantity"
                                             {...register('quantity', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setPercentSale(e.target.value)
                                                     if (quantity == JSON.parse(productInsessicon).quantity) {
@@ -187,11 +203,13 @@ const ProductEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.quantity && errors.quantity.type === "min" && <span className='error'>Số lượng phải lớn hơn 1</span>}
+                                        {errors.quantity && errors.quantity.type === "required" && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="status">Status Product</label>
+                                        <label htmlFor="status">Trạng thái</label>
                                         <select type="select"
                                             className="form-control"
                                             id="status"
@@ -203,7 +221,7 @@ const ProductEditModal = ({ idDetail }) => {
                                 </Col>
                                 <Col lg={6}>
                                     <div className='fotm-group'>
-                                        <label htmlFor="categoryId ">Caterory</label>
+                                        <label htmlFor="categoryId ">Danh mục</label>
                                         <Row>
                                             <select
                                                 id="categoryId"
@@ -223,13 +241,14 @@ const ProductEditModal = ({ idDetail }) => {
                                 </Col>
                                 <Col lg={12}>
                                     <div className='fotm-group'>
-                                        <label htmlFor="description">Description</label>
+                                        <label htmlFor="description">Mô tả</label>
                                         <textarea
                                             id='description'
                                             rows="4" cols=""
                                             className='form-control'
                                             spellCheck="false"
                                             {...register("description", {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setPercentSale(e.target.value)
                                                     if (description == JSON.parse(productInsessicon).description) {
@@ -238,12 +257,18 @@ const ProductEditModal = ({ idDetail }) => {
                                                 }
                                             })}
                                         ></textarea>
+                                        {errors.description?.type && <span className='error'>Không được bỏ trống mục này</span>}
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className='vendor_order_boxed position-relative'>
+                                        <div className='btn_right_table'>
+                                            {isChange ? <button type='submit' className="theme-btn-one bg-black btn_sm">Lưu</button> : <button type='submit' className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Lưu</button>}
+
+                                        </div>
                                     </div>
                                 </Col>
                             </Row>
-                            <div className="btn_right_table">
-                                {isChange ? <button className="theme-btn-one bg-black btn_sm">Save</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Save</button>}
-                            </div>
                         </form>
                         <button className="close close-modal" onClick={closeModal}><FaTimes /></button>
                     </div>

@@ -34,11 +34,12 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
                     },
                 },)
             .then((response) => {
+                console.log(response.data)
                 setSuccess(response.data.success)
                 if (response.data.success) {
-                    setMessage(response.data.errors)
-                } else {
                     setMessage(response.data.message)
+                } else {
+                    setMessage(response.data.errors)
                 }
 
                 setNotify(true)
@@ -56,10 +57,10 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
                     <div className="modal-content">
-                        <h2 className="title_modal">Confirm delete Voucher <p>{nameDetail}</p></h2>
+                        <h2 className="title_modal">Bạn muốn xoá mã <p>{nameDetail}?</p></h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="btn_right_table">
-                                <button className="theme-btn-one bg-black btn_sm">Delete </button>
+                                <button className="theme-btn-one bg-black btn_sm">Xác nhận </button>
                             </div>
                         </form>
                         <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
@@ -74,10 +75,10 @@ const DeleteVoucher = ({ idDetail, nameDetail }) => {
                         <div>
                             {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                         </div>
-                        <h2 className="title_modal">Delete {success ? 'Successful' : 'Failed'}</h2>
+                        <h2 className="title_modal">Xoá {success ? 'Successful' : 'Failed'}</h2>
                         <p className='p_modal'>{message}</p>
                         <div className="btn_right_table">
-                            <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Close </button>
+                            <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Đóng </button>
                         </div>
                         <div className='divClose'>
                             <button className="close close-modal" onClick={closeNotify}><FaTimes /></button>

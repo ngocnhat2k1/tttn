@@ -27,13 +27,13 @@ const CategoryEditModal = ({ idDetail }) => {
                 },
             })
             .then((response) => {
-                console.log(response.data)
                 reset(response.data.data)
                 sessionStorage.setItem("category", JSON.stringify(response.data.data))
             });
     };
     const closeModal = () => {
         setModal(!modal);
+        setIsChange(false);
     }
     if (modal) {
         document.body.classList.add('active-modal')
@@ -44,7 +44,6 @@ const CategoryEditModal = ({ idDetail }) => {
     const onSubmit = (data) => {
         const payload = data
         let { categoryId, createdAt, updatedAt, ...rest } = payload
-        console.log("rest", rest)
         axios
             .put(`http://127.0.0.1:8000/api/v1/categories/${idDetail}/update`, rest, {
                 headers: {
@@ -66,28 +65,25 @@ const CategoryEditModal = ({ idDetail }) => {
                 console.log(error);
             });
     }
-    const onChangeName = (e) => {
-        setcategoryName(e.target.value)
-    }
     return (
         <>
             <FaEdit onClick={toggleModal} className="btn-modal">
             </FaEdit>
-
             {modal && (
                 <div className="modal">
-                    <div onClick={toggleModal} className="overlay"></div>
+                    <div onClick={closeModal} className="overlay"></div>
                     <div className="modal-content">
-                        <h2 className="title_modal">Edit Category {idDetail}</h2>
+                        <h2 className="title_modal">Chỉnh sửa danh mục {idDetail}</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
                                 <Col lg={12}>
                                     <div className="fotm-group">
-                                        <label htmlFor="name">Category Name</label>
+                                        <label htmlFor="name">Tên danh mục</label>
                                         <input type="text"
                                             className="form-control"
                                             id="name"
                                             {...register('name', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setcategoryName(e.target.value)
                                                     if (categoryName !== JSON.parse(categoryInsessicon).name) {
@@ -95,11 +91,12 @@ const CategoryEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                             </Row>
                             <div className="btn_right_table">
-                                {isChange ? <button className="theme-btn-one bg-black btn_sm">Save</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Save</button>}
+                                {isChange ? <button className="theme-btn-one bg-black btn_sm">Lưu</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Lưu</button>}
                             </div>
                         </form>
 
