@@ -75,6 +75,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post('/add', [ProductController::class, "store"]); // Add single product to database
             Route::post("/bulk", [ProductController::class, "bulkStore"]); // Add multiple product at once
             Route::put('/{id}/edit', [ProductController::class, "update"]); // Update detail of a specific product
+            Route::put('/{id}/editNoRequired', [ProductController::class, "updateNoRequired"]); // Update detail of a specific product
             Route::put('/change/category={category}&product={product}', [ProductController::class, "changeCategory"]); // Delete a category from product
             Route::delete('/{id}/destroy={state}', [ProductController::class, "destroy"]); // (Soft) Delete product from database
             Route::delete('/destroyBulk={state}', [ProductController::class, "destroyBulk"]); // (Soft) Delete product from database
@@ -193,6 +194,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get("/{id}", [VoucherController::class, "show"]);
             Route::post("/create", [VoucherController::class, "store"]);
             Route::put("/{id}/update", [VoucherController::class, "update"]);
+            Route::put("/{id}/updateNoRequired", [VoucherController::class, "updateNoRequired"]);
             Route::put("/{id}/showVoucher={state}", [VoucherController::class, "showVoucher"]);
             Route::delete("/{id}/destroy={state}", [VoucherController::class, "destroy"]);
         });

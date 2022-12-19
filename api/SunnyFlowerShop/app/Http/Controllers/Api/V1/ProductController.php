@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -395,6 +396,104 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
+
+    public function updateNoRequired(GetAdminBasicRequest $request)
+    {
+        // Validate value
+        $data = Validator::make($request->all(), [
+            "name" => "string|min:2|max:100",
+            "description" => "string|min:10",
+            "price" => "integer",
+            "percentSale" => "integer|min:1|max:100",
+            "img" => "string",
+            "quantity" => "integer",
+            "status" => "boolean",
+            "categoryId" => "integer",
+        ]);
+
+        if ($data->fails()) {
+            $errors = $data->errors();
+
+            return response()->json([
+                "success" => false,
+                "errors" => $errors,
+            ]);
+        }
+
+        // Checking Product ID
+        $product = Product::find($request->id);
+        if (empty($product)) {
+            return response()->json([
+                'success' => false,
+                'errors' => "ID Sản phẩm không hợp lệ."
+            ]);
+        }
+
+        $check_existed = Product::where("name", "=", $request->name)
+            ->where("id", "<>", $request->id)
+            ->exists();
+
+        // Check if the existence of name product in database
+        if ($check_existed) {
+            return response()->json([
+                'success' => false,
+                'errors' => "Tên sản phẩm đã tồn tại."
+            ]);
+        }
+
+        $product->name = $request->name ?? $product->name;
+        $product->description = $request->description ?? $product->description;
+        $product->price = $request->price ?? $product->price;
+        $product->percent_sale = $request->percentSale ?? $product->percent_sale;
+        $product->img = $request->img ?? $product->img;
+        $product->quantity = $request->quantity ?? $product->quantity;
+        $product->status = $request->status ?? $product->status;
+
+        $result = $product->save();
+
+        // If result is false, that means save process has occurred some issues
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                "errors" => "Đã có lỗi xảy ra trong quá trình vận hành!!"
+            ]);
+        }
+
+        if (!empty($request->categoryId)) {
+            $check_existed_category = Category::where("id", "=", $request->categoryId)->exists();
+
+            if (!$check_existed_category) {
+                return response()->json([
+                    "success" => false,
+                    "errors" => "ID Danh mục sản phẩm không hợp lệ."
+                ]);
+            }
+            // Remove all existed categories from product to readd everything back
+            $product->categories()->detach();
+    
+            $product->categories()->attach($request->categoryId);
+        }        
+
+        // Check product status
+        if ($product->status === 0) { // if new status product is 0, then proceed to delete product out of "customer_product_cart"
+            DB::table("customer_product_cart")
+                ->where("product_id", "=", $product->id)
+                ->delete();
+        }
+
+        // Checking all categories that product has to decide to attach new categories or skip
+        // for ($i = 0; $i < sizeof($request['category']); $i++) {
+        //     $category_id = $request['category'][$i]['id'];
+
+        //     $category = Category::find($category_id);
+        //     $product->categories()->attach($category);
+        // }
+
+        return response()->json([
+            'success' => true,
+            "message" => "Cập nhật thông tin sản phẩm thành công."
+        ]);
+    }
 
     // This is SOFT DELETE not permanent delete
     public function destroy(DeleteAdminBasicRequest $request)
