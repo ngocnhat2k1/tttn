@@ -15,17 +15,6 @@ import axios from '../../service/axiosClient';
 import ListProduct from './ListProduct';
 
 function ShopMainArea() {
-    // const [searchParams] = useSearchParams();
-    // const [search, setSearch] = useState('');
-    // const [category, setCategory] = useState('ALL');
-    // const { register, handleSubmit } = useForm();
-    // const [price, setPrice] = useState(100000);
-    // const [gender, setGender] = useState('ALL');
-    // const [listProduct, setListProduct] = useState(products);
-    // const { data, page, nextPage, prevPage, lastPage } = usePaginate(
-    //     "http://127.0.0.1:8000/api/products",
-    //     searchParams
-    // );
     const [searchParams] = useSearchParams();
     const [listProduct, setListProduct] = useState()
     const [search, setSearch] = useState('');
@@ -92,7 +81,7 @@ function ShopMainArea() {
                                     <input
                                         value={search}
                                         className="form-control"
-                                        placeholder="Search..."
+                                        placeholder="Tìm kiếm..."
                                         {...register('name', { onChange: (e) => setSearch(e.target.value) })}
                                     />
                                     <button type="submit">
@@ -102,30 +91,30 @@ function ShopMainArea() {
                             </div>
                             <div className={styles.shopSidebarBoxed}>
                                 <h4>Danh Mục Sản Phẩm</h4>
-                                <form>
-                                    <label className={styles.boxed}>ALL
-                                        <input type="radio" name="radio"
-                                            checked={category === "ALL" ? true : false}
-                                            onChange={() => setCategory("ALL")}
-                                        />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                    <label className={styles.boxed}>Balo Tibi
-                                        <input type="radio" name="radio" checked={category === "Tibi" ? true : false}
-                                            onChange={() => setCategory("Tibi")} />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                    <label className={styles.boxed}>Balo Laptop
-                                        <input type="radio" name="radio" checked={category === "Laptop" ? true : false}
-                                            onChange={() => setCategory("Laptop")} />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                    <label className={styles.boxed}>Balo Tiểu học
-                                        <input type="radio" name="radio" checked={category === "Tiểu học" ? true : false}
-                                            onChange={() => setCategory("Tiểu học")} />
-                                        <span className={styles.checkmark}></span>
-                                    </label>
-                                </form>
+
+                                <label className={styles.boxed}>Tất cả
+                                    <input type="radio" name="radio"
+                                        checked={category === "ALL" ? true : false}
+                                        onChange={() => setCategory("ALL")}
+                                    />
+                                    <span className={styles.checkmark}></span>
+                                </label>
+                                <label className={styles.boxed}>Balo Tibi
+                                    <input type="radio" name="radio" checked={category === "Tibi" ? true : false}
+                                        onChange={() => setCategory("Tibi")} />
+                                    <span className={styles.checkmark}></span>
+                                </label>
+                                <label className={styles.boxed}>Balo Laptop
+                                    <input type="radio" name="radio" checked={category === "Laptop" ? true : false}
+                                        onChange={() => setCategory("Laptop")} />
+                                    <span className={styles.checkmark}></span>
+                                </label>
+                                <label className={styles.boxed}>Balo Tiểu học
+                                    <input type="radio" name="radio" checked={category === "Tiểu học" ? true : false}
+                                        onChange={() => setCategory("Tiểu học")} />
+                                    <span className={styles.checkmark}></span>
+                                </label>
+
                             </div>
 
                         </div>

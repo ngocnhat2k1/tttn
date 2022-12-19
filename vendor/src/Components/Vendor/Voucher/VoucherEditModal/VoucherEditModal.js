@@ -110,16 +110,17 @@ const VoucherEditModal = ({ idDetail }) => {
                 <div className="modal">
                     <div onClick={toggleModal} className="overlay"></div>
                     <div className="modal-content-edit-voucher">
-                        <h2 className="title_modal">Edit Voucher {idDetail}</h2>
+                        <h2 className="title_modal">Chỉnh sửa mã giảm giá</h2>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="name">Voucher Name</label>
+                                        <label htmlFor="name">Mã giảm giá</label>
                                         <input type="text"
                                             className="form-control"
                                             id="name"
                                             {...register('name', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setVoucherName(e.target.value)
                                                     if (voucherName == JSON.parse(voucherInsessicon).name) {
@@ -127,15 +128,18 @@ const VoucherEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.name?.type && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="percent">Voucher Percent</label>
+                                        <label htmlFor="percent">Phần trăm giảm giá</label>
                                         <input type="number"
                                             className="form-control"
                                             id="percent"
                                             {...register('percent', {
+                                                required: true,
+                                                min: 1, max: 99,
                                                 onChange: (e) => {
                                                     setVoucherPercent(e.target.value)
                                                     if (voucherPercent == JSON.parse(voucherInsessicon).percent) {
@@ -143,15 +147,19 @@ const VoucherEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.percent && (errors.percent.type === 'min' || errors.percent.type === 'max') && <span className='error'>Phần trăm giảm giá chỉ có thể từ 1-99</span>}
+                                        {errors.percent && errors.percent.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="usage">Voucher Usage</label>
+                                        <label htmlFor="usage">Lượt sử dụng</label>
                                         <input type="number"
                                             className="form-control"
                                             id="usage"
                                             {...register('usage', {
+                                                required: true,
+                                                min: 1,
                                                 onChange: (e) => {
                                                     setVoucherUsage(e.target.value)
                                                     if (voucherUsage == JSON.parse(voucherInsessicon).usage) {
@@ -159,16 +167,19 @@ const VoucherEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.usage && errors.usage.type === 'min' && <span className='error'>Lượt sử dụng phải lớn hơn 1</span>}
+                                        {errors.usage && errors.usage.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                                 <Col lg={6}>
                                     <div className="fotm-group">
-                                        <label htmlFor="VoucherExpiredDate">Voucher Expired Date</label>
+                                        <label htmlFor="VoucherExpiredDate">Ngày hết hạn</label>
                                         <input type="datetime-local"
                                             className="form-control"
                                             id="VoucherExpiredDate"
                                             value={VoucherExpiredDate}
                                             {...register('expiredDate', {
+                                                required: true,
                                                 onChange: (e) => {
                                                     setVoucherexpiredDate(e.target.value)
                                                     if (VoucherExpiredDate == JSON.parse(voucherInsessicon).expiredDate) {
@@ -176,16 +187,17 @@ const VoucherEditModal = ({ idDetail }) => {
                                                     }
                                                 }
                                             })} />
+                                        {errors.expiredDate && errors.expiredDate.type === 'required' && <span className='error'>Không được bỏ trống mục này</span>}
                                     </div>
                                 </Col>
                             </Row>
                             <Col lg={12}>
                                 {deleted ?
                                     <div className="btn_left_table" onClick={reversedVoucher}>
-                                        <button className="theme-btn-one bg-black btn_sm">Restore</button>
+                                        <button className="theme-btn-one bg-black btn_sm">Khôi phục</button>
                                     </div> : ""}
                                 <div className="btn_right_table">
-                                    {isChange ? <button className="theme-btn-one bg-black btn_sm">Save</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Save</button>}
+                                    {isChange ? <button className="theme-btn-one bg-black btn_sm">Lưu</button> : <button className="theme-btn-one bg-black btn_sm btn btn-secondary btn-lg" disabled>Lưu</button>}
                                 </div>
                             </Col>
                         </form>

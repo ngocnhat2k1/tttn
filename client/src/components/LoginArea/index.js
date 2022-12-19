@@ -100,9 +100,9 @@ function LoginArea() {
                                                 </div>
                                                 <h2 className="title_modal">Đăng nhập {success ? 'thành công' : 'thất bại'}</h2>
                                                 <p className='p_modal'>{message}</p>
-                                                <div className='divClose'>
-                                                    <button className="close close-modal" onClick={closeModal}>OK</button>
-                                                </div>
+                                                {/* <div className='divClose'> */}
+                                                <button className="close close-modal" onClick={closeModal}>OK</button>
+                                                {/* </div> */}
 
                                             </div>
                                         </div>

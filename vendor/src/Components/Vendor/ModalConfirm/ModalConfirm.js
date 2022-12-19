@@ -15,7 +15,7 @@ const ModalConfirm = ({ success, message }) => {
 
     return (
         <>{isTrue &&
-            <div className="modal">
+            <div className="modal text-center" >
                 <div onClick={closeNotify} className="overlay"></div>
                 <div className="modal-content">
                     <div>

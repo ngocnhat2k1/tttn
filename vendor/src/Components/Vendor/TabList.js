@@ -20,9 +20,9 @@ function TabList() {
                     </li>
                     <li>
                         <Link
-                            onClick={() => setActive('/all-product')}
-                            className={`${isActive === "/all-product" ? 'active_tablist' : isActive === "/add-product" ? 'acitve_tablist' : ' '} `}
-                            to="/all-product">  <i> <FaShoppingCart color='black' /></i> Danh Sách Sản Phẩm </Link>
+                            onClick={() => setActive('/all-products')}
+                            className={`${isActive === "/all-products" ? 'active_tablist' : isActive === "/add-products" ? 'acitve_tablist' : ' '} `}
+                            to="/all-products">  <i> <FaShoppingCart color='black' /></i> Danh Sách Sản Phẩm </Link>
                     </li>
                     <li>
                         <Link

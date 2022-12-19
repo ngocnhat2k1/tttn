@@ -47,15 +47,12 @@ const DeleteProduct = ({ idDetail, nameDetail }) => {
                     <div className="modal">
                         <div onClick={toggleModal} className="overlay"></div>
                         <div className="modal-content">
-                            <h2 className="title_modal">Confirm delete Category <p>{idDetail}</p></h2>
+                            <h2 className="title_modal">Bạn muốn xoá sản phẩm<p>{nameDetail}?</p></h2>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="btn_right_table">
-
-                                    <button className="theme-btn-one bg-black btn_sm">Delete </button>
-
+                                    <button className="theme-btn-one bg-black btn_sm">Xoá </button>
                                 </div>
                             </form>
-
                             <button className="close close-modal" onClick={toggleModal}><FaTimes /></button>
 
                         </div>

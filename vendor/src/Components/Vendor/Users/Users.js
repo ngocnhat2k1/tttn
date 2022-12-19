@@ -32,10 +32,10 @@ const Users = () => {
                     setData({
                         data: response.data.data,
                         total: response.data.total,
-                        page: response.data.current_page,
-                        lastPage: response.data.last_page,
-                        nextPage: response.data.current_page + 1,
-                        prevPage: response.data.current_page - 1,
+                        page: response.data.meta.current_page,
+                        lastPage: response.data.meta.last_page,
+                        nextPage: response.data.meta.current_page + 1,
+                        prevPage: response.data.meta.current_page - 1,
                     });
                 }
             });
@@ -45,7 +45,7 @@ const Users = () => {
             <div className='tab-content dashboard_content'>
                 <div className='tab-pane fade show active'>
                     <div className='vendors_profiles'>
-                        <h4>All Users</h4>
+                        <h4>Tất các người dùng</h4>
 
                         <div className='table-responsive'>
                             <table className='table pending_table'>
@@ -81,7 +81,7 @@ const Users = () => {
                                     {data.page !== data.lastPage && <li className={styles.pageItem}>
                                         <Link to={`?page=${data.nextPage}`} className={styles.pageLink}>{data.page + 1}</Link>
                                     </li>}
-                                    {data.page - 1 === 0 && <li className={styles.pageItem}><Link to={`?page=${data.page + 2}`} className={styles.pageLink}>{data.page + 2}</Link></li>}
+                                    {data.page - 3 === 0 && <li className={styles.pageItem}><Link to={`?page=${data.page + 2}`} className={styles.pageLink}>{data.page + 2}</Link></li>}
                                     {data.page !== data.lastPage && <li className={`${styles.pageItem} ${styles.disable}`}>
                                         <Link className={styles.pageLink}>...</Link>
                                     </li>}

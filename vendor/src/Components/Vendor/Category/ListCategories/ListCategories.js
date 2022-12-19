@@ -19,8 +19,8 @@ const ListCategories = ({ currentCategory }) => {
                         </td>
                         <td>{Category.name}</td>
 
-                        <td><div className='edit_icon'> <CategoryEditModal idDetail={Category.id} /></div>
-
+                        <td>
+                            <div className='edit_icon'> <CategoryEditModal idDetail={Category.id} /></div>
                             <div className='edit_icon'><DeleteCategory idDetail={Category.id} nameDetail={Category.name} /></div>
                         </td>
 
