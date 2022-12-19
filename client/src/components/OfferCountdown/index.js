@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import axios from 'axios';
 
 function OfferCountdown() {
 
@@ -11,11 +12,14 @@ function OfferCountdown() {
     const [timeHours, setHours] = useState('00');
     const [timeMinutes, setMinutes] = useState('00');
     const [timeSeconds, setSeconds] = useState('00');
+    const [name, setName] = useState('');
+    const [discount, setDiscount] = useState(0)
+    const [usage, setUsage] = useState(0);
 
     let interval = useRef();
 
-    const startCountDown = () => {
-        const countDownDate = new Date('October 1, 2022 00:00:00').getTime();
+    const startCountDown = (date) => {
+        const countDownDate = new Date(date).getTime();
 
         interval = setInterval(() => {
             const now = new Date().getTime();
@@ -38,10 +42,19 @@ function OfferCountdown() {
     }
 
     useEffect(() => {
-        startCountDown();
-        return () => {
-            clearInterval(interval.current);
-        }
+        axios
+            .get(`http://127.0.0.1:8000/api/show/voucher`)
+            .then((response) => {
+                if (response.data.success) {
+                    setName(response.data.data.name)
+                    setDiscount(response.data.data.percent)
+                    startCountDown(response.data.data.expiredDate);
+                    setUsage(response.data.data.usage)
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }, [])
 
     return (
@@ -69,9 +82,22 @@ function OfferCountdown() {
                                 </div>
                             </div>
                             <div className={styles.offerTimeText}>
-                                <h2>GIẢM GIÁ ĐẾN 40% CHO NHỮNG SẢN PHẨM MỚI</h2>
+                                {/* <h2>GIẢM GIÁ ĐẾN 40% CHO NHỮNG SẢN PHẨM MỚI</h2>
                                 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro quisquam, odit assumenda sit modi commodi esse necessitatibus temporibus aperiam veritatis eveniet!</p>
-                                <Link to='/shop'>XEM THÊM</Link>
+                                <Link to='/shop'>XEM THÊM</Link> */}
+                                {(timeDays !== '00' || timeHours !== '00' || timeMinutes !== '00' || timeSeconds !== '00') && usage > 0 && <>
+                                    <h2>MÃ GIẢM GIÁ: <span className={styles.name}>{name}</span></h2>
+                                    <h3>GIẢM ĐẾN: <span className={styles.discount}>{discount}%</span></h3>
+                                    <h3>SỐ LƯỢNG CÒN LẠI: <span className={styles.usage}>{usage}</span></h3>
+                                    <p>Nhập mã giảm giá {name} để được nhận ưu đãi lên đến {discount}%</p>
+                                    <Link to="/shop">MUA NGAY</Link>
+                                </>
+                                }
+                                {((timeDays === '00' && timeHours === '00' && timeMinutes === '00' && timeSeconds === '00') || usage < 1) && <>
+                                    <h2>HIỆN CỬA HÀNG CHƯA CÓ MÃ GIẢM GIÁ</h2>
+                                    <p>Hãy đón chờ các chương trình giảm giá sắp tới nhé</p>
+                                    <Link to="/shop">MUA NGAY</Link>
+                                </>}
                             </div>
                         </div>
                     </Col>

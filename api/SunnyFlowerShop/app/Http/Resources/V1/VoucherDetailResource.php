@@ -20,7 +20,7 @@ class VoucherDetailResource extends JsonResource
             "percent" => $this->percent,
             "usage" => $this->usage,
             "deleted" => $this->deleted,
-            "expiredDate" => date("d/m/Y H:i:s", strtotime($this->expired_date)),
+            "expiredDate" => date($this->expired_date),
             "createdAt" => date_format($this->created_at, "d/m/Y H:i:s"),
             "updatedAt" => date_format($this->updated_at, "d/m/Y H:i:s")
         ];
