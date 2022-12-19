@@ -126,7 +126,7 @@ function ModalDetailProduct({ productId }) {
                             <Col lg={7} md={6} sm={12} xs={12}>
                                 <div className='modal_product_content'>
                                     <h3>{product.name}</h3>
-                                    <h4>{formatter.format(product.price * ((100 - product.percentSale) / 100))} <del>{formatter.format(product.price)}</del>
+                                    <h4>{formatter.format(product.price * ((100 - product.percentSale) / 100))} <del>{product.percentSale ? formatter.format(product.price) : ""}</del>
                                     </h4>
                                     <p>{product.description}</p>
                                 </div>
