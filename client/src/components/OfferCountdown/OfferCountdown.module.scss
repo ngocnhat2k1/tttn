@@ -49,14 +49,13 @@
 }
 
 .offerTimeText h2 {
-    font-size: 40px;
-    font-weight: 500;
+    font-size: 30px;
     line-height: 55px;
     letter-spacing: 2px;
 }
 
 .offerTimeText p {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     color: #777c87;
     line-height: 24px;
@@ -78,4 +77,26 @@
         color: black;
         background-color: white;
     }
+}
+
+.name {
+    font-size: 50px;
+    border: 1px solid none;
+    color: white;
+    background-color: red;
+    padding: 5px 20px;
+    font-weight: 900;
+}
+
+.offerTimeText h3 {
+    font-size: 20px;
+    margin: 20px 0px;
+}
+
+.discount {
+    font-size: 40px;
+}
+
+.usage {
+    font-size: 40px;
 }
