@@ -331,7 +331,10 @@ class ProductController extends Controller
             ]);
         }
 
-        $check_existed = Product::where("name", "=", $request->name)->exists();
+        $check_existed = Product::where("name", "=", $request->name)
+            ->where("id", "<>", $product->id)
+            ->exists();
+
         $check_existed_category = Category::where("id", "=", $request->categoryId)->exists();
 
         if (!$check_existed_category) {
@@ -470,9 +473,9 @@ class ProductController extends Controller
             }
             // Remove all existed categories from product to readd everything back
             $product->categories()->detach();
-    
+
             $product->categories()->attach($request->categoryId);
-        }        
+        }
 
         // Check product status
         if ($product->status === 0) { // if new status product is 0, then proceed to delete product out of "customer_product_cart"

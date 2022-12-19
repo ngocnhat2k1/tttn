@@ -115,7 +115,9 @@ class VoucherController extends Controller
      */
     public function update(UpdateVoucherRequest $request)
     {
-        $voucher = Voucher::where("name", "=", $request->name)->exists();
+        $voucher = Voucher::where("name", "=", $request->name)
+            ->where("id", "<>", $request->id)
+            ->exists();
 
         if ($voucher) {
             return response()->json([
