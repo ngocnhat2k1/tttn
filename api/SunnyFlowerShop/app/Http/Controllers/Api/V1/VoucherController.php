@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\ShowValueEnum;
 use App\Models\Voucher;
 use App\Http\Requests\Admin\Store\StoreVoucherRequest;
 use App\Http\Requests\Admin\Update\UpdateVoucherRequest;
@@ -30,7 +31,7 @@ class VoucherController extends Controller
             ]);
         }
 
-        $vouchers = Voucher::paginate(10);
+        $vouchers = Voucher::orderBy("show", "DESC")->paginate(10);
 
         return new VoucherDetailCollection($vouchers);
     }
@@ -96,6 +97,8 @@ class VoucherController extends Controller
                 "percent" => $data->percent,
                 "usage" => $data->usage,
                 "expiredDate" => $data->expired_date,
+                "show" => ShowValueEnum::getShowValueAttribute($data->show),
+                "showInt" => $data->show,
                 "deleted" => $data->deleted,
                 "createdAt" => date_format($data->created_at, "d/m/Y H:i:s"),
                 "updatedAt" => date_format($data->updated_at, "d/m/Y H:i:s")
@@ -112,7 +115,9 @@ class VoucherController extends Controller
      */
     public function update(UpdateVoucherRequest $request)
     {
-        $voucher = Voucher::where("name", "=", $request->name)->exists();
+        $voucher = Voucher::where("name", "=", $request->name)
+            ->where("id", "<>", $request->id)
+            ->exists();
 
         if ($voucher) {
             return response()->json([
@@ -148,7 +153,85 @@ class VoucherController extends Controller
         ]);
     }
 
-    public function showVoucher(GetAdminBasicRequest $request) {
+    // Update value without any restriction
+    public function updateNoRequired(GetAdminBasicRequest $request)
+    {
+        $data = Validator::make($request->all(), [
+            "name" => "string|min:2",
+            "percent" => "integer|min:0|max:100",
+            "usage" => "integer|min:5",
+            "show" => "boolean",
+            "expiredDate" => "date_format:Y-m-d H:i:s",
+        ]);
+
+        if ($data->fails()) {
+            $errors = $data->errors();
+
+            return response()->json([
+                "success" => false,
+                "errors" => $errors,
+            ]);
+        }
+
+        $voucher = Voucher::where("name", "=", $request->name)
+            ->where("id", "<>", $request->id)
+            ->exists();
+
+        if ($voucher) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Tên mã giảm giá đã tồn tại."
+            ]);
+        }
+
+        if ($request->show) {
+            $voucherShowed = Voucher::where("show", "=", 1)->get();
+
+            if ($voucherShowed->count() >= 1) {
+
+                $arr = [];
+
+                for ($i = 0; $i < sizeof($voucherShowed); $i++) {
+                    if ($voucherShowed[$i]->show === 1) {
+                        $arr[$i] = $voucherShowed[$i]->name;
+                    }
+                }
+
+                return response()->json([
+                    "success" => false,
+                    "errors" => "Thay đổi không thành không ở phần chỉnh giá trị hiển thị. Mã giảm giá hiện đang được hiển thị: " . implode(", ", $arr)
+                ]);
+            }
+        }
+
+        $query = Voucher::where("id", "=", $request->id);
+
+        if (!$query->exists()) {
+            return response()->json([
+                "success" => false,
+                "errors" => "Không thể cập nhật thông tin của mã giảm giá không tồn tại."
+            ]);
+        }
+
+        $voucher_get = $query->first();
+
+        $voucher_get->name = $request->name ?? $voucher_get->name;
+
+        $voucher_get->show = $request->show ?? $voucher_get->show;
+        $voucher_get->percent = $request->percent ?? $voucher_get->percent;
+        $voucher_get->usage = $request->usage ?? $voucher_get->usage;
+        $voucher_get->expired_date = $request->expiredDate ?? $voucher_get->expired_date;
+
+        $voucher_get->save();
+
+        return response()->json([
+            "success" => true,
+            "message" => "Cập nhật thành công thông tin của Mã giảm giá có ID = " . $request->id
+        ]);
+    }
+
+    public function showVoucher(GetAdminBasicRequest $request)
+    {
         $voucherShowed = Voucher::where("show", "=", 1)->get();
 
         $voucherSelected = Voucher::find($request->id);
@@ -158,13 +241,13 @@ class VoucherController extends Controller
 
             if ($voucherShowed->count() >= 1) {
                 $arr = [];
-    
+
                 for ($i = 0; $i < sizeof($voucherShowed); $i++) {
-                    if ($voucherShowed[$i]->show === 1)  {
+                    if ($voucherShowed[$i]->show === 1) {
                         $arr[$i] = $voucherShowed[$i]->name;
                     }
                 }
-    
+
                 return response()->json([
                     "success" => false,
                     "errors" => "Những mã giảm giá hiện đang được hiển thị " . implode(", ", $arr)
@@ -225,7 +308,7 @@ class VoucherController extends Controller
 
         // If state is equal to 1, then (Soft) Delete voucher
         if ((int) $request->state === 1) {
-            
+
             // Check if voucher has already been deleted yet
             if ($voucher->deleted !== null) {
                 return response()->json([
