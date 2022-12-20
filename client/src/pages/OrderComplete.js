@@ -7,7 +7,7 @@ function OrderComplete() {
 
   return (
     <>
-      <CommonBanner namePage="Order Complete" />
+      <CommonBanner namePage="Đặt hàng thành công" />
       <OrderCompleteArea />
     </>
   )
