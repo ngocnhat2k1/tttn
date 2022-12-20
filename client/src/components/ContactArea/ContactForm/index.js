@@ -28,7 +28,7 @@ function ContactForm() {
     return (
         <Col lg={8}>
             <div className={styles.contactForm}>
-                <h3>Get In Touch</h3>
+                <h3>Liên hệ</h3>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col lg={6} md={6} sm={6} xs={12}>
@@ -36,11 +36,11 @@ function ContactForm() {
                                 <input
                                     className="FormInput"
                                     type="text"
-                                    placeholder="Name"
+                                    placeholder="Họ và Tên"
                                     {...register("name-input", { required: true, pattern: /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u })}
                                 />
                                 {errors["name-input"] && (
-                                    <p className="checkInput">Invalid Name!</p>
+                                    <p className="checkInput">Tên không hợp lệ</p>
                                 )}
                             </div>
                         </Col>
@@ -53,7 +53,7 @@ function ContactForm() {
                                     {...register("email-input", { required: true, pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i })}
                                 />
                                 {errors["email-input"] && (
-                                    <p className="checkInput">Invalid Email!</p>
+                                    <p className="checkInput">Email không hợp lệ</p>
                                 )}
                             </div>
                         </Col>
@@ -71,13 +71,13 @@ function ContactForm() {
                                             onChange={onChange}
                                             defaultCountry="VN"
                                             id="phone-input"
-                                            placeholder="Phone"
+                                            placeholder="Sô điện thoại"
                                             required
                                         />
                                     )}
                                 />
                                 {errors["phone-input"] && (
-                                    <p className="checkInput">Invalid Phone!</p>
+                                    <p className="checkInput">Số điện thoại không hợp lệ</p>
                                 )}
                             </div>
                         </Col>
@@ -86,11 +86,11 @@ function ContactForm() {
                                 <input
                                     className="FormInput"
                                     type="text"
-                                    placeholder="Subject"
+                                    placeholder="Vấn đề của bạn"
                                     {...register("subject-input", { required: true })}
                                 />
                                 {errors["subject-input"] && (
-                                    <p className="checkInput">Subject is blank!</p>
+                                    <p className="checkInput">Hãy điền vấn đề mà bạn gặp phải</p>
                                 )}
                             </div>
                         </Col>
@@ -99,13 +99,13 @@ function ContactForm() {
                                 <textarea
                                     className="FormInput"
                                     type="text"
-                                    placeholder="Message"
+                                    placeholder="Nội dung"
                                     {...register("message-input", { required: true })}
                                     rows={7}
                                 >
                                 </textarea>
                                 {errors["subject-input"] && (
-                                    <p className="checkInput">Message is blank!</p>
+                                    <p className="checkInput">Nội dung trống!</p>
                                 )}
                             </div>
                             <div className={styles.submitButtonContact}>

@@ -83,9 +83,9 @@ const VoucherEditModal = ({ idDetail }) => {
             .then((response) => {
                 setSuccess(response.data.success)
                 if (response.data.success) {
-                    setMessage(response.data.errors)
-                } else {
                     setMessage(response.data.message)
+                } else {
+                    setMessage(response.data.errors)
                 }
 
                 setNotify(true)
@@ -97,7 +97,7 @@ const VoucherEditModal = ({ idDetail }) => {
     }
     const closeNotify = () => {
         setNotify(!notify);
-        if (!success) {
+        if (success) {
             window.location.reload(false)
         }
     }
@@ -213,7 +213,7 @@ const VoucherEditModal = ({ idDetail }) => {
                         <div>
                             {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                         </div>
-                        <h2 className="title_modal">{success ? 'Successful' : 'Failed'}</h2>
+                        <h2 className="title_modal">{success ? 'Thành Công' : 'Thất Bại'}</h2>
                         <p className='p_modal'>{message}</p>
                         <div className="btn_right_table">
                             <button className="theme-btn-one bg-black btn_sm" onClick={closeNotify}>Close </button>

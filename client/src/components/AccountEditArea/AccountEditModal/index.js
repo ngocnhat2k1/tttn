@@ -32,7 +32,7 @@ function AccountEditModal({ message, success, nameBtn }) {
                         <div>
                             {success == true ? <FaRegCheckCircle size={90} className='colorSuccess' /> : <FaTimesCircle size={90} className='colorFail' />}
                         </div>
-                        <h2 className="title_modal">{nameBtn} {success ? 'Successful' : 'Failed'}</h2>
+                        <h2 className="title_modal">{nameBtn} {success ? 'Thành Công' : 'Thất Bại'}</h2>
                         <p className='p_modal'>{message}</p>
                         <div className='divClose'>
                             <button className="close close-modal" onClick={closeModal}>OK</button>
